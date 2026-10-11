@@ -2,13 +2,20 @@
 // NFKC を全体にかけると「…」が「...」に、全角英数が半角に変わってしまうため、
 // 文字化けの原因になりやすい範囲だけを選んで NFKC を適用する。
 
-// 康熙部首・CJK部首補助（⽇ → 日 のように PDF でよく混入する）
+// 康熙部首・CJK部首補助（⽇ → 日 のように PDF でよく混入する）、縦書き用の句読点・括弧（︒ → 。）
 // CJK互換漢字、半角カナ
-const COMPAT_RANGES = /[\u2E80-\u2FDF\uF900-\uFAFF\uFF61-\uFF9F]/g
+const COMPAT_RANGES = /[\u2E80-\u2FDF\uF900-\uFAFF\uFF61-\uFF9F\uFE10-\uFE19\uFE30-\uFE4F]/g
+
+// CJK部首補助のうち NFKC で戻らないが、PDF で漢字の代わりに使われやすいもの
+const RADICALS: Record<string, string> = {
+  '⺟': '母', '⺠': '民', '⻁': '虎', '⻄': '西', '⻆': '角',
+  '⻏': '邑', '⻑': '長', '⻘': '青', '⻝': '食', '⻤': '鬼',
+  '⻨': '麦', '⻩': '黄', '⻫': '斉', '⻭': '歯', '⻯': '竜', '⻲': '亀',
+}
 
 export function normalizeChars(s: string): string {
   return s
-    .replace(COMPAT_RANGES, (c) => c.normalize('NFKC'))
+    .replace(COMPAT_RANGES, (c) => RADICALS[c] ?? c.normalize('NFKC'))
     .replace(/ /g, ' ')
     .replace(/[​-‍﻿­]/g, '') // ゼロ幅文字・ソフトハイフン
 }
@@ -34,6 +41,7 @@ export interface Ruby {
   text: string
 }
 
+const KANA_ONLY = /^[\u3041-\u30FFー・ ]+$/
 const KANJI_RUN = /[\u4E00-\u9FFF\u3400-\u4DBF\uF900-\uFAFF々〆ヶ〇]+$/
 
 /**
@@ -61,13 +69,20 @@ export function parseRuby(s: string): { text: string; ruby: Ruby[] } {
       }
       const rt = s.slice(i + 1, close)
       let start = bar
-      if (start < 0) {
+      // ｜の無い記法は、直前が漢字で、中身がかなだけのときに限る。
+      // それ以外（《大賢者》のような本文中の括弧）は本文としてそのまま残す
+      if (start < 0 && KANA_ONLY.test(rt)) {
         const m = text.match(KANJI_RUN)
         start = m ? text.length - m[0].length : -1
       }
-      if (start >= 0 && start < text.length && rt) ruby.push({ start, end: text.length, text: rt })
+      if (start >= 0 && start < text.length && rt) {
+        ruby.push({ start, end: text.length, text: rt })
+        i = close + 1
+      } else {
+        text += s.slice(i, close + 1)
+        i = close + 1
+      }
       bar = -1
-      i = close + 1
       continue
     }
     text += c

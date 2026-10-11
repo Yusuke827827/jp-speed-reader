@@ -8,7 +8,7 @@ import { BLANK_INK, FULL_PAGE, illustrationRect, type Rect } from './illust'
 import { decodeText, parseTextBook } from './textImport'
 
 export interface ImportProgress {
-  phase: 'reading' | 'extracting' | 'saving' | 'done'
+  phase: 'reading' | 'extracting' | 'repairing' | 'saving' | 'done'
   done: number
   total: number
 }
@@ -76,6 +76,26 @@ export async function importPdf(
       if (i % 4 === 3 || i === pageCount - 1) {
         onProgress({ phase: 'extracting', done: i + 1, total: pageCount })
         await new Promise((r) => setTimeout(r, 0)) // 画面を固めない
+      }
+    }
+
+    // ToUnicode が空の文字（U+0000）を返すフォントがあれば、ActualText から対応表を直して取り出し直す
+    const nulCount = lines.reduce((a, p) => a + p.lines.reduce((b, l) => b + (l.text.split('\u0000').length - 1), 0), 0)
+    if (nulCount > 0) {
+      onProgress({ phase: 'repairing', done: 0, total: 1 })
+      const { fixActualText } = await import('./actualText')
+      const fixedPdf = await fixActualText(new Uint8Array(buf)).catch(() => null)
+      if (fixedPdf && fixedPdf.fixed > 0) {
+        await closePdf(doc)
+        buf = fixedPdf.bytes.slice().buffer as ArrayBuffer
+        doc = await openPdf(buf)
+        for (let i = 0; i < pageCount; i++) {
+          lines[i] = await pageLines(doc, i).catch(() => ({ lines: [], vertical: false }))
+          if (i % 8 === 7 || i === pageCount - 1) {
+            onProgress({ phase: 'repairing', done: i + 1, total: pageCount })
+            await new Promise((r) => setTimeout(r, 0))
+          }
+        }
       }
     }
 

@@ -2,6 +2,7 @@
 // ブラウザに依存しないので、Node 上のテストからも使える。
 
 import type { RawItem } from './layout'
+import { normalizeChars } from './normalize'
 
 interface TCItem {
   str?: string
@@ -27,7 +28,7 @@ export function toRawItems(tc: TextContentLike): RawItem[] {
     // 縦書きの断片は (e, f) が上端なので、下端に揃える
     const h = vertical ? Math.abs(it.height ?? 0) || size * it.str.length : Math.abs(it.height ?? 0) || size
     const w = vertical ? Math.abs(it.width ?? 0) || size : Math.abs(it.width ?? 0)
-    items.push({ str: it.str, x: e, y: vertical ? f - h : f, w, h, size, vertical })
+    items.push({ str: normalizeChars(it.str), x: e, y: vertical ? f - h : f, w, h, size, vertical })
   }
   return items
 }

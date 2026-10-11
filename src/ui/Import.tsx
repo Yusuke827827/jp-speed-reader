@@ -88,10 +88,11 @@ export function Import() {
               <div style={{ fontWeight: 700 }}>
                 {progress!.phase === 'reading' && 'ファイルを読み込んでいます'}
                 {progress!.phase === 'extracting' && `本文を取り出しています（${progress!.done} / ${progress!.total} ページ）`}
+                {progress!.phase === 'repairing' && `欠けた文字を補っています（${progress!.done} / ${progress!.total} ページ）`}
                 {progress!.phase === 'saving' && '端末に保存しています'}
               </div>
               <div className="progress">
-                <div style={{ width: `${progress!.phase === 'extracting' ? pct : progress!.phase === 'saving' ? 100 : 5}%` }} />
+                <div style={{ width: `${progress!.phase === 'extracting' || progress!.phase === 'repairing' ? pct : progress!.phase === 'saving' ? 100 : 5}%` }} />
               </div>
               <button className="btn" onClick={() => abort.current?.abort()}>
                 中止

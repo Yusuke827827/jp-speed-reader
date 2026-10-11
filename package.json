@@ -16,6 +16,7 @@
   "dependencies": {
     "budoux": "^0.9.3",
     "idb": "^8.0.4",
+    "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^6.4.299",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
