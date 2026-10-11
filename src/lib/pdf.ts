@@ -7,6 +7,7 @@ import workerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url'
 import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist/types/src/display/api'
 import { itemsToLines, type PageLines } from './layout'
 import { toRawItems } from './pdfItems'
+import { imageRects, inkRatio, type Rect } from './illust'
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerUrl
 
@@ -175,4 +176,41 @@ export async function makeCover(doc: PDFDocumentProxy): Promise<string | undefin
   } catch {
     return undefined
   }
+}
+
+/** ページに描かれた画像の範囲（ページに対する割合） */
+export async function pageImageRects(doc: PDFDocumentProxy, pageIndex: number): Promise<Rect[]> {
+  const page = await doc.getPage(pageIndex + 1)
+  try {
+    const ops = await page.getOperatorList()
+    return imageRects(ops.fnArray, ops.argsArray, pdfjs.OPS, page.view)
+  } finally {
+    page.cleanup()
+  }
+}
+
+/** ページを小さく描いて、白でない画素の割合を測る（白紙の判定用） */
+export async function pageInk(doc: PDFDocumentProxy, pageIndex: number): Promise<number> {
+  const c = await renderToCanvas(doc, pageIndex, 160)
+  const ink = inkRatio(c.getContext('2d')!.getImageData(0, 0, c.width, c.height).data)
+  c.width = c.height = 0
+  return ink
+}
+
+/** 挿絵の範囲を切り出して画像（data URL）にする。longSide は切り出した後の長辺の画素数 */
+export async function renderIllust(doc: PDFDocumentProxy, pageIndex: number, rect: Rect, longSide: number): Promise<string> {
+  const w = rect[2] - rect[0]
+  const h = rect[3] - rect[1]
+  const page = await renderToCanvas(doc, pageIndex, Math.min(3000, longSide / Math.max(0.1, Math.max(w, h))))
+  const sx = Math.floor(rect[0] * page.width)
+  const sy = Math.floor(rect[1] * page.height)
+  const sw = Math.max(1, Math.floor(w * page.width))
+  const sh = Math.max(1, Math.floor(h * page.height))
+  const out = document.createElement('canvas')
+  out.width = sw
+  out.height = sh
+  out.getContext('2d')!.drawImage(page, sx, sy, sw, sh, 0, 0, sw, sh)
+  const url = out.toDataURL('image/jpeg', 0.85)
+  page.width = page.height = out.width = out.height = 0
+  return url
 }

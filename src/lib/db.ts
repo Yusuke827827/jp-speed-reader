@@ -59,6 +59,15 @@ export interface PageRecord {
   vertical: boolean
   source: PageSource
   confidence?: number
+  /** 挿絵のページ（本文がある場合は挿絵入りのページ）か、白紙か */
+  image?: 'illust' | 'blank'
+  /** 挿絵の範囲（ページに対する割合）。無ければページ全体 */
+  illustRect?: [number, number, number, number]
+}
+
+/** OCR をかけるべきページ（文字が取れず、挿絵・白紙でもない） */
+export function needsOcr(p: PageRecord): boolean {
+  return p.source === 'empty' && !p.image
 }
 
 export interface Progress {

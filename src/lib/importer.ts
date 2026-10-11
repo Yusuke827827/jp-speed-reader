@@ -1,9 +1,10 @@
 // PDF の取り込み: ファイル保存 → 本文抽出 → ページ保存 → OCR が必要か判定
 
-import { describeStorageError, putBook, putPages, saveFile, deleteBook, type BookMeta, type PageRecord } from './db'
+import { describeStorageError, needsOcr, putBook, putPages, saveFile, deleteBook, type BookMeta, type PageRecord } from './db'
 import { linesToPageTexts, type PageLines } from './layout'
 import { garbledRatio, visibleLength } from './normalize'
-import { closePdf, makeCover, openPdf, pageLines, readOutline, readTitle, PdfLoadError } from './pdf'
+import { closePdf, makeCover, openPdf, pageImageRects, pageInk, pageLines, readOutline, readTitle, PdfLoadError } from './pdf'
+import { BLANK_INK, FULL_PAGE, illustrationRect, type Rect } from './illust'
 import { decodeText, parseTextBook } from './textImport'
 
 export interface ImportProgress {
@@ -61,6 +62,7 @@ export async function importPdf(
   const id = newId()
   const pageCount = doc.numPages
   const lines: PageLines[] = []
+  const rects: Rect[][] = []
   try {
     for (let i = 0; i < pageCount; i++) {
       if (signal?.aborted) throw new DOMException('中止しました', 'AbortError')
@@ -70,6 +72,7 @@ export async function importPdf(
         // 1 ページの失敗で全体を止めない。OCR の対象にする
         lines.push({ lines: [], vertical: false })
       }
+      rects.push(await pageImageRects(doc, i).catch(() => []))
       if (i % 4 === 3 || i === pageCount - 1) {
         onProgress({ phase: 'extracting', done: i + 1, total: pageCount })
         await new Promise((r) => setTimeout(r, 0)) // 画面を固めない
@@ -91,9 +94,10 @@ export async function importPdf(
         source: empty ? 'empty' : 'text',
       }
     })
-    const emptyPages = pages.filter((p) => p.source === 'empty').length
+    await classifyImages(doc, pages, rects)
+    const emptyPages = pages.filter(needsOcr).length
     const verticalVotes = pages.filter((p) => p.source === 'text' && p.vertical).length
-    const textPages = pages.length - emptyPages
+    const textPages = pages.filter((p) => p.source === 'text').length
 
     onProgress({ phase: 'saving', done: 0, total: 1 })
     const title = (await readTitle(doc)) ?? file.name.replace(/\.pdf$/i, '')
@@ -185,4 +189,32 @@ async function importText(file: File, onProgress: (p: ImportProgress) => void): 
   }
   onProgress({ phase: 'done', done: 1, total: 1 })
   return { book, garbledPages: 0 }
+}
+
+/**
+ * 挿絵・白紙のページを見分ける。
+ * - 文字の取れないページ: 塗りがほとんど無ければ白紙。本文の多い PDF なら挿絵とみなす。
+ *   ほぼ全ページが画像の PDF（スキャン）では、挿絵か本文かを見分けられないので OCR に任せる。
+ * - 文字のあるページ: 大きな画像が載っていれば挿絵入りのページ。ただし本文ページの多くに
+ *   大きな画像がある PDF は、背景画像とみなして挿絵扱いしない。
+ */
+async function classifyImages(doc: Awaited<ReturnType<typeof openPdf>>, pages: PageRecord[], rects: Rect[][]) {
+  const textPages = pages.filter((p) => p.source === 'text')
+  const scanned = textPages.length < pages.length * 0.5
+  const withBig = textPages.filter((p) => illustrationRect(rects[p.pageIndex] ?? []))
+  const background = textPages.length >= 4 && withBig.length > textPages.length * 0.6
+  for (const p of pages) {
+    const big = illustrationRect(rects[p.pageIndex] ?? [])
+    if (p.source === 'empty') {
+      const ink = await pageInk(doc, p.pageIndex).catch(() => 1)
+      if (ink < BLANK_INK) p.image = 'blank'
+      else if (!scanned) {
+        p.image = 'illust'
+        p.illustRect = big ?? FULL_PAGE
+      }
+    } else if (big && !background) {
+      p.image = 'illust'
+      p.illustRect = big
+    }
+  }
 }

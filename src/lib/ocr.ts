@@ -7,7 +7,8 @@
 //   以後はブラウザ内（IndexedDB）にキャッシュされる。本文や画像は外部に送らない。
 
 import { createWorker, PSM, type Worker } from 'tesseract.js'
-import { getPages, putPages, updateBook, type BookMeta, type OcrLang, type PageRecord } from './db'
+import { getPages, needsOcr, putPages, updateBook, type BookMeta, type OcrLang, type PageRecord } from './db'
+import { BLANK_INK, FULL_PAGE, inkRatio } from './illust'
 import { closePdf, openPdf, renderToCanvas, type PDFDocumentProxy } from './pdf'
 import { getFile } from './db'
 
@@ -92,7 +93,7 @@ export function runOcr(
     if (!blob) throw new Error('元の PDF が見つかりません。本棚から取り込み直してください。')
     doc = await openPdf(await blob.arrayBuffer())
     const all = await getPages(book.id)
-    const targets = opts.pages ?? all.filter((p) => p.source === 'empty').map((p) => p.pageIndex)
+    const targets = opts.pages ?? all.filter(needsOcr).map((p) => p.pageIndex)
     if (targets.length === 0) {
       await updateBook(book.id, (b) => (b.ocr = { ...b.ocr, status: 'done', updatedAt: Date.now() }))
       return
@@ -111,6 +112,7 @@ export function runOcr(
       if (cancelled) break
       report(pageIndex, 0, 'ページを画像にしています')
       const canvas = await renderToCanvas(doc, pageIndex, OCR_LONG_SIDE)
+      const ink = inkRatio(canvas.getContext('2d')!.getImageData(0, 0, canvas.width, canvas.height).data)
 
       if (!lang) {
         // 縦横の自動判定: 両方で認識して平均信頼度を比べる
@@ -129,12 +131,12 @@ export function runOcr(
         lang = results[0].lang
         const chosen = lang
         await updateBook(book.id, (b) => (b.ocr.lang = chosen))
-        await savePage(book.id, pageIndex, results[0].text, results[0].conf, lang)
+        await savePage(book.id, pageIndex, results[0].text, results[0].conf, lang, ink)
       } else {
         worker ??= await createOcrWorker(lang, (p, s) => report(pageIndex, p, statusLabel(s)))
         const r = await worker.recognize(canvas)
         if (cancelled) break
-        await savePage(book.id, pageIndex, r.data.text, r.data.confidence, lang)
+        await savePage(book.id, pageIndex, r.data.text, r.data.confidence, lang, ink)
       }
       canvas.width = canvas.height = 0 // iPhone でキャンバスのメモリを早めに返す
       done++
@@ -146,7 +148,7 @@ export function runOcr(
       report(pageIndex, 1, '保存しました')
     }
 
-    const remaining = (await getPages(book.id)).filter((p) => p.source === 'empty').length
+    const remaining = (await getPages(book.id)).filter(needsOcr).length
     await updateBook(book.id, (b) => {
       b.emptyPages = remaining
       b.ocr.status = cancelled ? 'paused' : remaining === 0 ? 'done' : 'paused'
@@ -170,8 +172,16 @@ export function runOcr(
   return { promise, cancel }
 }
 
-async function savePage(bookId: string, pageIndex: number, raw: string, confidence: number, lang: OcrLang) {
-  const { text, contFromPrev } = cleanOcrText(raw)
+/** OCR の結果がこれより少ない、または信頼度が低いページは、本文ではなく挿絵とみなす */
+const ILLUST_MAX_CHARS = 15
+const ILLUST_MAX_CONF = 45
+
+async function savePage(bookId: string, pageIndex: number, raw: string, confidence: number, lang: OcrLang, ink: number) {
+  const cleaned = cleanOcrText(raw)
+  const chars = cleaned.text.replace(/\s/g, '').length
+  const image: PageRecord['image'] = ink < BLANK_INK ? 'blank' : chars < ILLUST_MAX_CHARS || confidence < ILLUST_MAX_CONF ? 'illust' : undefined
+  // 挿絵・白紙と判断したページでは、絵から拾った文字を本文に入れない
+  const { text, contFromPrev } = image ? { text: '', contFromPrev: false } : cleaned
   const rec: PageRecord = {
     bookId,
     pageIndex,
@@ -181,6 +191,7 @@ async function savePage(bookId: string, pageIndex: number, raw: string, confiden
     // 白紙ページも処理済みとして残す（'empty' のままだと再開のたびに処理し直す）
     source: 'ocr',
     confidence,
+    ...(image ? { image, illustRect: FULL_PAGE } : {}),
   }
   await putPages([rec])
 }

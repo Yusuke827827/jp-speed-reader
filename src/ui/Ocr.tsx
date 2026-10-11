@@ -8,6 +8,7 @@ type LangChoice = 'auto' | OcrLang
 export function Ocr({ id, garbled }: { id: string; garbled: number }) {
   const [book, setBook] = useState<BookMeta | null>(null)
   const [textPages, setTextPages] = useState(0)
+  const [imagePages, setImagePages] = useState(0)
   const [lang, setLang] = useState<LangChoice>('auto')
   const [progress, setProgress] = useState<OcrProgress | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -24,7 +25,8 @@ export function Ocr({ id, garbled }: { id: string; garbled: number }) {
     setBook(b)
     if (b.ocr.lang) setLang(b.ocr.lang)
     const ps = await getPages(id)
-    setTextPages(ps.filter((p) => p.source !== 'empty').length)
+    setTextPages(ps.filter((p) => p.source !== 'empty' && p.text.trim()).length)
+    setImagePages(ps.filter((p) => p.image).length)
   }
 
   useEffect(() => {
@@ -91,7 +93,7 @@ export function Ocr({ id, garbled }: { id: string; garbled: number }) {
         <div className="card">
           <div style={{ fontWeight: 700 }}>{book.title}</div>
           <div className="small muted">
-            全{book.pageCount}ページ・文字を取り出せたページ {textPages}・OCRが必要なページ {remaining}
+            全{book.pageCount}ページ・本文のあるページ {textPages}・挿絵／白紙 {imagePages}・OCRが必要なページ {remaining}
           </div>
         </div>
 
@@ -195,6 +197,7 @@ export function Ocr({ id, garbled }: { id: string; garbled: number }) {
             <li>初回だけ、日本語の学習データ（数MB）をCDNから取得します。2回目以降はオフラインでも動きます。</li>
             <li>1ページずつ保存するため、途中でアプリを閉じても次回は続きから再開できます。</li>
             <li>iPhoneでは1ページに数秒〜数十秒かかります。画面をロックすると処理が止まることがあります。</li>
+            <li>文字がほとんど読み取れないページ（信頼度45%未満、または15字未満）は挿絵とみなし、本文に入れずに読書中に絵として表示します。違っていたら、PDF表示の画面で「本文」に戻せます。</li>
             <li>誤認識やルビの混入は避けられません。「PDF表示」の比較画面で元のページと見比べて、本文を直せます。</li>
           </ul>
         </div>

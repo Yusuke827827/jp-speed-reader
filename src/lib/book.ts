@@ -10,6 +10,13 @@ export interface PageEntry {
   pageIndex: number
   text: string
   contFromPrev: boolean
+  image?: 'illust' | 'blank'
+  illustRect?: [number, number, number, number]
+}
+
+export interface Illust {
+  page: number
+  rect: [number, number, number, number]
 }
 
 export interface Paragraph {
@@ -20,6 +27,8 @@ export interface Paragraph {
   pageMarks: [number, number][]
   /** 1 冊の先頭からの文字位置 */
   globalStart: number
+  /** 挿絵を表す段落（本文は空） */
+  illust?: Illust
 }
 
 export interface BookText {
@@ -36,27 +45,45 @@ export interface TextPosition {
 export function buildBookText(pages: PageEntry[], pageCount: number): BookText {
   const paragraphs: Paragraph[] = []
   const sorted = [...pages].sort((a, b) => a.pageIndex - b.pageIndex)
+  const illustPages = new Set(sorted.filter((p) => p.image === 'illust').map((p) => p.pageIndex))
+  const blankPages = new Set(sorted.filter((p) => p.image === 'blank').map((p) => p.pageIndex))
+  // 挿絵は段落を途中で切らないよう、次に新しい段落が始まる位置に差し込む
+  let pending: Illust[] = []
+  const flush = () => {
+    for (const il of pending) paragraphs.push({ text: '', ruby: [], pageMarks: [[0, il.page]], globalStart: 0, illust: il })
+    pending = []
+  }
   let prevPage = -2
   for (const p of sorted) {
     const parts = p.text.split('\n').map((s) => s.trim()).filter(Boolean)
-    if (parts.length === 0) continue
-    // 前のページが空でなく、直前のページから続いている場合だけ連結する
-    const canJoin = p.contFromPrev && paragraphs.length > 0 && p.pageIndex === prevPage + 1
-    parts.forEach((raw, i) => {
-      const { text: t, ruby } = parseRuby(raw)
-      if (!t) return
-      if (i === 0 && canJoin) {
-        const last = paragraphs[paragraphs.length - 1]
-        const shift = last.text.length
-        last.pageMarks.push([shift, p.pageIndex])
-        last.text += t
-        for (const r of ruby) last.ruby.push({ ...r, start: r.start + shift, end: r.end + shift })
-      } else {
-        paragraphs.push({ text: t, ruby, pageMarks: [[0, p.pageIndex]], globalStart: 0 })
+    if (parts.length > 0) {
+      // 直前の本文ページとの間が挿絵・白紙のページだけなら、段落をつなげてよい
+      let gapOk = p.pageIndex === prevPage + 1
+      if (!gapOk && prevPage >= 0) {
+        gapOk = true
+        for (let k = prevPage + 1; k < p.pageIndex; k++) if (!illustPages.has(k) && !blankPages.has(k)) gapOk = false
       }
-    })
-    prevPage = p.pageIndex
+      const last = paragraphs[paragraphs.length - 1]
+      const canJoin = p.contFromPrev && gapOk && !!last && !last.illust
+      parts.forEach((raw, i) => {
+        const { text: t, ruby } = parseRuby(raw)
+        if (!t) return
+        if (i === 0 && canJoin) {
+          const last = paragraphs[paragraphs.length - 1]
+          const shift = last.text.length
+          last.pageMarks.push([shift, p.pageIndex])
+          last.text += t
+          for (const r of ruby) last.ruby.push({ ...r, start: r.start + shift, end: r.end + shift })
+        } else {
+          flush()
+          paragraphs.push({ text: t, ruby, pageMarks: [[0, p.pageIndex]], globalStart: 0 })
+        }
+      })
+      prevPage = p.pageIndex
+    }
+    if (p.image === 'illust') pending.push({ page: p.pageIndex, rect: p.illustRect ?? [0, 0, 1, 1] })
   }
+  flush()
   let pos = 0
   for (const para of paragraphs) {
     para.globalStart = pos

@@ -170,6 +170,26 @@ export function SettingsScreen() {
           </div>
           <p className="small muted">「注視点を強調」は、単位の前から約3分の1の文字に色を付け、その文字を画面中央に置きます。はみ出す場合は中央寄せを優先します。</p>
         </div>
+        <div className="field">
+          <div className="label">挿絵の位置に来たら</div>
+          <div className="segmented" role="group">
+            {(
+              [
+                ['pause', '止まる'],
+                ['show', `${s.illustSeconds}秒表示`],
+                ['skip', '飛ばす'],
+              ] as const
+            ).map(([v, l]) => (
+              <button key={v} aria-pressed={s.illustMode === v} onClick={() => update({ illustMode: v })}>
+                {l}
+              </button>
+            ))}
+          </div>
+          {s.illustMode === 'show' && (
+            <input type="range" min={1} max={15} value={s.illustSeconds} onChange={(e) => update({ illustSeconds: Number(e.target.value) })} aria-label="挿絵を表示する秒数" />
+          )}
+          <p className="small muted">挿絵を表示している時間は、読書速度の計算に含めません。</p>
+        </div>
         <label className="switch">
           <span>登録した人物名を色分け</span>
           <input type="checkbox" checked={s.personColors} onChange={(e) => update({ personColors: e.target.checked })} />

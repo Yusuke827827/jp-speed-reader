@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { addBookmark, deleteBookmark, getBook, getFile, getPages, listBookmarks, putPages, updateBook, type BookMeta, type Bookmark, type PageRecord } from '../lib/db'
+import { addBookmark, deleteBookmark, getBook, getFile, getPages, listBookmarks, needsOcr, putPages, updateBook, type BookMeta, type Bookmark, type PageRecord } from '../lib/db'
 import { closePdf, openPdf, readOutline, renderPage, renderToCanvas, type PDFDocumentProxy } from '../lib/pdf'
 import { ErrorBox, go, Icon, toast } from './common'
 import { parseRuby } from '../lib/normalize'
@@ -127,7 +127,7 @@ export function PdfViewer({ id, initialPage, compare: compareInit, fromReader }:
                 const all = await getPages(id)
                 await updateBook(id, (b) => {
                   b.textVersion++
-                  b.emptyPages = all.filter((p) => p.source === 'empty').length
+                  b.emptyPages = all.filter(needsOcr).length
                 })
                 setPages(all)
                 toast('このページの本文を保存しました')
@@ -163,6 +163,32 @@ export function PdfViewer({ id, initialPage, compare: compareInit, fromReader }:
         )}
         <button className="btn small" aria-pressed={compare} onClick={() => setCompare(!compare)} title="抽出した本文と元のページを並べる">
           <Icon name="compare" /> {compare ? '比較を閉じる' : '比較'}
+        </button>
+        <button
+          className="btn small"
+          aria-pressed={record?.image === 'illust'}
+          title="このページを挿絵として扱うか切り替える"
+          onClick={async () => {
+            const base: PageRecord = record ?? { bookId: id, pageIndex: page, text: '', contFromPrev: false, vertical: false, source: 'empty' }
+            const next: PageRecord = { ...base }
+            if (base.image === 'illust') {
+              delete next.image
+              delete next.illustRect
+            } else {
+              next.image = 'illust'
+              next.illustRect = base.illustRect ?? [0, 0, 1, 1]
+            }
+            await putPages([next])
+            const all = await getPages(id)
+            await updateBook(id, (b) => {
+              b.textVersion++
+              b.emptyPages = all.filter(needsOcr).length
+            })
+            setPages(all)
+            toast(next.image ? `${page + 1}ページを挿絵として扱います` : `${page + 1}ページを挿絵として扱わないようにしました`)
+          }}
+        >
+          {record?.image === 'illust' ? '挿絵' : '挿絵にする'}
         </button>
         <button className="btn small primary" onClick={() => go(`/read/${id}?page=${page + 1}`)} title="このページから高速読書を始める">
           <Icon name="bolt" /> 速読

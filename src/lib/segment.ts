@@ -8,7 +8,7 @@
 // 開き括弧は後ろに、閉じ括弧と句読点は前にくっつける。
 
 import { loadDefaultJapaneseParser } from 'budoux'
-import type { BookText, TextPosition } from './book'
+import type { BookText, Illust, TextPosition } from './book'
 
 export type ChunkMode = 'char' | 'short' | 'phrase' | 'bunsetsu' | 'sentence'
 
@@ -33,6 +33,8 @@ export interface Chunk {
   len: number
   /** 登録した人物名を含む */
   name?: boolean
+  /** 挿絵（本文は空） */
+  illust?: Illust
 }
 
 export interface SegmentOptions {
@@ -288,6 +290,10 @@ export function segmentBook(book: BookText, opts: SegmentOptions): Chunk[] {
   const chunks: Chunk[] = []
   const minChars = Math.max(1, opts.minChars ?? 1)
   book.paragraphs.forEach((para, pi) => {
+    if (para.illust) {
+      chunks.push({ text: '', para: pi, start: 0, end: 0, pause: 'none', len: 0, illust: para.illust })
+      return
+    }
     const nameRanges = opts.names?.length ? findTerms(para.text, opts.names) : []
     // ルビの親文字と人物名は途中で切らない
     const protect: [number, number][] = [...para.ruby.map((r) => [r.start, r.end] as [number, number]), ...nameRanges]

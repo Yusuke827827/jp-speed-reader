@@ -4,6 +4,7 @@ import type { ChunkMode } from './segment'
 
 export type Theme = 'paper' | 'light' | 'sepia' | 'gray' | 'dark' | 'black'
 export type PersonLabel = 'off' | 'chapter3' | 'first3' | 'always'
+export type IllustMode = 'pause' | 'show' | 'skip'
 export type FontFamily = 'mincho' | 'gothic'
 export type Guide = 'none' | 'center' | 'focus'
 export type Direction = 'horizontal' | 'vertical'
@@ -34,6 +35,9 @@ export interface Settings {
   personLabel: PersonLabel
   /** 人物名を含む単位を少し長く表示する */
   nameBoost: boolean
+  /** 挿絵の位置に来たとき: 止まる／決まった秒数だけ表示／飛ばす */
+  illustMode: IllustMode
+  illustSeconds: number
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -54,6 +58,8 @@ export const DEFAULT_SETTINGS: Settings = {
   personColors: true,
   personLabel: 'chapter3',
   nameBoost: true,
+  illustMode: 'pause',
+  illustSeconds: 4,
 }
 
 export const THEMES: { id: Theme; label: string; bg: string; fg: string }[] = [

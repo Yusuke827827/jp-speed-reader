@@ -7,6 +7,7 @@ const SAMPLES = [
   { file: 'sample-horizontal.pdf', label: '横書きの短編（テキストPDF）' },
   { file: 'sample-vertical.pdf', label: '縦書きの短編（テキストPDF）' },
   { file: 'sample-scanned.pdf', label: '画像だけのPDF（OCRの確認用）' },
+  { file: 'sample-illustrated.pdf', label: '挿絵入りのPDF' },
   { file: 'sample-aozora.txt', label: '青空文庫形式のテキスト（ルビ・人物名）' },
 ]
 

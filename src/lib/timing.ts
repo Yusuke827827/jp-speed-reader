@@ -22,6 +22,8 @@ export interface TimingOptions {
   pauseScale: number
   /** 人物名を含む単位を少し長く表示する */
   nameBoost?: boolean
+  /** 挿絵を表示する時間（ミリ秒）。挿絵は速度の計算に含めない */
+  illustMs?: number
 }
 
 export const MIN_MS = 40
@@ -39,6 +41,7 @@ const NAME_UNITS = 1.5
 const MIN_UNITS = 1.6
 
 export function weightOf(c: Chunk, opts: TimingOptions): number {
+  if (c.illust) return 0
   // 長いチャンクは目の移動が少ない分だけ、1 文字あたりの重みを少し下げる
   const len = c.len <= 8 ? c.len : 8 + (c.len - 8) * 0.85
   const base = Math.max(MIN_UNITS, len)
@@ -49,6 +52,8 @@ export function weightOf(c: Chunk, opts: TimingOptions): number {
 
 export interface Schedule {
   weights: Float32Array
+  /** 決まった時間だけ表示する単位（挿絵）のミリ秒。0 なら通常の単位 */
+  fixed: Float32Array
   /** チャンクごとの、重み 1 あたりのミリ秒（所属する区間の値） */
   unit: Float32Array
   totalChars: number
@@ -59,17 +64,22 @@ export interface Schedule {
 }
 
 /** 区間 [from, to) の 1 重みあたりの時間を求める */
-function solveBlock(weights: Float32Array, chars: number, from: number, to: number, msPerChar: number) {
+function solveBlock(weights: Float32Array, fixed: Float32Array, chars: number, from: number, to: number, msPerChar: number) {
   const target = chars * msPerChar
   let totalW = 0
-  for (let i = from; i < to; i++) totalW += weights[i]
+  let count = 0
+  for (let i = from; i < to; i++) {
+    if (fixed[i]) continue
+    totalW += weights[i]
+    count++
+  }
   if (totalW === 0) return { unit: msPerChar, limited: false }
   const total = (u: number) => {
     let t = 0
-    for (let i = from; i < to; i++) t += Math.max(MIN_MS, weights[i] * u)
+    for (let i = from; i < to; i++) if (!fixed[i]) t += Math.max(MIN_MS, weights[i] * u)
     return t
   }
-  const limited = (to - from) * MIN_MS > target
+  const limited = count * MIN_MS > target
   let lo = 0
   let hi = target / totalW // total(hi) >= target が成り立つ
   if (!limited) {
@@ -85,10 +95,12 @@ function solveBlock(weights: Float32Array, chars: number, from: number, to: numb
 export function buildSchedule(chunks: Chunk[], opts: TimingOptions): Schedule {
   const n = chunks.length
   const weights = new Float32Array(n)
+  const fixed = new Float32Array(n)
   const unit = new Float32Array(n)
   let totalChars = 0
   for (let i = 0; i < n; i++) {
     weights[i] = weightOf(chunks[i], opts)
+    if (chunks[i].illust) fixed[i] = opts.illustMs ?? 4000
     totalChars += chunks[i].len
   }
   const msPerChar = 60000 / Math.max(1, opts.cpm)
@@ -114,14 +126,15 @@ export function buildSchedule(chunks: Chunk[], opts: TimingOptions): Schedule {
 
   let limited = false
   for (const [from, to, c] of blocks) {
-    const r = solveBlock(weights, c, from, to, msPerChar)
+    const r = solveBlock(weights, fixed, c, from, to, msPerChar)
     unit.fill(r.unit, from, to)
     limited ||= r.limited
   }
-  return { weights, unit, totalChars, limited, blocks: blocks.map(([a, b]) => [a, b] as [number, number]) }
+  return { weights, fixed, unit, totalChars, limited, blocks: blocks.map(([a, b]) => [a, b] as [number, number]) }
 }
 
 export function durationOf(s: Schedule, index: number): number {
+  if (s.fixed[index]) return s.fixed[index]
   return Math.max(MIN_MS, s.weights[index] * s.unit[index])
 }
 

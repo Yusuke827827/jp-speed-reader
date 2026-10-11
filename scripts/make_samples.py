@@ -175,3 +175,56 @@ def aozora():
 
 aozora()
 print("sample-aozora.txt", (OUT / "sample-aozora.txt").stat().st_size, "bytes")
+
+
+def scene_pixmap(width, height):
+    """図形だけで描いたオリジナルの風景（月・山・川・橋）を画像にする"""
+    tmp = pymupdf.open()
+    pg = tmp.new_page(width=width, height=height)
+    W, H = width, height
+    pg.draw_rect(pg.rect, color=None, fill=(0.16, 0.2, 0.33))  # 夜空
+    pg.draw_circle((W * 0.75, H * 0.22), W * 0.08, color=None, fill=(0.98, 0.93, 0.7))  # 月
+    hills = [(0, H * 0.62), (W * 0.25, H * 0.45), (W * 0.5, H * 0.58), (W * 0.78, H * 0.42), (W, H * 0.6), (W, H), (0, H)]
+    pg.draw_polyline(hills, color=None, fill=(0.2, 0.3, 0.25), closePath=True)  # 山
+    river = [(W * 0.35, H), (W * 0.48, H * 0.7), (W * 0.55, H * 0.62), (W * 0.62, H * 0.7), (W * 0.8, H)]
+    pg.draw_polyline(river, color=None, fill=(0.45, 0.6, 0.78), closePath=True)  # 川
+    pg.draw_line((W * 0.38, H * 0.8), (W * 0.76, H * 0.8), color=(0.55, 0.35, 0.2), width=W * 0.015)  # 橋
+    for k in range(5):
+        x = W * (0.41 + k * 0.08)
+        pg.draw_line((x, H * 0.8), (x, H * 0.88), color=(0.55, 0.35, 0.2), width=W * 0.008)
+    return pg.get_pixmap(dpi=110, alpha=False)
+
+
+def illustrated():
+    """本文・挿絵だけのページ・挿絵入りのページを含む PDF"""
+    doc = pymupdf.open()
+    font = pymupdf.Font(fontfile=str(FONT))
+    W, H, size, lead, cols = 420, 595, 12, 21, 28
+    lines = []
+    for p in PARAS:
+        body = p if p.startswith("「") else "　" + p
+        lines += wrap(body, cols)
+
+    def text_page(chunk, y=80):
+        page = doc.new_page(width=W, height=H)
+        tw = pymupdf.TextWriter(page.rect)
+        for line in chunk:
+            tw.append((42, y), line, font=font, fontsize=size)
+            y += lead
+        tw.write_text(page)
+        return page
+
+    # 1 ページ目は段落の途中で終わり、挿絵ページをはさんで 3 ページ目に続く
+    text_page(lines[0:9])
+    full = doc.new_page(width=W, height=H)
+    full.insert_image(pymupdf.Rect(30, 60, W - 30, H - 60), pixmap=scene_pixmap(360, 475))
+    mixed = text_page(lines[9:17], y=260)
+    mixed.insert_image(pymupdf.Rect(60, 40, W - 60, 230), pixmap=scene_pixmap(300, 190))
+    text_page(lines[17:])
+    doc.set_metadata({"title": TITLE + "（挿絵入り）"})
+    doc.subset_fonts()
+    doc.save(OUT / "sample-illustrated.pdf", deflate=True)
+
+
+illustrated()
+print("sample-illustrated.pdf", (OUT / "sample-illustrated.pdf").stat().st_size // 1024, "KB")

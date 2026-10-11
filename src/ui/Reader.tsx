@@ -10,6 +10,7 @@ import { buildSchedule, durationOf, remainingMs, SPEED_PRESETS, CPM_MAX, CPM_MIN
 import { useBook, type LoadedBook } from '../lib/useBook'
 import { ConfirmDialog, ErrorBox, formatDuration, go, Icon, toast } from './common'
 import { RichText } from './rich'
+import { IllustView, loadIllust, releaseIllusts } from './IllustView'
 
 export function Reader({ id, startPage }: { id: string; startPage?: number }) {
   const { book, error, loading } = useBook(id)
@@ -58,13 +59,21 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
   const isPdf = meta.kind !== 'text'
   const [people, setPeople] = useState<Person[]>(meta.people ?? [])
   const names = useMemo(() => personTerms(people), [people])
-  const chunks = useMemo(
-    () => segmentBook(text, { mode: settings.mode, phraseTarget: settings.phraseTarget, minChars: settings.minChars, names }),
-    [text, settings.mode, settings.phraseTarget, settings.minChars, names],
-  )
+  const chunks = useMemo(() => {
+    const all = segmentBook(text, { mode: settings.mode, phraseTarget: settings.phraseTarget, minChars: settings.minChars, names })
+    // テキストの本には挿絵が無い。「飛ばす」設定なら挿絵の単位を除く
+    return !isPdf || settings.illustMode === 'skip' ? all.filter((c) => !c.illust) : all
+  }, [text, settings.mode, settings.phraseTarget, settings.minChars, names, settings.illustMode, isPdf])
   const schedule = useMemo(
-    () => buildSchedule(chunks, { cpm: settings.cpm, pauses: settings.pauses, pauseScale: settings.pauseScale, nameBoost: settings.nameBoost && people.length > 0 }),
-    [chunks, settings.cpm, settings.pauses, settings.pauseScale, settings.nameBoost, people.length],
+    () =>
+      buildSchedule(chunks, {
+        cpm: settings.cpm,
+        pauses: settings.pauses,
+        pauseScale: settings.pauseScale,
+        nameBoost: settings.nameBoost && people.length > 0,
+        illustMs: settings.illustSeconds * 1000,
+      }),
+    [chunks, settings.cpm, settings.pauses, settings.pauseScale, settings.nameBoost, people.length, settings.illustSeconds],
   )
 
   // 段落ごとの人物名の位置（表示のたびに探さないよう覚えておく）
@@ -209,6 +218,13 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
       readingMs.current += now - lastTick.current
       lastTick.current = now
       setIndex(next)
+      // 挿絵で止まる設定なら、挿絵を出したところで一時停止する
+      if (chunks[next].illust && settings.illustMode === 'pause') {
+        setPlaying(false)
+        endSession()
+        persist()
+        return
+      }
       const mult = settings.rampUp && ramp.current < RAMP.length ? RAMP[ramp.current++] : 1
       due.current += durationOf(schedule, next) * mult
       timer.current = window.setTimeout(step, Math.max(0, due.current - performance.now()))
@@ -224,14 +240,16 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
       readingMs.current += performance.now() - lastTick.current
       lastTick.current = performance.now()
     }
-  }, [playing, chunks, schedule, settings.rampUp])
+  }, [playing, chunks, schedule, settings.rampUp, settings.illustMode, endSession, persist])
 
   const play = useCallback(() => {
     if (indexRef.current >= chunks.length - 1) setIndex(0)
+    // 挿絵で止まっていたら、次の本文から再開する
+    else if (chunks[indexRef.current]?.illust && settings.illustMode === 'pause') setIndex(indexRef.current + 1)
     session.current = { start: Date.now(), startIndex: indexRef.current, startPct: percentAt(text, posRef.current), chars: 0 }
     setMeasured(null)
     setPlaying(true)
-  }, [chunks.length, text])
+  }, [chunks, text, settings.illustMode])
 
   const pause = useCallback(() => {
     setPlaying(false)
@@ -420,7 +438,21 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
   const page = pageAt(text, pos)
   const remain = remainingMs(chunks, schedule, index)
   const showBars = !playing || settings.showProgressWhilePlaying
-  const showPanel = !playing && settings.showContext
+
+  // 次の挿絵を先に用意しておき、表示のときに待たせない
+  useEffect(() => {
+    if (!isPdf) return
+    for (let i = index + 1; i < Math.min(chunks.length, index + 60); i++) {
+      const il = chunks[i].illust
+      if (il) {
+        loadIllust(meta.id, il).catch(() => {})
+        break
+      }
+    }
+  }, [index, chunks, isPdf, meta.id])
+  useEffect(() => releaseIllusts, [])
+  // 挿絵を出しているあいだは全文パネルを隠し、絵を大きく見せる
+  const showPanel = !playing && settings.showContext && !chunk?.illust
   const readChars = chunk ? globalOffset(text, { para: chunk.para, offset: chunk.end }) : 0
 
   return (
@@ -463,8 +495,10 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
 
       <div className={`stage${showPanel ? ' with-panel' : ''}`}>
         <div className="word-area" onPointerDown={onPointerDown} onPointerUp={onPointerUp} role="button" aria-label={playing ? '一時停止' : '再生'}>
-          {chunk && (
-            <Word chunk={chunk} para={text.paragraphs[chunk.para]} names={rangesOf(chunk.para)} labels={labels.get(index)} settings={settings} />
+          {chunk?.illust ? (
+            <IllustView bookId={meta.id} illust={chunk.illust} note={settings.illustMode === 'pause' && !playing ? 'タップで続きを読む' : ''} />
+          ) : (
+            chunk && <Word chunk={chunk} para={text.paragraphs[chunk.para]} names={rangesOf(chunk.para)} labels={labels.get(index)} settings={settings} />
           )}
         </div>
         {showPanel && chunk && <TextPanel book={text} chunks={chunks} index={index} rangesOf={rangesOf} settings={settings} onPick={setIndex} />}
@@ -709,6 +743,15 @@ function TextPanel(props: {
     while (i < chunks.length && chunks[i].para === pi) {
       const c = chunks[i]
       const k = i
+      if (c.illust) {
+        spans.push(
+          <span key={k} ref={k === index ? currentRef : undefined} className={`illust-ref${k === index ? ' cur' : ''}`} onClick={() => props.onPick(k)}>
+            ［挿絵 p.{c.illust.page + 1}］
+          </span>,
+        )
+        i++
+        continue
+      }
       spans.push(
         <span key={k} ref={k === index ? currentRef : undefined} className={k === index ? 'cur' : undefined} onClick={() => props.onPick(k)}>
           <RichText para={para} start={c.start} end={c.end} names={names} opts={{ ruby: true, colors: props.settings.personColors }} />
@@ -817,6 +860,26 @@ function QuickSettings({ onClose, chunks }: { onClose: () => void; chunks: Chunk
               </div>
               <input type="range" min={4} max={14} value={s.phraseTarget} onChange={(e) => update({ phraseTarget: Number(e.target.value) })} aria-label="フレーズの目標文字数" />
             </>
+          )}
+        </div>
+
+        <div className="field">
+          <div className="label">挿絵の位置に来たら</div>
+          <div className="segmented" role="group">
+            {(
+              [
+                ['pause', '止まる'],
+                ['show', `${s.illustSeconds}秒表示`],
+                ['skip', '飛ばす'],
+              ] as const
+            ).map(([v, l]) => (
+              <button key={v} aria-pressed={s.illustMode === v} onClick={() => update({ illustMode: v })}>
+                {l}
+              </button>
+            ))}
+          </div>
+          {s.illustMode === 'show' && (
+            <input type="range" min={1} max={15} value={s.illustSeconds} onChange={(e) => update({ illustSeconds: Number(e.target.value) })} aria-label="挿絵を表示する秒数" />
           )}
         </div>
 
