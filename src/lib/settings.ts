@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { getKV, setKV } from './db'
 import type { ChunkMode } from './segment'
 
-export type Theme = 'paper' | 'light' | 'sepia' | 'gray' | 'dark' | 'black'
+export type Theme = 'paper' | 'light' | 'sepia' | 'gray' | 'dark' | 'black' | 'night' | 'washi' | 'aurora' | 'parchment'
 export type PersonLabel = 'off' | 'chapter3' | 'first3' | 'always'
 export type IllustMode = 'pause' | 'show' | 'skip'
 export type FontFamily = 'mincho' | 'gothic'
@@ -62,14 +62,34 @@ export const DEFAULT_SETTINGS: Settings = {
   illustSeconds: 4,
 }
 
-export const THEMES: { id: Theme; label: string; bg: string; fg: string }[] = [
-  { id: 'paper', label: '紙', bg: '#f3f0e8', fg: '#1f1d1a' },
-  { id: 'light', label: '白', bg: '#fbfaf7', fg: '#1b1b1b' },
-  { id: 'sepia', label: 'セピア', bg: '#f1e7d0', fg: '#3b2f1e' },
-  { id: 'gray', label: 'グレー', bg: '#3a3d42', fg: '#e8e6e1' },
-  { id: 'dark', label: '黒', bg: '#1d1f24', fg: '#e9e5dc' },
-  { id: 'black', label: '真っ黒', bg: '#000000', fg: '#c9c5bc' },
+export interface ThemeDef {
+  id: Theme
+  label: string
+  /** 地の色（質感のある背景では、模様の下に敷く色） */
+  bg: string
+  fg: string
+  accent: string
+  dark: boolean
+  /** CSS で模様を描く背景（本棚にも同じ背景を使う） */
+  art?: boolean
+}
+
+export const THEMES: ThemeDef[] = [
+  { id: 'paper', label: '紙', bg: '#f3f0e8', fg: '#1f1d1a', accent: '#b5482f', dark: false },
+  { id: 'washi', label: '和紙', bg: '#eee7d8', fg: '#1e1b16', accent: '#b0402a', dark: false, art: true },
+  { id: 'parchment', label: '羊皮紙', bg: '#e8d6a8', fg: '#3a2a16', accent: '#8a3b1c', dark: false, art: true },
+  { id: 'night', label: '夜空', bg: '#0b1430', fg: '#f1ece2', accent: '#f0b95a', dark: true, art: true },
+  { id: 'aurora', label: 'オーロラ', bg: '#07080d', fg: '#eceaf6', accent: '#a7b8ff', dark: true, art: true },
+  { id: 'light', label: '白', bg: '#fbfaf7', fg: '#1b1b1b', accent: '#b5482f', dark: false },
+  { id: 'sepia', label: 'セピア', bg: '#f1e7d0', fg: '#3b2f1e', accent: '#b5482f', dark: false },
+  { id: 'gray', label: 'グレー', bg: '#3a3d42', fg: '#e8e6e1', accent: '#e07a5f', dark: true },
+  { id: 'dark', label: '黒', bg: '#1d1f24', fg: '#e9e5dc', accent: '#e07a5f', dark: true },
+  { id: 'black', label: '真っ黒', bg: '#000000', fg: '#c9c5bc', accent: '#e07a5f', dark: true },
 ]
+
+export function themeOf(id: Theme): ThemeDef {
+  return THEMES.find((t) => t.id === id) ?? THEMES[0]
+}
 
 const KEY = 'settings'
 let cache: Settings | null = null

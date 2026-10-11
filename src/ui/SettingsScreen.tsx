@@ -22,7 +22,7 @@ export function SettingsScreen() {
         <h1>読書設定</h1>
       </header>
 
-      <div className="preview-box" style={{ background: theme.bg, color: theme.fg, fontFamily: s.font === 'mincho' ? 'var(--font-mincho)' : 'var(--font-gothic)', fontSize: Math.min(s.fontSize, 40) }}>
+      <div className={`preview-box bg-${theme.id}`} style={{ backgroundColor: theme.bg, color: theme.fg, fontFamily: s.font === 'mincho' ? 'var(--font-mincho)' : 'var(--font-gothic)', fontSize: Math.min(s.fontSize, 40) }}>
         川沿いの道を
       </div>
 
@@ -113,7 +113,7 @@ export function SettingsScreen() {
             {THEMES.map((t) => (
               <button
                 key={t.id}
-                className="btn small"
+                className={`btn small bg-${t.id}`}
                 aria-pressed={s.theme === t.id}
                 style={{ background: t.bg, color: t.fg, borderColor: s.theme === t.id ? 'var(--accent)' : 'var(--line)', borderWidth: 2 }}
                 onClick={() => update({ theme: t.id })}

@@ -1012,6 +1012,11 @@ textarea {
   background: linear-gradient(160deg, #efe7d6, #e2d6bd);
 }
 
+/* 紙色の表紙なので、暗い背景のときも題名は濃い色にする */
+.cover[data-text='true'] .cover-title {
+  color: #2b2418;
+}
+
 @media (orientation: landscape) and (max-height: 500px) {
   .stage.with-panel .word-area {
     flex-basis: 45%;
@@ -1054,4 +1059,149 @@ textarea {
   font-size: 13px;
   opacity: 0.75;
   white-space: nowrap;
+}
+
+/* ---------- 質感のある背景（夜空・和紙・オーロラ・羊皮紙） ----------
+   画像ファイルは使わず、グラデーションと SVG（ノイズ・星）で描く。オフラインでも表示できる。
+   文字が読みにくくならないよう、模様の濃さは控えめにしている。 */
+
+:root {
+  /* 細かいノイズ（紙のざらつき） */
+  --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  /* 和紙の繊維（横に伸びた筋） */
+  --fiber: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='turbulence' baseFrequency='.004 .09' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .4 0 0 0 0 .3 0 0 0 .22 -.05'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+  /* 星（大小の点をまばらに置いた模様） */
+  --stars: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cg fill='%23fff'%3E%3Ccircle cx='23' cy='41' r='.8' opacity='.7'/%3E%3Ccircle cx='97' cy='12' r='.5' opacity='.5'/%3E%3Ccircle cx='151' cy='78' r='1.1' opacity='.8'/%3E%3Ccircle cx='211' cy='33' r='.6' opacity='.45'/%3E%3Ccircle cx='288' cy='96' r='.9' opacity='.6'/%3E%3Ccircle cx='61' cy='142' r='.5' opacity='.4'/%3E%3Ccircle cx='183' cy='167' r='.7' opacity='.55'/%3E%3Ccircle cx='262' cy='201' r='1.2' opacity='.75'/%3E%3Ccircle cx='34' cy='233' r='.6' opacity='.5'/%3E%3Ccircle cx='121' cy='259' r='.9' opacity='.65'/%3E%3Ccircle cx='233' cy='291' r='.5' opacity='.4'/%3E%3Ccircle cx='303' cy='262' r='.6' opacity='.5'/%3E%3Ccircle cx='79' cy='303' r='.4' opacity='.35'/%3E%3Ccircle cx='166' cy='121' r='.4' opacity='.35'/%3E%3C/g%3E%3C/svg%3E");
+
+  --art-night: var(--stars), radial-gradient(ellipse 120% 70% at 50% -10%, #23407a 0%, #0f1c42 45%, #070b1c 100%);
+  --art-washi: var(--fiber), var(--noise), radial-gradient(ellipse at 50% 40%, #f4efe3 0%, #ebe3d1 70%, #ddd2bb 100%);
+  --art-aurora: radial-gradient(circle at 18% 18%, rgba(84, 120, 255, 0.34), transparent 42%),
+    radial-gradient(circle at 85% 28%, rgba(176, 92, 255, 0.28), transparent 48%),
+    radial-gradient(circle at 45% 95%, rgba(40, 200, 180, 0.2), transparent 52%), var(--noise), #07080d;
+  --art-parchment: var(--noise), radial-gradient(ellipse at 50% 45%, #f4e6c0 0%, #e9d5a1 55%, #d2b071 82%, #9c6e35 100%);
+}
+
+.bg-night,
+:root[data-theme='night'] body {
+  background: var(--art-night);
+  background-color: #0b1430;
+}
+
+.bg-washi,
+:root[data-theme='washi'] body {
+  background: var(--art-washi);
+  background-color: #eee7d8;
+}
+
+.bg-aurora,
+:root[data-theme='aurora'] body {
+  background: var(--art-aurora);
+}
+
+.bg-parchment,
+:root[data-theme='parchment'] body {
+  background: var(--art-parchment);
+  background-color: #e8d6a8;
+}
+
+/* 背景の模様が画面いっぱいに広がるよう、本棚では本文の高さを画面に合わせる */
+:root[data-theme] body {
+  min-height: 100vh;
+  background-size: auto, auto, auto, cover;
+}
+
+/* 本棚・設定の画面を、背景に合わせた配色にする */
+:root[data-theme='night'],
+:root[data-theme='aurora'] {
+  color-scheme: dark;
+  --text: #eeebe4;
+  --muted: #a7a6b4;
+  --line: rgba(255, 255, 255, 0.12);
+  --surface: rgba(20, 24, 40, 0.55);
+  --surface-2: rgba(255, 255, 255, 0.08);
+  --shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
+}
+
+:root[data-theme='night'] {
+  --accent: #e9ae4c;
+  --accent-text: #1a1406;
+}
+
+:root[data-theme='aurora'] {
+  --accent: #8ea4ff;
+  --accent-text: #0b0d1a;
+}
+
+:root[data-theme='washi'],
+:root[data-theme='parchment'] {
+  color-scheme: light;
+  --text: #22201b;
+  --muted: #6d655a;
+  --line: rgba(60, 45, 20, 0.16);
+  --surface: rgba(255, 252, 244, 0.6);
+  --surface-2: rgba(80, 60, 30, 0.07);
+  --shadow: 0 1px 2px rgba(60, 40, 10, 0.08), 0 6px 18px rgba(60, 40, 10, 0.08);
+}
+
+:root[data-theme='washi'] {
+  --accent: #b0402a;
+}
+
+:root[data-theme='parchment'] {
+  --text: #34250f;
+  --muted: #6e5634;
+  --accent: #8a3b1c;
+}
+
+/* 半透明のカードは、後ろの模様をぼかして文字を読みやすくする */
+:root[data-theme] .card,
+:root[data-theme] .dropzone,
+:root[data-theme] .sheet,
+:root[data-theme] .dialog {
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+:root[data-theme] .sheet,
+:root[data-theme] .dialog {
+  background: color-mix(in srgb, var(--surface) 40%, var(--bg-solid, #fff) 60%);
+}
+
+:root[data-theme='night'] .sheet,
+:root[data-theme='night'] .dialog {
+  --bg-solid: #111a35;
+}
+
+:root[data-theme='aurora'] .sheet,
+:root[data-theme='aurora'] .dialog {
+  --bg-solid: #10121b;
+}
+
+:root[data-theme='washi'] .sheet,
+:root[data-theme='washi'] .dialog {
+  --bg-solid: #f6f1e6;
+}
+
+:root[data-theme='parchment'] .sheet,
+:root[data-theme='parchment'] .dialog {
+  --bg-solid: #f2e4bf;
+}
+
+/* 読書画面: 背景の上の全文パネルとボタンを半透明にする */
+.reader.art .text-panel {
+  background: color-mix(in srgb, var(--r-bg) 62%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.reader.art.dark .word {
+  text-shadow: 0 0 18px rgba(0, 0, 0, 0.55);
+}
+
+.reader.art.dark .text-panel .cur {
+  background: color-mix(in srgb, var(--r-accent) 35%, transparent);
+}
+
+.reader.bg-night .guide {
+  box-shadow: 0 0 6px var(--r-accent);
 }

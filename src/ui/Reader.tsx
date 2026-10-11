@@ -5,7 +5,7 @@ import { newId } from '../lib/importer'
 import { chapterStarts, personRanges, personTerms, suggestPeople, PERSON_COLORS, type PersonRange } from '../lib/people'
 import { closePdf, openPdf, readOutline } from '../lib/pdf'
 import { chunkIndexAt, paragraphStartIndex, segmentBook, CHUNK_MODES, visible, type Chunk } from '../lib/segment'
-import { THEMES, useSettings, type Settings } from '../lib/settings'
+import { THEMES, themeOf, useSettings, type Settings } from '../lib/settings'
 import { buildSchedule, durationOf, remainingMs, SPEED_PRESETS, CPM_MAX, CPM_MIN } from '../lib/timing'
 import { useBook, type LoadedBook } from '../lib/useBook'
 import { ConfirmDialog, ErrorBox, formatDuration, go, Icon, toast } from './common'
@@ -431,8 +431,7 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
   }
 
   // ---------- 表示 ----------
-  const theme = THEMES.find((t) => t.id === settings.theme) ?? THEMES[0]
-  const lightTheme = ['paper', 'light', 'sepia'].includes(theme.id)
+  const theme = themeOf(settings.theme)
   const pos = chunk ? { para: chunk.para, offset: chunk.start } : posRef.current
   const percent = percentAt(text, pos)
   const page = pageAt(text, pos)
@@ -457,12 +456,12 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
 
   return (
     <div
-      className={`reader${playing ? ' playing' : ''}`}
+      className={`reader bg-${theme.id}${theme.art ? ' art' : ''}${theme.dark ? ' dark' : ''}${playing ? ' playing' : ''}`}
       style={
         {
           '--r-bg': theme.bg,
           '--r-fg': theme.fg,
-          '--r-accent': lightTheme ? '#b5482f' : '#e07a5f',
+          '--r-accent': theme.accent,
         } as React.CSSProperties
       }
     >
@@ -897,7 +896,7 @@ function QuickSettings({ onClose, chunks }: { onClose: () => void; chunks: Chunk
             {THEMES.map((t) => (
               <button
                 key={t.id}
-                className="btn small"
+                className={`btn small bg-${t.id}`}
                 aria-pressed={s.theme === t.id}
                 style={{ background: t.bg, color: t.fg, borderColor: s.theme === t.id ? 'var(--accent)' : 'var(--line)', borderWidth: 2 }}
                 onClick={() => update({ theme: t.id })}
