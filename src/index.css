@@ -550,7 +550,8 @@ textarea {
 
 .word.vertical {
   writing-mode: vertical-rl;
-  text-orientation: upright;
+  /* mixed にすると、句読点・小書きの仮名・括弧が縦書き用の字形と位置になる（upright では横書きのまま） */
+  text-orientation: mixed;
   height: auto;
   width: 1.3em;
   font-feature-settings: normal;

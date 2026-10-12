@@ -104,7 +104,8 @@ export interface Bookmark {
 
 interface Schema extends DBSchema {
   books: { key: string; value: BookMeta }
-  files: { key: string; value: { id: string; blob: Blob } }
+  // 古い版は blob、今の版は data（ArrayBuffer）に保存している
+  files: { key: string; value: { id: string; blob?: Blob; data?: ArrayBuffer; type?: string } }
   pages: { key: [string, number]; value: PageRecord; indexes: { byBook: string } }
   progress: { key: string; value: Progress }
   sessions: { key: number; value: Session; indexes: { byBook: string; byStart: number } }
@@ -172,12 +173,20 @@ export async function updateBook(id: string, patch: (b: BookMeta) => void) {
   return b
 }
 
+/**
+ * 元のファイルを保存する。Safari（WebKit）の IndexedDB は環境によって Blob を保存できない
+ * （DataCloneError）ため、どのブラウザでも保存できる ArrayBuffer にして入れる。
+ */
 export async function saveFile(id: string, blob: Blob) {
-  await (await db()).put('files', { id, blob })
+  const data = await blob.arrayBuffer()
+  await (await db()).put('files', { id, data, type: blob.type })
 }
 
-export async function getFile(id: string) {
-  return (await (await db()).get('files', id))?.blob
+export async function getFile(id: string): Promise<Blob | undefined> {
+  const rec = await (await db()).get('files', id)
+  if (!rec) return undefined
+  if (rec.data) return new Blob([rec.data], { type: rec.type ?? 'application/pdf' })
+  return rec.blob
 }
 
 export async function putPages(pages: PageRecord[]) {

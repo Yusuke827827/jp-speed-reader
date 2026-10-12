@@ -63,6 +63,7 @@ export async function importPdf(
   const pageCount = doc.numPages
   const lines: PageLines[] = []
   const rects: Rect[][] = []
+  let failures = 0
   try {
     for (let i = 0; i < pageCount; i++) {
       if (signal?.aborted) throw new DOMException('中止しました', 'AbortError')
@@ -70,6 +71,7 @@ export async function importPdf(
         lines.push(await pageLines(doc, i))
       } catch {
         // 1 ページの失敗で全体を止めない。OCR の対象にする
+        failures++
         lines.push({ lines: [], vertical: false })
       }
       rects.push(await pageImageRects(doc, i).catch(() => []))
@@ -79,8 +81,16 @@ export async function importPdf(
       }
     }
 
+    // 大半のページで取り出しに失敗したときは、全ページを挿絵や OCR に回さずに知らせる
+    if (pageCount > 0 && failures > pageCount * 0.5) {
+      throw new ImportError(
+        'このブラウザでは本文を取り出せませんでした。',
+        'ブラウザを最新版に更新してから、もう一度試してください。直らない場合は、別のブラウザで開いてください。',
+      )
+    }
+
     // ToUnicode が空の文字（U+0000）を返すフォントがあれば、ActualText から対応表を直して取り出し直す
-    const nulCount = lines.reduce((a, p) => a + p.lines.reduce((b, l) => b + (l.text.split('\u0000').length - 1), 0), 0)
+    const nulCount = lines.reduce((a, p) => a + p.lines.reduce((b, l) => b + (l.text.match(/[\u0000\uFFFD]/g)?.length ?? 0), 0), 0)
     if (nulCount > 0) {
       onProgress({ phase: 'repairing', done: 0, total: 1 })
       const { fixActualText } = await import('./actualText')
@@ -101,9 +111,13 @@ export async function importPdf(
 
     const texts = linesToPageTexts(lines)
     let garbledPages = 0
+    const garbledSet = new Set<number>()
     const pages: PageRecord[] = texts.map((t, i) => {
       const garbled = garbledRatio(t.text) > 0.1
-      if (garbled) garbledPages++
+      if (garbled) {
+        garbledPages++
+        garbledSet.add(i)
+      }
       const empty = visibleLength(t.text) < MIN_PAGE_CHARS || garbled
       return {
         bookId: id,
@@ -114,7 +128,7 @@ export async function importPdf(
         source: empty ? 'empty' : 'text',
       }
     })
-    await classifyImages(doc, pages, rects)
+    await classifyImages(doc, pages, rects, garbledSet)
     const emptyPages = pages.filter(needsOcr).length
     const verticalVotes = pages.filter((p) => p.source === 'text' && p.vertical).length
     const textPages = pages.filter((p) => p.source === 'text').length
@@ -218,13 +232,15 @@ async function importText(file: File, onProgress: (p: ImportProgress) => void): 
  * - 文字のあるページ: 大きな画像が載っていれば挿絵入りのページ。ただし本文ページの多くに
  *   大きな画像がある PDF は、背景画像とみなして挿絵扱いしない。
  */
-async function classifyImages(doc: Awaited<ReturnType<typeof openPdf>>, pages: PageRecord[], rects: Rect[][]) {
+async function classifyImages(doc: Awaited<ReturnType<typeof openPdf>>, pages: PageRecord[], rects: Rect[][], garbled: Set<number>) {
   const textPages = pages.filter((p) => p.source === 'text')
   const scanned = textPages.length < pages.length * 0.5
   const withBig = textPages.filter((p) => illustrationRect(rects[p.pageIndex] ?? []))
   const background = textPages.length >= 4 && withBig.length > textPages.length * 0.6
   for (const p of pages) {
     const big = illustrationRect(rects[p.pageIndex] ?? [])
+    // 文字化けしたページは本文があるはずなので、挿絵ではなく OCR に回す
+    if (p.source === 'empty' && garbled.has(p.pageIndex)) continue
     if (p.source === 'empty') {
       const ink = await pageInk(doc, p.pageIndex).catch(() => 1)
       if (ink < BLANK_INK) p.image = 'blank'

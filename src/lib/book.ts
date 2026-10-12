@@ -4,7 +4,7 @@
 // 各段落は「どの文字位置からどのページか」を持つので、
 // 高速読書の位置から PDF のページを引ける（逆も可）。
 
-import { parseRuby, type Ruby } from './normalize'
+import { normalizeChars, parseRuby, type Ruby } from './normalize'
 
 export interface PageEntry {
   pageIndex: number
@@ -66,7 +66,8 @@ export function buildBookText(pages: PageEntry[], pageCount: number): BookText {
       const last = paragraphs[paragraphs.length - 1]
       const canJoin = p.contFromPrev && gapOk && !!last && !last.illust
       parts.forEach((raw, i) => {
-        const { text: t, ruby } = parseRuby(raw)
+        // 古い版で取り込んだ本文には縦書き用の記号が残っているので、読むときにも直す
+      const { text: t, ruby } = parseRuby(normalizeChars(raw))
         if (!t) return
         if (i === 0 && canJoin) {
           const last = paragraphs[paragraphs.length - 1]
