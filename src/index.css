@@ -545,7 +545,6 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-feature-settings: 'palt' 0;
 }
 
 .word.vertical {
@@ -554,7 +553,6 @@ textarea {
   text-orientation: mixed;
   height: auto;
   width: 1.3em;
-  font-feature-settings: normal;
 }
 
 .word .focus {
@@ -1205,4 +1203,14 @@ textarea {
 
 .reader.bg-night .guide {
   box-shadow: 0 0 6px var(--r-accent);
+}
+
+/* 単位の先頭の開き括弧・末尾の句読点と閉じ括弧の空き（字形の半分）を詰め、中央がずれて見えないようにする。
+   font-feature-settings の halt はフォントによって効かないため、余白で詰める（縦表示でも同じように効く） */
+.word .trim-start {
+  margin-inline-start: -0.5em;
+}
+
+.word .trim-end {
+  margin-inline-end: -0.5em;
 }

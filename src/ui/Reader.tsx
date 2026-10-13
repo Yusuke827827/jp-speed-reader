@@ -670,7 +670,7 @@ function Word({ chunk, para, names, labels, settings }: { chunk: Chunk; para: Pa
         style={{ fontSize: size, fontFamily: family, transform: vertical ? `translateY(${shift}px)` : `translateX(${shift}px)` }}
         aria-live="off"
       >
-        <RichText para={para} start={chunk.start} end={chunk.end} names={names} opts={{ ruby: true, colors: settings.personColors, focusAt: fi, focusRef }} />
+        <RichText para={para} start={chunk.start} end={chunk.end} names={names} opts={{ ruby: true, colors: settings.personColors, focusAt: fi, focusRef, trimEdges: true }} />
       </div>
       {labels && labels.length > 0 && (
         <div className="person-label" style={vertical ? { bottom: 4 } : { top: `calc(50% + ${size * 0.75 + 26}px)` }}>

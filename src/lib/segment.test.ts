@@ -156,3 +156,21 @@ describe('最小字数・保護範囲・人物名', () => {
     expect(on.weights[i] - off.weights[i]).toBeGreaterThan(1)
   })
 })
+
+describe('記号と括弧の扱い', () => {
+  it('長い「……」「――」「ーーー」を途中で切らない', () => {
+    for (const mode of ['short', 'bunsetsu', 'phrase'] as const) {
+      const parts = segmentSentence('「…………………………」と彼は黙りこんだ。', { mode, phraseTarget: 7 })
+      expect(parts.some((p) => p.includes('…………………………'))).toBe(true)
+      const parts2 = segmentSentence('風がヒューーーーーーーーーーと鳴った。', { mode, phraseTarget: 7 })
+      for (const p of parts2) expect(p[0]).not.toBe('ー')
+    }
+  })
+  it('閉じ括弧と「!!」を次の単位の頭に置かない', () => {
+    for (const mode of ['short', 'bunsetsu', 'phrase', 'sentence'] as const) {
+      const parts = segmentSentence('《解析が終わりました》それなら安心だ!!本当にありがとう', { mode, phraseTarget: 7 })
+      for (const p of parts) expect(p[0]).not.toMatch(/[》」!]/)
+      expect(parts.join('')).toBe('《解析が終わりました》それなら安心だ!!本当にありがとう')
+    }
+  })
+})

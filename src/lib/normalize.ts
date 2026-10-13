@@ -6,6 +6,18 @@
 // CJK互換漢字、半角カナ
 const COMPAT_RANGES = /[\u2E80-\u2FDF\uF900-\uFAFF\uFF61-\uFF9F\uFE10-\uFE19\uFE30-\uFE4F]/g
 
+// 縦書き用の句読点・括弧。NFKC では「？」「！」「（）」が半角になるので、全角の対応を自前で持つ
+const VERTICAL: Record<string, string> = {
+  '︐': '，', '︑': '、', '︒': '。', '︓': '：', '︔': '；', '︕': '！', '︖': '？', '︗': '〖', '︘': '〗', '︙': '…', '︰': '‥', '︱': '―', '︲': '–', '︵': '（', '︶': '）', '︷': '｛', '︸': '｝', '︹': '〔', '︺': '〕', '︻': '【', '︼': '】', '︽': '《', '︾': '》', '︿': '〈', '﹀': '〉', '﹁': '「', '﹂': '」', '﹃': '『', '﹄': '』', '﹇': '［', '﹈': '］',
+}
+
+// 康熙部首を NFKC で戻すと、日本で使わない字体になる字がある（⿊ → 黑 など）。日本の字体にそろえる
+const KANGXI_JA: Record<string, string> = { '黑': '黒', '戶': '戸', '靑': '青', '龜': '亀', '麥': '麦', '黃': '黄', '齒': '歯' }
+function toJapanese(nfkc: string, original: string): string {
+  const code = original.charCodeAt(0)
+  return code >= 0x2f00 && code <= 0x2fdf ? (KANGXI_JA[nfkc] ?? nfkc) : nfkc
+}
+
 // CJK部首補助のうち NFKC で戻らないが、PDF で漢字の代わりに使われやすいもの
 const RADICALS: Record<string, string> = {
   '⺟': '母', '⺠': '民', '⻁': '虎', '⻄': '西', '⻆': '角',
@@ -15,7 +27,7 @@ const RADICALS: Record<string, string> = {
 
 export function normalizeChars(s: string): string {
   return s
-    .replace(COMPAT_RANGES, (c) => RADICALS[c] ?? c.normalize('NFKC'))
+    .replace(COMPAT_RANGES, (c) => VERTICAL[c] ?? RADICALS[c] ?? toJapanese(c.normalize('NFKC'), c))
     .replace(/ /g, ' ')
     .replace(/[​-‍﻿­]/g, '') // ゼロ幅文字・ソフトハイフン
 }

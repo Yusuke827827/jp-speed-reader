@@ -26,7 +26,7 @@ function hexToText(hex: string): string {
 
 /**
  * 描画命令の文字列から、フォントごとの「字形番号 → 文字」を集める。
- * ActualText の範囲に字形が 1 つだけある場合に限る（複数の字形をまとめた注記は対応が決まらない）。
+ * ActualText の範囲の字形の数と、注記の文字数が同じときだけ、順に対応させる（数が違うと対応が決まらない）。
  */
 export function collectActualText(content: string): Map<string, Map<number, string>> {
   const out = new Map<string, Map<number, string>>()
@@ -37,11 +37,12 @@ export function collectActualText(content: string): Map<string, Map<number, stri
       font = m[1]
       continue
     }
-    const text = hexToText(m[2])
-    const glyphs = [...m[3].matchAll(/<([0-9A-Fa-f]+)>\s*Tj/g)].map((g) => g[1])
-    if (!font || glyphs.length !== 1 || glyphs[0].length !== 4 || [...text].length !== 1) continue
+    const chars = [...hexToText(m[2])]
+    // Tj ごとの字形（4 桁ずつ）を順に並べる。字形の数と文字の数が同じときだけ、順に対応させる
+    const glyphs = [...m[3].matchAll(/<([0-9A-Fa-f]+)>\s*Tj/g)].flatMap((g) => g[1].match(/.{4}/g) ?? [])
+    if (!font || glyphs.length === 0 || glyphs.length !== chars.length) continue
     const map = out.get(font) ?? new Map<number, string>()
-    map.set(parseInt(glyphs[0], 16), text)
+    glyphs.forEach((g, i) => map.set(parseInt(g, 16), chars[i]))
     out.set(font, map)
   }
   return out

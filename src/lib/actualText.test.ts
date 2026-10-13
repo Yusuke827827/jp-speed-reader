@@ -16,7 +16,7 @@ describe('ActualText による文字対応表の修復', () => {
     'ET',
   ].join('\n')
 
-  it('フォントごとに、字形番号と ActualText の文字を対応付ける（字形が複数の注記は使わない）', () => {
+  it('フォントごとに、字形番号と ActualText の文字を対応付ける（字形と文字の数が合わない注記は使わない）', () => {
     const m = collectActualText(content)
     expect([...m.get('F4')!]).toEqual([
       [0x2417, 'ー'],

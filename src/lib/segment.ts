@@ -141,8 +141,15 @@ export function splitLong(s: string, max: number): string[] {
       }
     }
     if (best <= 0) {
-      // 切れる場所がない（長い数字列など）。禁則を緩めて max で切る
-      best = Math.max(1, nthVisibleIndex(rest, max))
+      // max までに切れる場所がない（長い「……」「――」「ーーー」や数字列）。
+      // 記号の連なりを途中で切らないよう、max を超えて最初に切ってよい位置まで伸ばす。無ければ全部を 1 単位にする
+      best = rest.length
+      for (let i = nthVisibleIndex(rest, max); i < rest.length; i++) {
+        if (canBreakAt(rest, i)) {
+          best = i
+          break
+        }
+      }
     }
     out.push(rest.slice(0, best))
     rest = rest.slice(best)
@@ -195,9 +202,31 @@ function splitChars(s: string): string[] {
 function phrasesOf(sentence: string): string[] {
   const raw = budoux().parse(sentence)
   const out: string[] = []
-  for (const p of raw) {
-    if (out.length && [...p].every((c) => NO_START.has(c) || /\s/.test(c))) out[out.length - 1] += p
-    else out.push(p)
+  let carry = '' // 前の文節の末尾にあった開き括弧（次の文節の頭へ移す）
+  for (const piece of raw) {
+    let p = carry + piece
+    carry = ''
+    // 文節の頭に来た閉じ括弧・句読点・「!!」などは、前の文節の末尾へ移す
+    if (out.length) {
+      let k = 0
+      while (k < p.length && (NO_START.has(p[k]) || /\s/.test(p[k]))) k++
+      if (k > 0) {
+        out[out.length - 1] += p.slice(0, k)
+        p = p.slice(k)
+      }
+    }
+    // 文節の末尾に来た開き括弧は、次の文節の頭へ移す
+    let e = p.length
+    while (e > 0 && OPEN.includes(p[e - 1])) e--
+    if (e < p.length && e > 0) {
+      carry = p.slice(e)
+      p = p.slice(0, e)
+    }
+    if (p) out.push(p)
+  }
+  if (carry) {
+    if (out.length) out[out.length - 1] += carry
+    else out.push(carry)
   }
   return out
 }

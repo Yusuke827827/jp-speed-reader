@@ -44,6 +44,12 @@ export function median(xs: number[]): number {
   return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2
 }
 
+/**
+ * 縦書きか横書きかを決める。断片の形（縦長・横長）で 3 倍以上の差があればそれに従う。
+ * 決まらないときは、縦・横の両方で行をまとめてみて、行の中の文字の間隔が 1 文字分に近い方を選ぶ。
+ * 正しい向きでは約 1 文字分の間隔で並ぶ。誤った向きでは行間の分だけ離れるか、
+ * 横長の断片を縦に割るなどして極端に詰まる。
+ */
 export function detectVertical(items: RawItem[]): boolean {
   let v = 0
   let h = 0
@@ -53,9 +59,28 @@ export function detectVertical(items: RawItem[]): boolean {
     if (it.vertical || it.h > it.w * 1.5) v += n
     else h += n
   }
+  if (v + h >= 20 && (v >= h * 3 || h >= v * 3)) return v > h
+  const pv = linePitch(items, true)
+  const ph = linePitch(items, false)
+  if (pv !== null && ph !== null) {
+    const off = (p: number) => Math.abs(Math.log(Math.max(p, 0.01)))
+    if (Math.abs(off(pv) - off(ph)) > 0.1) return off(pv) < off(ph)
+  }
   if (v + h >= 20) return v > h
   // 1 文字ずつ配置された PDF: すぐ下に次の文字がある断片と、すぐ右にある断片の数を比べる
   return neighborVotes(items) > 0
+}
+
+/** その向きで行をまとめたときの、行の中で隣り合う文字の間隔の中央値（文字の大きさに対する比） */
+export function linePitch(items: RawItem[], vertical: boolean): number | null {
+  const { body } = splitSmallItems(items)
+  const lines = groupLines(body, vertical)
+  const gaps: number[] = []
+  for (const l of lines) {
+    const cs = l.chars ?? []
+    for (let i = 1; i < cs.length; i++) gaps.push((cs[i][0] - cs[i - 1][0]) / (l.size || 1))
+  }
+  return gaps.length >= 10 ? median(gaps) : null
 }
 
 function neighborVotes(items: RawItem[]): number {
