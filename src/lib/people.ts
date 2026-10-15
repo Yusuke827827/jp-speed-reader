@@ -4,6 +4,7 @@
 import type { BookText } from './book'
 import type { Person } from './db'
 import { findTerms } from './segment'
+import { t } from './i18n'
 
 export const PERSON_COLORS = ['#a8761b', '#b5422e', '#2f6f8f', '#5b7f2a', '#7a4f9a', '#a34d72']
 
@@ -22,23 +23,24 @@ export function suggestPeople(book: BookText, registered: Person[], limit = 20):
   const known = new Set(registered.flatMap((p) => [p.name, ...p.aliases]))
   // 語 → 候補に挙げた理由（最初に見つかったもの）
   const reasons = new Map<string, string>()
+  const katakana = t('カタカナ')
   const bump = (w: string, reason: string) => {
     if (!known.has(w) && !reasons.has(w)) reasons.set(w, reason)
   }
   for (const p of book.paragraphs) {
     for (const r of p.ruby) {
       const base = p.text.slice(r.start, r.end)
-      if (base.length >= 1 && base.length <= 4) bump(base, 'ルビ付き')
+      if (base.length >= 1 && base.length <= 4) bump(base, t('ルビ付き'))
     }
-    for (const m of p.text.matchAll(HONORIFIC)) bump(m[1], `「${m[2]}」付き`)
-    for (const m of p.text.matchAll(KATAKANA)) if (!COMMON_KATAKANA.has(m[0])) bump(m[0], 'カタカナ')
+    for (const m of p.text.matchAll(HONORIFIC)) bump(m[1], t('「{honorific}」付き', { honorific: m[2] }))
+    for (const m of p.text.matchAll(KATAKANA)) if (!COMMON_KATAKANA.has(m[0])) bump(m[0], katakana)
   }
   // 出現回数は本文全体で数え直す
   const all = book.paragraphs.map((p) => p.text).join('\n')
   const out: Candidate[] = []
   for (const [word, reason] of reasons) {
     const count = findTerms(all, [word]).length
-    if (count >= (reason === 'カタカナ' ? 3 : 2)) out.push({ word, count, reason })
+    if (count >= (reason === katakana ? 3 : 2)) out.push({ word, count, reason })
   }
   return out.sort((a, b) => b.count - a.count).slice(0, limit)
 }

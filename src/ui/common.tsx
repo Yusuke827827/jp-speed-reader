@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
+import { t } from '../lib/i18n'
 
 // ---------- アイコン（線画の SVG。外部フォントに頼らない） ----------
 
@@ -96,7 +97,7 @@ export function ConfirmDialog(props: {
         <div className="muted">{props.body}</div>
         <div className="actions">
           <button className="btn" onClick={props.onCancel} autoFocus>
-            キャンセル
+            {t('キャンセル')}
           </button>
           <button className={`btn ${props.danger ? 'danger' : 'primary'}`} onClick={props.onConfirm}>
             {props.confirmLabel}
@@ -145,20 +146,20 @@ export function ErrorBox({ title, children }: { title: string; children?: ReactN
 
 export function formatDuration(ms: number): string {
   const m = Math.round(ms / 60000)
-  if (m < 1) return `${Math.max(0, Math.round(ms / 1000))}秒`
-  if (m < 60) return `${m}分`
-  return `${Math.floor(m / 60)}時間${m % 60}分`
+  if (m < 1) return t('{s}秒', { s: Math.max(0, Math.round(ms / 1000)) })
+  if (m < 60) return t('{m}分', { m })
+  return t('{h}時間{m}分', { h: Math.floor(m / 60), m: m % 60 })
 }
 
-export function formatDate(t: number): string {
-  const d = new Date(t)
+export function formatDate(time: number): string {
+  const d = new Date(time)
   const now = new Date()
   const sameDay = d.toDateString() === now.toDateString()
   const hm = `${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`
-  if (sameDay) return `今日 ${hm}`
+  if (sameDay) return t('今日 {time}', { time: hm })
   const y = new Date(now)
   y.setDate(now.getDate() - 1)
-  if (d.toDateString() === y.toDateString()) return `昨日 ${hm}`
+  if (d.toDateString() === y.toDateString()) return t('昨日 {time}', { time: hm })
   return `${d.getFullYear() === now.getFullYear() ? '' : d.getFullYear() + '/'}${d.getMonth() + 1}/${d.getDate()} ${hm}`
 }
 

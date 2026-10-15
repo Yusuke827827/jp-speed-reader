@@ -8,6 +8,7 @@ import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist/types/src/displa
 import { itemsToLines, type PageLines } from './layout'
 import { toRawItems } from './pdfItems'
 import { imageRects, inkRatio, type Rect } from './illust'
+import { t } from './i18n'
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerUrl
 
@@ -43,12 +44,12 @@ export async function openPdf(data: ArrayBuffer | Uint8Array): Promise<PDFDocume
   } catch (e) {
     const name = (e as { name?: string })?.name
     if (name === 'PasswordException') {
-      throw new PdfLoadError('パスワードで保護された PDF は読み込めません。保護を外した PDF を用意してください。', 'password')
+      throw new PdfLoadError(t('パスワードで保護された PDF は読み込めません。保護を外した PDF を用意してください。'), 'password')
     }
     if (name === 'InvalidPDFException' || name === 'FormatError') {
-      throw new PdfLoadError('PDF が壊れているか、PDF 形式ではありません。別の方法で保存し直した PDF を試してください。', 'broken')
+      throw new PdfLoadError(t('PDF が壊れているか、PDF 形式ではありません。別の方法で保存し直した PDF を試してください。'), 'broken')
     }
-    throw new PdfLoadError(`PDF を開けませんでした（${(e as Error)?.message ?? e}）。`, 'unknown')
+    throw new PdfLoadError(t('PDF を開けませんでした（{detail}）。', { detail: String((e as Error)?.message ?? e) }), 'unknown')
   }
 }
 

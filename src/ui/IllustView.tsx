@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import type { Illust } from '../lib/book'
 import { getFile } from '../lib/db'
 import { closePdf, openPdf, renderIllust, type PDFDocumentProxy } from '../lib/pdf'
+import { t } from '../lib/i18n'
 
 let current: { bookId: string; doc: Promise<PDFDocumentProxy> } | null = null
 const images = new Map<string, Promise<string>>()
@@ -18,7 +19,7 @@ function docFor(bookId: string) {
       bookId,
       doc: (async () => {
         const blob = await getFile(bookId)
-        if (!blob) throw new Error('元の PDF が見つかりません')
+        if (!blob) throw new Error(t('元の PDF が見つかりません'))
         return openPdf(await blob.arrayBuffer())
       })(),
     }
@@ -63,13 +64,13 @@ export function IllustView({ bookId, illust, note }: { bookId: string; illust: I
   return (
     <figure className="illust-view">
       {state.url ? (
-        <img src={state.url} alt={`挿絵（${illust.page + 1}ページ）`} />
+        <img src={state.url} alt={t('挿絵（{page}ページ）', { page: illust.page + 1 })} />
       ) : (
-        <div className="illust-loading">{state.error ? '挿絵を表示できませんでした' : '挿絵を読み込んでいます…'}</div>
+        <div className="illust-loading">{state.error ? t('挿絵を表示できませんでした') : t('挿絵を読み込んでいます…')}</div>
       )}
       <figcaption>
-        挿絵・p.{illust.page + 1}
-        {note && `・${note}`}
+        {t('挿絵・p.{page}', { page: illust.page + 1 })}
+        {note && t('・{note}', { note })}
       </figcaption>
     </figure>
   )

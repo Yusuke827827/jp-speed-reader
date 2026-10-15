@@ -6,6 +6,7 @@ import { garbledRatio, visibleLength } from './normalize'
 import { closePdf, makeCover, openPdf, pageImageRects, pageInk, pageLines, readOutline, readTitle, PdfLoadError } from './pdf'
 import { BLANK_INK, FULL_PAGE, illustrationRect, type Rect } from './illust'
 import { decodeText, parseTextBook } from './textImport'
+import { t } from './i18n'
 
 export interface ImportProgress {
   phase: 'reading' | 'extracting' | 'repairing' | 'saving' | 'done'
@@ -41,21 +42,21 @@ export async function importPdf(
 ): Promise<ImportResult> {
   if (/\.txt$/i.test(file.name) || file.type === 'text/plain') return importText(file, onProgress)
   if (file.type && file.type !== 'application/pdf' && !/\.pdf$/i.test(file.name)) {
-    throw new ImportError('対応していないファイルです。', '小説の PDF（.pdf）か、テキストファイル（.txt、青空文庫形式も可）を選んでください。')
+    throw new ImportError(t('対応していないファイルです。'), t('小説の PDF（.pdf）か、テキストファイル（.txt、青空文庫形式も可）を選んでください。'))
   }
   onProgress({ phase: 'reading', done: 0, total: 1 })
   let buf: ArrayBuffer
   try {
     buf = await file.arrayBuffer()
   } catch {
-    throw new ImportError('ファイルを読み込めませんでした。', 'iCloud Drive のファイルは、先に「ファイル」アプリでダウンロードしてから選んでください。')
+    throw new ImportError(t('ファイルを読み込めませんでした。'), t('iCloud Drive のファイルは、先に「ファイル」アプリでダウンロードしてから選んでください。'))
   }
 
   let doc
   try {
     doc = await openPdf(buf)
   } catch (e) {
-    if (e instanceof PdfLoadError) throw new ImportError(e.message, e.kind === 'password' ? '' : '別の PDF で試すか、元のアプリから PDF を書き出し直してください。')
+    if (e instanceof PdfLoadError) throw new ImportError(e.message, e.kind === 'password' ? '' : t('別の PDF で試すか、元のアプリから PDF を書き出し直してください。'))
     throw e
   }
 
@@ -84,8 +85,8 @@ export async function importPdf(
     // 大半のページで取り出しに失敗したときは、全ページを挿絵や OCR に回さずに知らせる
     if (pageCount > 0 && failures > pageCount * 0.5) {
       throw new ImportError(
-        'このブラウザでは本文を取り出せませんでした。',
-        'ブラウザを最新版に更新してから、もう一度試してください。直らない場合は、別のブラウザで開いてください。',
+        t('このブラウザでは本文を取り出せませんでした。'),
+        t('ブラウザを最新版に更新してから、もう一度試してください。直らない場合は、別のブラウザで開いてください。'),
       )
     }
 
@@ -178,14 +179,14 @@ async function importText(file: File, onProgress: (p: ImportProgress) => void): 
   try {
     raw = decodeText(await file.arrayBuffer())
   } catch {
-    throw new ImportError('ファイルを読み込めませんでした。', 'iCloud Drive のファイルは、先に「ファイル」アプリでダウンロードしてから選んでください。')
+    throw new ImportError(t('ファイルを読み込めませんでした。'), t('iCloud Drive のファイルは、先に「ファイル」アプリでダウンロードしてから選んでください。'))
   }
   const parsed = parseTextBook(raw)
   if (parsed.pages.length === 0 || visibleLength(parsed.pages.join('')) === 0) {
-    throw new ImportError('本文が見つかりませんでした。', '空のファイルか、文字コードが UTF-8・Shift_JIS 以外の可能性があります。')
+    throw new ImportError(t('本文が見つかりませんでした。'), t('空のファイルか、文字コードが UTF-8・Shift_JIS 以外の可能性があります。'))
   }
   if (garbledRatio(parsed.pages.join('')) > 0.05) {
-    throw new ImportError('文字化けしているようです。', 'UTF-8 か Shift_JIS で保存し直したテキストを選んでください。')
+    throw new ImportError(t('文字化けしているようです。'), t('UTF-8 か Shift_JIS で保存し直したテキストを選んでください。'))
   }
   const id = newId()
   const pages: PageRecord[] = parsed.pages.map((text, i) => ({

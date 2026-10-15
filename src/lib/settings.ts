@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { getKV, setKV } from './db'
+import { detectLang, setUiLang } from './i18n'
 import type { ChunkMode } from './segment'
 
 export type Theme = 'paper' | 'light' | 'sepia' | 'gray' | 'dark' | 'black' | 'night' | 'washi' | 'aurora' | 'parchment'
@@ -42,6 +43,8 @@ export interface Settings {
   illustSeconds: number
   /** 論文などの参考文献の節を高速読書で飛ばす */
   skipReferences: boolean
+  /** 画面の言語。auto は端末の言語に合わせる */
+  uiLang: 'auto' | 'ja' | 'en'
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -66,6 +69,7 @@ export const DEFAULT_SETTINGS: Settings = {
   illustMode: 'pause',
   illustSeconds: 4,
   skipReferences: true,
+  uiLang: 'auto',
 }
 
 export interface ThemeDef {
@@ -101,11 +105,17 @@ const KEY = 'settings'
 let cache: Settings | null = null
 const listeners = new Set<(s: Settings) => void>()
 
+/** 画面の言語を設定に合わせる。設定の変更を知らせる前に呼ぶので、再描画で新しい言語になる */
+function applyUiLang(s: Settings) {
+  setUiLang(s.uiLang === 'auto' ? detectLang() : s.uiLang)
+}
+
 export async function loadSettings(): Promise<Settings> {
   if (cache) return cache
   try {
     const saved = await getKV<Partial<Settings>>(KEY)
     cache = { ...DEFAULT_SETTINGS, ...(saved ?? {}) }
+    applyUiLang(cache)
   } catch {
     cache = { ...DEFAULT_SETTINGS }
   }
@@ -127,6 +137,7 @@ export function useSettings() {
   const update = useCallback((patch: Partial<Settings>) => {
     const next = { ...(cache ?? DEFAULT_SETTINGS), ...patch }
     cache = next
+    applyUiLang(next)
     listeners.forEach((l) => l(next))
     setKV(KEY, next).catch(() => {})
   }, [])

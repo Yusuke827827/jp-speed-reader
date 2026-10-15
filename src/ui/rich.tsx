@@ -17,8 +17,8 @@ export interface RichOptions {
 }
 
 // 字形の片側が空いている約物。全角の括弧・句読点は、字形の半分が空白になっている
-const OPENING = /^[「『（〔【〈《［｛]$/
-const CLOSING = /^[、。，．」』）〕】〉》］｝]$/
+const OPENING = /^[「『（〔【〈《［｛]$/ // i18n-ignore (regex, not UI text)
+const CLOSING = /^[、。，．」』）〕】〉》］｝]$/ // i18n-ignore (regex, not UI text)
 
 interface Atom {
   start: number

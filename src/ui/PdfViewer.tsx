@@ -3,6 +3,7 @@ import { addBookmark, deleteBookmark, getBook, getFile, getPages, listBookmarks,
 import { closePdf, openPdf, readOutline, renderPage, renderToCanvas, type PDFDocumentProxy } from '../lib/pdf'
 import { ErrorBox, go, Icon, toast } from './common'
 import { parseRuby } from '../lib/normalize'
+import { t } from '../lib/i18n'
 
 type Panel = null | 'thumbs' | 'toc' | 'search' | 'marks'
 
@@ -24,9 +25,9 @@ export function PdfViewer({ id, initialPage, compare: compareInit, fromReader }:
     ;(async () => {
       try {
         const m = await getBook(id)
-        if (!m) throw new Error('この本は見つかりませんでした。')
+        if (!m) throw new Error(t('この本は見つかりませんでした。'))
         const blob = await getFile(id)
-        if (!blob) throw new Error('元のPDFが保存されていません。本棚から取り込み直してください。')
+        if (!blob) throw new Error(t('元のPDFが保存されていません。本棚から取り込み直してください。'))
         d = await openPdf(await blob.arrayBuffer())
         if (!alive) return closePdf(d)
         setMeta(m)
@@ -75,9 +76,9 @@ export function PdfViewer({ id, initialPage, compare: compareInit, fromReader }:
   if (error)
     return (
       <div className="screen">
-        <ErrorBox title="PDFを表示できませんでした">{error}</ErrorBox>
+        <ErrorBox title={t('PDFを表示できませんでした')}>{error}</ErrorBox>
         <button className="btn" style={{ marginTop: 12 }} onClick={() => go('/')}>
-          本棚へ戻る
+          {t('本棚へ戻る')}
         </button>
       </div>
     )
@@ -88,22 +89,22 @@ export function PdfViewer({ id, initialPage, compare: compareInit, fromReader }:
   return (
     <div className="viewer">
       <div className="v-top">
-        <button className="icon-btn" aria-label={fromReader ? '高速読書へ戻る' : '本棚へ戻る'} onClick={back}>
+        <button className="icon-btn" aria-label={fromReader ? t('高速読書へ戻る') : t('本棚へ戻る')} onClick={back}>
           <Icon name="back" />
         </button>
         <div className="grow small" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {meta?.title}
         </div>
-        <button className="icon-btn" aria-label="ページ一覧" aria-pressed={panel === 'thumbs'} onClick={() => setPanel(panel === 'thumbs' ? null : 'thumbs')}>
+        <button className="icon-btn" aria-label={t('ページ一覧')} aria-pressed={panel === 'thumbs'} onClick={() => setPanel(panel === 'thumbs' ? null : 'thumbs')}>
           <Icon name="grid" />
         </button>
-        <button className="icon-btn" aria-label="目次" onClick={() => setPanel(panel === 'toc' ? null : 'toc')}>
+        <button className="icon-btn" aria-label={t('目次')} onClick={() => setPanel(panel === 'toc' ? null : 'toc')}>
           <Icon name="list" />
         </button>
-        <button className="icon-btn" aria-label="本文検索" onClick={() => setPanel(panel === 'search' ? null : 'search')}>
+        <button className="icon-btn" aria-label={t('本文検索')} onClick={() => setPanel(panel === 'search' ? null : 'search')}>
           <Icon name="search" />
         </button>
-        <button className="icon-btn" aria-label="しおり" onClick={() => setPanel(panel === 'marks' ? null : 'marks')}>
+        <button className="icon-btn" aria-label={t('しおり')} onClick={() => setPanel(panel === 'marks' ? null : 'marks')}>
           <Icon name="bookmark" />
         </button>
       </div>
@@ -111,7 +112,7 @@ export function PdfViewer({ id, initialPage, compare: compareInit, fromReader }:
       <div className="v-body" ref={bodyRef}>
         {!doc ? (
           <p className="muted" style={{ margin: 'auto' }}>
-            読み込み中…
+            {t('読み込み中…')}
           </p>
         ) : compare ? (
           <div className="compare">
@@ -130,7 +131,7 @@ export function PdfViewer({ id, initialPage, compare: compareInit, fromReader }:
                   b.emptyPages = all.filter(needsOcr).length
                 })
                 setPages(all)
-                toast('このページの本文を保存しました')
+                toast(t('このページの本文を保存しました'))
               }}
             />
           </div>
@@ -142,32 +143,32 @@ export function PdfViewer({ id, initialPage, compare: compareInit, fromReader }:
       </div>
 
       <div className="v-bottom">
-        <button className="icon-btn" aria-label="前のページ" onClick={() => goPage(page - 1)} disabled={page === 0}>
+        <button className="icon-btn" aria-label={t('前のページ')} onClick={() => goPage(page - 1)} disabled={page === 0}>
           <Icon name="prev" />
         </button>
         <span className="small" style={{ fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
           {page + 1} / {n}
         </span>
-        <button className="icon-btn" aria-label="次のページ" onClick={() => goPage(page + 1)} disabled={page >= n - 1}>
+        <button className="icon-btn" aria-label={t('次のページ')} onClick={() => goPage(page + 1)} disabled={page >= n - 1}>
           <Icon name="next" />
         </button>
         {!compare && (
           <>
-            <button className="icon-btn" aria-label="縮小" onClick={() => setZoom((z) => Math.max(0.5, z / 1.25))}>
+            <button className="icon-btn" aria-label={t('縮小')} onClick={() => setZoom((z) => Math.max(0.5, z / 1.25))}>
               <Icon name="zoomOut" />
             </button>
-            <button className="icon-btn" aria-label="拡大" onClick={() => setZoom((z) => Math.min(4, z * 1.25))}>
+            <button className="icon-btn" aria-label={t('拡大')} onClick={() => setZoom((z) => Math.min(4, z * 1.25))}>
               <Icon name="zoomIn" />
             </button>
           </>
         )}
-        <button className="btn small" aria-pressed={compare} onClick={() => setCompare(!compare)} title="抽出した本文と元のページを並べる">
-          <Icon name="compare" /> {compare ? '比較を閉じる' : '比較'}
+        <button className="btn small" aria-pressed={compare} onClick={() => setCompare(!compare)} title={t('抽出した本文と元のページを並べる')}>
+          <Icon name="compare" /> {compare ? t('比較を閉じる') : t('比較')}
         </button>
         <button
           className="btn small"
           aria-pressed={record?.image === 'illust'}
-          title="このページを挿絵として扱うか切り替える"
+          title={t('このページを挿絵として扱うか切り替える')}
           onClick={async () => {
             const base: PageRecord = record ?? { bookId: id, pageIndex: page, text: '', contFromPrev: false, vertical: false, source: 'empty' }
             const next: PageRecord = { ...base }
@@ -185,13 +186,13 @@ export function PdfViewer({ id, initialPage, compare: compareInit, fromReader }:
               b.emptyPages = all.filter(needsOcr).length
             })
             setPages(all)
-            toast(next.image ? `${page + 1}ページを挿絵として扱います` : `${page + 1}ページを挿絵として扱わないようにしました`)
+            toast(next.image ? t('{page}ページを挿絵として扱います', { page: page + 1 }) : t('{page}ページを挿絵として扱わないようにしました', { page: page + 1 }))
           }}
         >
-          {record?.image === 'illust' ? '挿絵' : '挿絵にする'}
+          {record?.image === 'illust' ? t('挿絵') : t('挿絵にする')}
         </button>
-        <button className="btn small primary" onClick={() => go(`/read/${id}?page=${page + 1}`)} title="このページから高速読書を始める">
-          <Icon name="bolt" /> 速読
+        <button className="btn small primary" onClick={() => go(`/read/${id}?page=${page + 1}`)} title={t('このページから高速読書を始める')}>
+          <Icon name="bolt" /> {t('速読')}
         </button>
       </div>
 
@@ -201,9 +202,9 @@ export function PdfViewer({ id, initialPage, compare: compareInit, fromReader }:
           <div className="sheet stack" role="dialog">
             <div className="row">
               <div className="grow" style={{ fontWeight: 700, fontSize: 17 }}>
-                {{ thumbs: 'ページ一覧', toc: '目次', search: '本文検索', marks: 'しおり' }[panel]}
+                {{ thumbs: t('ページ一覧'), toc: t('目次'), search: t('本文検索'), marks: t('しおり') }[panel]}
               </div>
-              <button className="icon-btn" aria-label="閉じる" onClick={() => setPanel(null)}>
+              <button className="icon-btn" aria-label={t('閉じる')} onClick={() => setPanel(null)}>
                 <Icon name="close" />
               </button>
             </div>
@@ -260,7 +261,7 @@ function PageCanvas({ doc, page, width }: { doc: PDFDocumentProxy; page: number;
     const ac = new AbortController()
     setErr(null)
     renderPage(doc, page, ref.current, width, ac.signal).catch(() => {
-      if (!ac.signal.aborted) setErr('このページを描画できませんでした。')
+      if (!ac.signal.aborted) setErr(t('このページを描画できませんでした。'))
     })
     return () => ac.abort()
   }, [doc, page, width])
@@ -276,17 +277,17 @@ function TextEditor({ record, onSave }: { record?: PageRecord; onSave: (text: st
   const [text, setText] = useState(record?.text ?? '')
   const [saving, setSaving] = useState(false)
   const dirty = text !== (record?.text ?? '')
-  const label = { text: 'PDFの文字から抽出', ocr: 'OCRで認識', edited: '手で修正済み', empty: '本文なし' }[record?.source ?? 'empty']
+  const label = { text: t('PDFの文字から抽出'), ocr: t('OCRで認識'), edited: t('手で修正済み'), empty: t('本文なし') }[record?.source ?? 'empty']
   return (
     <div className="stack">
       <div className="row small muted">
         <span className="grow">
           {label}
-          {record?.confidence !== undefined ? `・信頼度 ${record.confidence.toFixed(0)}%` : ''}
+          {record?.confidence !== undefined ? t('・信頼度 {n}%', { n: record.confidence.toFixed(0) }) : ''}
         </span>
-        <span>段落は改行、ルビは｜漢字《かんじ》</span>
+        <span>{t('段落は改行、ルビは｜漢字《かんじ》')}</span>
       </div>
-      <textarea value={text} onChange={(e) => setText(e.target.value)} aria-label="このページの本文" />
+      <textarea value={text} onChange={(e) => setText(e.target.value)} aria-label={t('このページの本文')} />
       <div className="row">
         <button
           className="btn primary"
@@ -300,10 +301,10 @@ function TextEditor({ record, onSave }: { record?: PageRecord; onSave: (text: st
             }
           }}
         >
-          本文を保存
+          {t('本文を保存')}
         </button>
         <button className="btn" disabled={!dirty} onClick={() => setText(record?.text ?? '')}>
-          元に戻す
+          {t('元に戻す')}
         </button>
       </div>
     </div>
@@ -344,7 +345,7 @@ function Thumb({ doc, page, current, onPick }: { doc: PDFDocumentProxy; page: nu
     return () => io.disconnect()
   }, [doc, page, current])
   return (
-    <button ref={ref} className="thumb" aria-current={current} onClick={() => onPick(page)} aria-label={`${page + 1}ページ`}>
+    <button ref={ref} className="thumb" aria-current={current} onClick={() => onPick(page)} aria-label={t('{page}ページ', { page: page + 1 })}>
       {url && <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />}
       <span>{page + 1}</span>
     </button>
@@ -356,8 +357,8 @@ function Outline({ doc, onPick }: { doc: PDFDocumentProxy; onPick: (p: number) =
   useEffect(() => {
     readOutline(doc).then(setItems).catch(() => setItems([]))
   }, [doc])
-  if (items === null) return <p className="small muted">読み込み中…</p>
-  if (items.length === 0) return <p className="small muted">このPDFには目次（しおり）が入っていません。ページ一覧か本文検索を使ってください。</p>
+  if (items === null) return <p className="small muted">{t('読み込み中…')}</p>
+  if (items.length === 0) return <p className="small muted">{t('このPDFには目次（しおり）が入っていません。ページ一覧か本文検索を使ってください。')}</p>
   return (
     <ul className="list">
       {items.map((o, i) => (
@@ -390,8 +391,8 @@ function Search({ pages, onPick }: { pages: PageRecord[]; onPick: (p: number) =>
   }, [q, pages])
   return (
     <div className="stack">
-      <input type="search" placeholder="本文から探す" value={q} onChange={(e) => setQ(e.target.value)} autoFocus aria-label="検索語" />
-      {q.trim() && <div className="small muted">{hits.length >= 200 ? '200件以上' : `${hits.length}件`}</div>}
+      <input type="search" placeholder={t('本文から探す')} value={q} onChange={(e) => setQ(e.target.value)} autoFocus aria-label={t('検索語')} />
+      {q.trim() && <div className="small muted">{hits.length >= 200 ? t('200件以上') : t('{n}件', { n: hits.length })}</div>}
       <ul className="list">
         {hits.map((h, i) => (
           <li key={i}>
@@ -408,7 +409,7 @@ function Search({ pages, onPick }: { pages: PageRecord[]; onPick: (p: number) =>
           </li>
         ))}
       </ul>
-      <p className="small muted">抽出した本文を検索します。OCRがまだのページは検索できません。</p>
+      <p className="small muted">{t('抽出した本文を検索します。OCRがまだのページは検索できません。')}</p>
     </div>
   )
 }
@@ -425,15 +426,15 @@ function Marks({ bookId, page, onPick }: { bookId: string; page: number; onPick:
       <button
         className="btn primary"
         onClick={async () => {
-          await addBookmark({ bookId, page, label: `${page + 1}ページ`, createdAt: Date.now() })
-          toast(`${page + 1}ページにしおりを挟みました`)
+          await addBookmark({ bookId, page, label: t('{page}ページ', { page: page + 1 }), createdAt: Date.now() })
+          toast(t('{page}ページにしおりを挟みました', { page: page + 1 }))
           load()
         }}
       >
-        <Icon name="bookmark" /> このページ（p.{page + 1}）にしおり
+        <Icon name="bookmark" /> {t('このページ（p.{page}）にしおり', { page: page + 1 })}
       </button>
       {marks.length === 0 ? (
-        <p className="small muted">しおりはまだありません。</p>
+        <p className="small muted">{t('しおりはまだありません。')}</p>
       ) : (
         <ul className="list">
           {marks.map((m) => (
@@ -443,7 +444,7 @@ function Marks({ bookId, page, onPick }: { bookId: string; page: number; onPick:
               </button>
               <button
                 className="icon-btn"
-                aria-label="しおりを削除"
+                aria-label={t('しおりを削除')}
                 onClick={async () => {
                   await deleteBookmark(m.id!)
                   load()
