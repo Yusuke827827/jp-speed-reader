@@ -4,7 +4,7 @@ import { openDB, type DBSchema, type IDBPDatabase } from 'idb'
 
 export type PageSource = 'text' | 'ocr' | 'edited' | 'empty'
 export type OcrStatus = 'none' | 'needed' | 'running' | 'paused' | 'done' | 'error'
-export type OcrLang = 'jpn' | 'jpn_vert'
+export type OcrLang = 'jpn' | 'jpn_vert' | 'eng'
 
 export interface TocEntry {
   title: string

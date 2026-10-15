@@ -127,6 +127,7 @@ export function Ocr({ id, garbled }: { id: string; garbled: number }) {
                     ['auto', '自動判定'],
                     ['jpn_vert', '縦書き'],
                     ['jpn', '横書き'],
+                    ['eng', '英語'],
                   ] as const
                 ).map(([v, l]) => (
                   <button key={v} aria-pressed={lang === v} disabled={running} onClick={() => setLang(v)}>
@@ -135,7 +136,7 @@ export function Ocr({ id, garbled }: { id: string; garbled: number }) {
                 ))}
               </div>
               <div className="small muted" style={{ marginTop: 6 }}>
-                自動判定では、最初のページを縦書き・横書きの両方で認識し、信頼度の高い方を残りのページに使います。
+                自動判定では、最初のページを縦書き・横書きの両方で認識し、信頼度の高い方を残りのページに使います。英語が主のページなら、英語としても読み直して比べます。
               </div>
             </div>
 
@@ -153,7 +154,7 @@ export function Ocr({ id, garbled }: { id: string; garbled: number }) {
                 {running && progress && (
                   <div className="small muted">
                     p.{progress.page + 1}：{progress.status}
-                    {progress.lang ? `（${progress.lang === 'jpn_vert' ? '縦書き' : '横書き'}）` : ''}
+                    {progress.lang ? `（${{ jpn_vert: '縦書き', jpn: '横書き', eng: '英語' }[progress.lang]}）` : ''}
                   </div>
                 )}
               </div>
@@ -194,7 +195,7 @@ export function Ocr({ id, garbled }: { id: string; garbled: number }) {
           <div style={{ fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>OCRについて</div>
           <ul style={{ margin: 0, paddingLeft: 20 }}>
             <li>認識はこの端末の中で行います。画像や本文は外部に送りません。</li>
-            <li>初回だけ、日本語の学習データ（数MB）をCDNから取得します。2回目以降はオフラインでも動きます。</li>
+            <li>初回だけ、使う言語の学習データ（日本語・英語、各数MB）をCDNから取得します。2回目以降はオフラインでも動きます。</li>
             <li>1ページずつ保存するため、途中でアプリを閉じても次回は続きから再開できます。</li>
             <li>iPhoneでは1ページに数秒〜数十秒かかります。画面をロックすると処理が止まることがあります。</li>
             <li>文字がほとんど読み取れないページ（信頼度45%未満、または15字未満）は挿絵とみなし、本文に入れずに読書中に絵として表示します。違っていたら、PDF表示の画面で「本文」に戻せます。</li>
