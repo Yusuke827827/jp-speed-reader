@@ -201,6 +201,13 @@ export function SettingsScreen() {
           <p className="small muted">挿絵を表示している時間は、読書速度の計算に含めません。</p>
         </div>
         <label className="switch">
+          <span>論文の参考文献を飛ばす</span>
+          <input type="checkbox" checked={s.skipReferences} onChange={(e) => update({ skipReferences: e.target.checked })} />
+        </label>
+        <p className="small muted" style={{ margin: 0 }}>
+          「References」「参考文献」などの見出しから、付録（Appendix）の見出しの手前までを高速読書で飛ばします。PDF表示と全文パネルでは読めます。
+        </p>
+        <label className="switch">
           <span>登録した人物名を色分け</span>
           <input type="checkbox" checked={s.personColors} onChange={(e) => update({ personColors: e.target.checked })} />
         </label>

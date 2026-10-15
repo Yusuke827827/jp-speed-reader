@@ -376,6 +376,19 @@ export function itemsToLines(items: RawItem[]): PageLines {
   return { lines, vertical }
 }
 
+/** 本文の字の大きさ。文字数で重みを付けた最頻値（脚注や柱の多いページでも本文の大きさを返す） */
+function bodySizeOf(lines: Line[]): number {
+  const count = new Map<number, number>()
+  for (const l of lines) {
+    const k = Math.round(l.size * 10) / 10
+    count.set(k, (count.get(k) ?? 0) + l.text.length)
+  }
+  let best = 0
+  let bestN = -1
+  for (const [k, n] of count) if (n > bestN || (n === bestN && k > best)) [best, bestN] = [k, n]
+  return best
+}
+
 const headerKey = (s: string) => s.replace(/[0-9０-９\s]/g, '')
 
 /**
@@ -397,7 +410,7 @@ export function linesToPageTexts(pages: PageLines[]): PageText[] {
 
   return pages.map((p) => {
     // 本文より明らかに小さい文字の端の行も柱とみなす（ページ数が少なく頻度で判定できない場合）
-    const body = median(p.lines.map((l) => l.size))
+    const body = bodySizeOf(p.lines)
     const drop = new Set(
       edge(p).filter((i) => {
         const l = p.lines[i]
@@ -407,6 +420,14 @@ export function linesToPageTexts(pages: PageLines[]): PageText[] {
         return headers.has(headerKey(t)) || (body > 0 && l.size < body * 0.85)
       }),
     )
+    // 横書きのページ下部で、本文より小さい字の行が続く部分は脚注とみなして除く（ノンブルは上で除いた）
+    if (!p.vertical && body > 0) {
+      for (let i = p.lines.length - 1; i >= 0; i--) {
+        if (drop.has(i)) continue
+        if (p.lines[i].size >= body * 0.88) break
+        drop.add(i)
+      }
+    }
     return buildPageText(p.lines.filter((_, i) => !drop.has(i)), p.vertical)
   })
 }

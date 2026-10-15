@@ -40,6 +40,8 @@ export interface Settings {
   /** 挿絵の位置に来たとき: 止まる／決まった秒数だけ表示／飛ばす */
   illustMode: IllustMode
   illustSeconds: number
+  /** 論文などの参考文献の節を高速読書で飛ばす */
+  skipReferences: boolean
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -63,6 +65,7 @@ export const DEFAULT_SETTINGS: Settings = {
   nameBoost: true,
   illustMode: 'pause',
   illustSeconds: 4,
+  skipReferences: true,
 }
 
 export interface ThemeDef {

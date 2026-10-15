@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { gapBefore, globalOffset, pageAt, percentAt, positionForPage, type BookText, type Paragraph, type TextPosition } from '../lib/book'
+import { gapBefore, globalOffset, pageAt, referenceParagraphs, percentAt, positionForPage, type BookText, type Paragraph, type TextPosition } from '../lib/book'
 import { addSession, describeStorageError, listBookmarks, saveProgress, getFile, updateBook, type Bookmark, type Person, type TocEntry } from '../lib/db'
 import { newId } from '../lib/importer'
 import { chapterStarts, personRanges, personTerms, suggestPeople, PERSON_COLORS, type PersonRange } from '../lib/people'
@@ -62,8 +62,12 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
   const chunks = useMemo(() => {
     const all = segmentBook(text, { mode: settings.mode, phraseTarget: settings.phraseTarget, minChars: settings.minChars, names })
     // テキストの本には挿絵が無い。「飛ばす」設定なら挿絵の単位を除く
-    return !isPdf || settings.illustMode === 'skip' ? all.filter((c) => !c.illust) : all
-  }, [text, settings.mode, settings.phraseTarget, settings.minChars, names, settings.illustMode, isPdf])
+    const noIllust = !isPdf || settings.illustMode === 'skip'
+    // 参考文献の節を飛ばす（全部が参考文献と判定された場合は飛ばさない）
+    const refs = settings.skipReferences ? referenceParagraphs(text) : new Set<number>()
+    const skipRefs = refs.size > 0 && refs.size < text.paragraphs.length
+    return noIllust || skipRefs ? all.filter((c) => !(noIllust && c.illust) && !(skipRefs && refs.has(c.para))) : all
+  }, [text, settings.mode, settings.phraseTarget, settings.minChars, names, settings.illustMode, settings.skipReferences, isPdf])
   const schedule = useMemo(
     () =>
       buildSchedule(chunks, {
