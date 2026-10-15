@@ -31,6 +31,8 @@ export interface Chunk {
   pause: Pause
   /** 表示上の文字数（空白を除く） */
   len: number
+  /** 欧文の単位の語数。速度を WPM で合わせるのに使う（日本語の単位には無い） */
+  words?: number
   /** 登録した人物名を含む */
   name?: boolean
   /** 挿絵（本文は空） */
@@ -399,6 +401,7 @@ export function segmentBook(book: BookText, opts: SegmentOptions): Chunk[] {
 
     const sentences = splitSentences(para.text)
     for (const [a, b] of sentences) {
+      const latin = isLatinText(para.text.slice(a, b))
       const pieces = segmentSentence(para.text.slice(a, b), opts)
       // 元の文字位置を求めるため、元の文の中で順に探す（空白は分割時に落ちている場合がある）
       let local: Piece[] = []
@@ -433,7 +436,11 @@ export function segmentBook(book: BookText, opts: SegmentOptions): Chunk[] {
       }
       for (const p of local) {
         const name = nameRanges.some(([s, e]) => s < p.end && p.start < e)
-        chunks.push({ text: p.text, para: pi, start: p.start, end: p.end, pause: 'none', len: visible(p.text), ...(name ? { name } : {}) })
+        const words = latin ? (p.text.match(/\S+/g)?.length ?? 0) : undefined
+        chunks.push({
+          text: p.text, para: pi, start: p.start, end: p.end, pause: 'none', len: visible(p.text),
+          ...(words !== undefined ? { words } : {}), ...(name ? { name } : {}),
+        })
       }
       if (local.length) sentenceEnds.add(chunks.length - 1)
     }
@@ -442,6 +449,18 @@ export function segmentBook(book: BookText, opts: SegmentOptions): Chunk[] {
     }
   })
   return chunks
+}
+
+/** 欧文が主の本か（挿絵を除く単位の半分以上が欧文）。速度を WPM で表示するのに使う */
+export function isLatinBook(chunks: Chunk[]): boolean {
+  let latin = 0
+  let all = 0
+  for (const c of chunks) {
+    if (c.illust) continue
+    all++
+    if (c.words !== undefined) latin++
+  }
+  return all > 0 && latin * 2 >= all
 }
 
 /** 本文位置に対応するチャンク番号（その位置を含むか、それより後で最初のもの） */

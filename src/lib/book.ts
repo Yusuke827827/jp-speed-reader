@@ -124,3 +124,10 @@ export function percentAt(book: BookText, pos: TextPosition): number {
   if (book.totalChars === 0) return 0
   return Math.min(100, (globalOffset(book, pos) / book.totalChars) * 100)
 }
+
+/** 前の単位の終わり（prevEnd）から次の単位の始まり（start）までの空白。全文パネルで単位の間に描く */
+export function gapBefore(para: Paragraph, prevEnd: number, start: number): string {
+  if (start <= prevEnd) return ''
+  const gap = para.text.slice(prevEnd, start)
+  return /^\s+$/.test(gap) ? gap : ''
+}

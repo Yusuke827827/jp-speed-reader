@@ -1,6 +1,7 @@
 // 各チャンクの表示時間を決める。
 //
-// 速度の基準は「文字/分」（空白を除いた文字数）。
+// 速度の基準は「文字/分」（空白を除いた文字数）。欧文の単位（語数を持つもの）は、
+// wpm が指定されていれば「語/分」で合わせる。1 語を cpm / wpm 文字ぶんとして扱う。
 // 各チャンクに「重み（文字数 + 句読点の間 ＋ 最低表示量の補正）」を与え、
 // 段落の切れ目でまとめた約 240 字ごとの区間で「区間の文字数 ÷ 区間の表示時間」が
 // 設定速度と一致するように、区間ごとに 1 重みあたりの時間を決める。
@@ -16,6 +17,8 @@ import type { Chunk } from './segment'
 export interface TimingOptions {
   /** 文字/分 */
   cpm: number
+  /** 欧文の語/分。省略すると欧文も文字/分で合わせる */
+  wpm?: number
   /** 句読点で間をとるか */
   pauses: boolean
   /** 間の長さの倍率（1 = 標準） */
@@ -40,10 +43,17 @@ const NAME_UNITS = 1.5
 /** 短すぎるチャンクが一瞬で消えないよう、最低でもこの文字数ぶんは表示する */
 const MIN_UNITS = 1.6
 
+/** 速度の計算に使う文字数。欧文の単位は語数を文字数に換算する */
+export function unitsOf(c: Chunk, opts: TimingOptions): number {
+  if (c.words !== undefined && opts.wpm) return (c.words * opts.cpm) / opts.wpm
+  return c.len
+}
+
 export function weightOf(c: Chunk, opts: TimingOptions): number {
   if (c.illust) return 0
   // 長いチャンクは目の移動が少ない分だけ、1 文字あたりの重みを少し下げる
-  const len = c.len <= 8 ? c.len : 8 + (c.len - 8) * 0.85
+  const units = unitsOf(c, opts)
+  const len = units <= 8 ? units : 8 + (units - 8) * 0.85
   const base = Math.max(MIN_UNITS, len)
   const pause = opts.pauses ? PAUSE_UNITS[c.pause] * opts.pauseScale : 0
   const name = opts.nameBoost && c.name ? NAME_UNITS : 0
@@ -110,7 +120,7 @@ export function buildSchedule(chunks: Chunk[], opts: TimingOptions): Schedule {
   let start = 0
   let chars = 0
   for (let i = 0; i < n; i++) {
-    chars += chunks[i].len
+    chars += unitsOf(chunks[i], opts)
     const boundary = chunks[i].pause === 'paragraph' || i === n - 1
     if (boundary && (chars >= BLOCK_CHARS || i === n - 1)) {
       blocks.push([start, i + 1, chars])
@@ -165,3 +175,14 @@ export const SPEED_PRESETS = [
 
 export const CPM_MIN = 100
 export const CPM_MAX = 3000
+
+/** 欧文の速度（語/分）。英語の黙読は一般に毎分 200〜300 語程度と言われる */
+export const WPM_PRESETS = [
+  { label: 'ゆっくり', wpm: 180 },
+  { label: '標準', wpm: 250 },
+  { label: '速い', wpm: 350 },
+  { label: '高速', wpm: 500 },
+]
+
+export const WPM_MIN = 60
+export const WPM_MAX = 1200

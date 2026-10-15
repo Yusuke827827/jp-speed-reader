@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { globalOffset, pageAt, percentAt, positionForPage, type BookText, type Paragraph, type TextPosition } from '../lib/book'
+import { gapBefore, globalOffset, pageAt, percentAt, positionForPage, type BookText, type Paragraph, type TextPosition } from '../lib/book'
 import { addSession, describeStorageError, listBookmarks, saveProgress, getFile, updateBook, type Bookmark, type Person, type TocEntry } from '../lib/db'
 import { newId } from '../lib/importer'
 import { chapterStarts, personRanges, personTerms, suggestPeople, PERSON_COLORS, type PersonRange } from '../lib/people'
 import { closePdf, openPdf, readOutline } from '../lib/pdf'
-import { chunkIndexAt, paragraphStartIndex, segmentBook, CHUNK_MODES, visible, type Chunk } from '../lib/segment'
+import { chunkIndexAt, isLatinBook, paragraphStartIndex, segmentBook, CHUNK_MODES, visible, type Chunk } from '../lib/segment'
 import { THEMES, themeOf, useSettings, type Settings } from '../lib/settings'
-import { buildSchedule, durationOf, remainingMs, SPEED_PRESETS, CPM_MAX, CPM_MIN } from '../lib/timing'
+import { buildSchedule, durationOf, remainingMs, SPEED_PRESETS, CPM_MAX, CPM_MIN, WPM_PRESETS, WPM_MAX, WPM_MIN } from '../lib/timing'
 import { useBook, type LoadedBook } from '../lib/useBook'
 import { ConfirmDialog, ErrorBox, formatDuration, go, Icon, toast } from './common'
 import { RichText } from './rich'
@@ -68,12 +68,13 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
     () =>
       buildSchedule(chunks, {
         cpm: settings.cpm,
+        wpm: settings.wpm,
         pauses: settings.pauses,
         pauseScale: settings.pauseScale,
         nameBoost: settings.nameBoost && people.length > 0,
         illustMs: settings.illustSeconds * 1000,
       }),
-    [chunks, settings.cpm, settings.pauses, settings.pauseScale, settings.nameBoost, people.length, settings.illustSeconds],
+    [chunks, settings.cpm, settings.wpm, settings.pauses, settings.pauseScale, settings.nameBoost, people.length, settings.illustSeconds],
   )
 
   // 段落ごとの人物名の位置（表示のたびに探さないよう覚えておく）
@@ -332,7 +333,12 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
     moveTo(i)
   }
   const [confirmRestart, setConfirmRestart] = useState(false)
-  const setSpeed = (cpm: number) => update({ cpm: Math.max(CPM_MIN, Math.min(CPM_MAX, Math.round(cpm))) })
+  // 欧文が主の本は語/分（WPM）、それ以外は字/分で速度を表示・調整する
+  const latin = useMemo(() => isLatinBook(chunks), [chunks])
+  const changeSpeed = (dir: 1 | -1) =>
+    latin
+      ? update({ wpm: Math.max(WPM_MIN, Math.min(WPM_MAX, settings.wpm + dir * 10)) })
+      : update({ cpm: Math.max(CPM_MIN, Math.min(CPM_MAX, Math.round(settings.cpm + dir * 50))) })
 
   // ---------- 操作 ----------
   const [sheet, setSheet] = useState<null | 'settings' | 'toc' | 'people'>(null)
@@ -377,10 +383,10 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
           break
         case '+':
         case '=':
-          setSpeed(settings.cpm + 50)
+          changeSpeed(1)
           break
         case '-':
-          setSpeed(settings.cpm - 50)
+          changeSpeed(-1)
           break
         case ']':
           update({ fontSize: Math.min(120, settings.fontSize + 4) })
@@ -560,13 +566,14 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
           </button>
         </div>
         <div className="speedrow">
-          <button className="speed-btn" aria-label="遅くする" onClick={() => setSpeed(settings.cpm - 50)}>
+          <button className="speed-btn" aria-label="遅くする" onClick={() => changeSpeed(-1)}>
             −
           </button>
           <button className="speed-btn grow" onClick={() => setSheet('settings')} aria-label="速度と表示の設定">
-            {settings.cpm} 字/分{schedule.limited ? '（上限）' : ''}
+            {latin ? `${settings.wpm} WPM` : `${settings.cpm} 字/分`}
+            {schedule.limited ? '（上限）' : ''}
           </button>
-          <button className="speed-btn" aria-label="速くする" onClick={() => setSpeed(settings.cpm + 50)}>
+          <button className="speed-btn" aria-label="速くする" onClick={() => changeSpeed(1)}>
             ＋
           </button>
           <button className="speed-btn" aria-label="最初から読む" title="最初から読む (Home)" onClick={() => setConfirmRestart(true)}>
@@ -575,7 +582,7 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
         </div>
       </div>
 
-      {sheet === 'settings' && <QuickSettings onClose={() => setSheet(null)} chunks={chunks} />}
+      {sheet === 'settings' && <QuickSettings onClose={() => setSheet(null)} chunks={chunks} latin={latin} />}
       {sheet === 'people' && <PeopleSheet book={book} people={people} onChange={savePeople} onClose={() => setSheet(null)} />}
       {sheet === 'toc' && (
         <TocSheet
@@ -670,7 +677,7 @@ function Word({ chunk, para, names, labels, settings }: { chunk: Chunk; para: Pa
         style={{ fontSize: size, fontFamily: family, transform: vertical ? `translateY(${shift}px)` : `translateX(${shift}px)` }}
         aria-live="off"
       >
-        <RichText para={para} start={chunk.start} end={chunk.end} names={names} opts={{ ruby: true, colors: settings.personColors, focusAt: fi, focusRef, trimEdges: true }} />
+        <RichText para={para} start={chunk.start} end={chunk.end} names={names} opts={{ ruby: true, colors: settings.personColors, focusAt: fi, focusRef, trimEdges: true, keepSpaces: true }} />
       </div>
       {labels && labels.length > 0 && (
         <div className="person-label" style={vertical ? { bottom: 4 } : { top: `calc(50% + ${size * 0.75 + 26}px)` }}>
@@ -739,9 +746,14 @@ function TextPanel(props: {
     const para = book.paragraphs[pi]
     const names = props.rangesOf(pi)
     const spans: ReactNode[] = []
+    let prevEnd = -1
     while (i < chunks.length && chunks[i].para === pi) {
       const c = chunks[i]
       const k = i
+      // 欧文の文と文の間の空白は、どの単位にも含まれないので、ここで描く
+      const gap = prevEnd >= 0 ? gapBefore(para, prevEnd, c.start) : ''
+      if (gap) spans.push(gap)
+      prevEnd = c.end
       if (c.illust) {
         spans.push(
           <span key={k} ref={k === index ? currentRef : undefined} className={`illust-ref${k === index ? ' cur' : ''}`} onClick={() => props.onPick(k)}>
@@ -769,7 +781,7 @@ function TextPanel(props: {
   )
 }
 
-function QuickSettings({ onClose, chunks }: { onClose: () => void; chunks: Chunk[] }) {
+function QuickSettings({ onClose, chunks, latin }: { onClose: () => void; chunks: Chunk[]; latin: boolean }) {
   const [s, update] = useSettings()
   const [custom, setCustom] = useState(String(s.cpm))
   useEffect(() => setCustom(String(s.cpm)), [s.cpm])
@@ -794,7 +806,9 @@ function QuickSettings({ onClose, chunks }: { onClose: () => void; chunks: Chunk
           </button>
         </div>
 
-        <div className="field">
+        {latin && <WpmField />}
+
+        <div className="field" hidden={latin}>
           <div className="label">
             <span>速度</span>
             <span>
@@ -958,6 +972,57 @@ function QuickSettings({ onClose, chunks }: { onClose: () => void; chunks: Chunk
         </button>
       </div>
     </>
+  )
+}
+
+/** 欧文の本の速度（語/分）の設定 */
+function WpmField() {
+  const [s, update] = useSettings()
+  const [custom, setCustom] = useState(String(s.wpm))
+  // 設定が外から変わったら入力欄も合わせる（描画中に前回の値と比べる）
+  const [shown, setShown] = useState(s.wpm)
+  if (shown !== s.wpm) {
+    setShown(s.wpm)
+    setCustom(String(s.wpm))
+  }
+  return (
+    <div className="field">
+      <div className="label">
+        <span>速度（英語など）</span>
+        <span>{s.wpm} WPM（語/分）</span>
+      </div>
+      <div className="segmented" role="group" aria-label="速度のプリセット（語/分）">
+        {WPM_PRESETS.map((p) => (
+          <button key={p.wpm} aria-pressed={s.wpm === p.wpm} onClick={() => update({ wpm: p.wpm })}>
+            {p.label}
+            <span className="small muted"> {p.wpm}</span>
+          </button>
+        ))}
+      </div>
+      <input type="range" min={WPM_MIN} max={800} step={10} value={Math.min(800, s.wpm)} onChange={(e) => update({ wpm: Number(e.target.value) })} aria-label="速度（語/分）" />
+      <div className="row">
+        <span className="small muted">数値で指定</span>
+        <input
+          type="number"
+          inputMode="numeric"
+          min={WPM_MIN}
+          max={WPM_MAX}
+          value={custom}
+          style={{ maxWidth: 120 }}
+          onChange={(e) => setCustom(e.target.value)}
+          onBlur={() => {
+            const v = Number(custom)
+            if (Number.isFinite(v) && v > 0) update({ wpm: Math.max(WPM_MIN, Math.min(WPM_MAX, Math.round(v))) })
+            else setCustom(String(s.wpm))
+          }}
+          onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
+          aria-label="速度を語/分で入力"
+        />
+        <span className="small muted">
+          WPM（{WPM_MIN}〜{WPM_MAX}）
+        </span>
+      </div>
+    </div>
   )
 }
 

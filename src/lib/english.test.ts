@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { itemsToLines, joinLine, linesToPageTexts, type RawItem } from './layout'
 import { buildBookText } from './book'
 import { segmentBook, segmentSentence, splitSentences } from './segment'
+import { buildSchedule, durationOf } from './timing'
 
 // テスト文はすべてこのプロジェクト用に書いたもの
 
@@ -118,5 +119,39 @@ describe('英語の分割', () => {
     const parts = segmentSentence('Reading long documents on a phone is hard.', { mode: 'phrase', phraseTarget: 7 })
     expect(parts.length).toBeGreaterThan(1)
     expect(parts.length).toBeLessThan(8)
+  })
+})
+
+describe('英語の速度（WPM）', () => {
+  const para =
+    'Reading long documents on a phone is hard, but it gets easier with practice. The report explains why, and it suggests a few simple steps.'
+  const mixed = [para, '川沿いの道を歩いていると、向こうから自転車が一台、ゆっくりと近づいてきた。荷台には大きな箱が載っている。']
+  const book = buildBookText([{ pageIndex: 0, text: Array.from({ length: 40 }, (_, i) => mixed[i % 2]).join('\n'), contFromPrev: false }], 1)
+  it('英語の単位は語数を持つ', () => {
+    const chunks = segmentBook(book, { mode: 'phrase', phraseTarget: 7 })
+    const en = chunks.filter((c) => c.para === 0)
+    expect(en.reduce((a, c) => a + (c.words ?? 0), 0)).toBe(para.split(' ').length)
+    expect(chunks.filter((c) => c.para === 1).every((c) => c.words === undefined)).toBe(true)
+  })
+  it('英語は WPM、日本語は字/分の設定どおりの速さで表示する', () => {
+    for (const mode of ['bunsetsu', 'phrase', 'sentence'] as const) {
+      const chunks = segmentBook(book, { mode, phraseTarget: 7 })
+      const s = buildSchedule(chunks, { cpm: 600, wpm: 300, pauses: true, pauseScale: 1 })
+      let enMs = 0
+      let enWords = 0
+      let jaMs = 0
+      let jaChars = 0
+      chunks.forEach((c, i) => {
+        if (c.words !== undefined) {
+          enMs += durationOf(s, i)
+          enWords += c.words
+        } else {
+          jaMs += durationOf(s, i)
+          jaChars += c.len
+        }
+      })
+      expect(Math.abs((enWords / enMs) * 60000 - 300) / 300).toBeLessThan(0.05)
+      expect(Math.abs((jaChars / jaMs) * 60000 - 600) / 600).toBeLessThan(0.05)
+    }
   })
 })

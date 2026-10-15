@@ -12,6 +12,8 @@ export interface RichOptions {
   /** 強調する 1 文字の位置（段落内）。注視点ガイド用 */
   focusAt?: number
   focusRef?: Ref<HTMLSpanElement>
+  /** 欧文の単語間の空白を詰められない空白にする。1 文字ずつの span を flex で並べる中央表示用 */
+  keepSpaces?: boolean
 }
 
 // 字形の片側が空いている約物。全角の括弧・句読点は、字形の半分が空白になっている
@@ -81,7 +83,9 @@ export function RichText({
   }
 
   const renderAtom = (a: Atom): ReactNode => {
-    const base = para.text.slice(a.start, a.end)
+    // 欧文の単語間の空白は、1 文字ずつの span では詰められて消えるため、詰められない空白にする
+    const raw = para.text.slice(a.start, a.end)
+    const base = opts.keepSpaces && raw === ' ' ? '\u00a0' : raw
     const edge = edgeClass(a)
     const isFocus = opts.focusAt !== undefined && a.start <= opts.focusAt && opts.focusAt < a.end
     const node = a.rt ? (

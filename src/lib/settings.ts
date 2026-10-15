@@ -21,6 +21,8 @@ export interface Settings {
   /** これより短い単位は隣とつなぐ（1 = つながない） */
   minChars: number
   cpm: number
+  /** 欧文の語/分 */
+  wpm: number
   pauses: boolean
   pauseScale: number
   /** 再生開始直後の数単位をゆっくり表示する */
@@ -50,6 +52,7 @@ export const DEFAULT_SETTINGS: Settings = {
   phraseTarget: 7,
   minChars: 3,
   cpm: 600,
+  wpm: 250,
   pauses: true,
   pauseScale: 1,
   rampUp: true,

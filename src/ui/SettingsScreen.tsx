@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { requestPersist, storageInfo } from '../lib/db'
 import { CHUNK_MODES } from '../lib/segment'
 import { DEFAULT_SETTINGS, THEMES, useSettings } from '../lib/settings'
-import { CPM_MAX, CPM_MIN, SPEED_PRESETS } from '../lib/timing'
+import { CPM_MAX, CPM_MIN, SPEED_PRESETS, WPM_MAX, WPM_MIN } from '../lib/timing'
 import { formatBytes, go, Icon, toast } from './common'
 
 export function SettingsScreen() {
@@ -42,6 +42,16 @@ export function SettingsScreen() {
           </div>
           <input type="number" inputMode="numeric" min={CPM_MIN} max={CPM_MAX} value={s.cpm} onChange={(e) => update({ cpm: Math.max(CPM_MIN, Math.min(CPM_MAX, Number(e.target.value) || DEFAULT_SETTINGS.cpm)) })} />
         </label>
+        <label className="field">
+          <div className="label">
+            <span>英語など欧文の語/分（WPM）</span>
+            <span>{s.wpm}</span>
+          </div>
+          <input type="number" inputMode="numeric" min={WPM_MIN} max={WPM_MAX} value={s.wpm} onChange={(e) => update({ wpm: Math.max(WPM_MIN, Math.min(WPM_MAX, Number(e.target.value) || DEFAULT_SETTINGS.wpm)) })} />
+        </label>
+        <p className="small muted" style={{ margin: 0 }}>
+          欧文（英語など）の文は語数で速度を合わせます。英語の黙読は一般に毎分200〜300語程度と言われます。
+        </p>
         <p className="small muted" style={{ margin: 0 }}>
           速度は「空白を除いた文字数 ÷ 表示時間」で決めています。句読点の間を入れても、本全体の平均が設定値と一致するように各単位の表示時間を配分します。日本語の黙読は一般に毎分400〜600字程度と言われます。
         </p>
