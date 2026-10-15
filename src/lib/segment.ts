@@ -122,7 +122,8 @@ function canBreakAt(s: string, i: number): boolean {
 export function splitLong(s: string, max: number): string[] {
   const out: string[] = []
   let rest = s
-  while (visible(rest) > max) {
+  // 少しだけ超える程度なら、切って短い切れ端を作るより 1 単位のまま表示する
+  while (visible(rest) > max + Math.min(3, Math.floor(max / 4))) {
     let best = -1
     let bestScore = -Infinity
     for (let i = 1; i < rest.length; i++) {
@@ -130,11 +131,14 @@ export function splitLong(s: string, max: number): string[] {
       if (!canBreakAt(rest, i)) continue
       const a = kindOf(rest[i - 1])
       const b = kindOf(rest[i])
-      // 後ろに寄せたいので長さを点数に足し、字種が変わる位置を優遇する
+      // 後ろに寄せたいので長さを点数に足し、字種が変わる位置を優遇する。
+      // ひらがなの途中（「しまし｜た」など）と、3 字未満の切れ端が残る位置は避ける
       let score = i
       if (a !== b) score += 4
       if (COMMA.includes(rest[i - 1])) score += 8
       if (a === 'hira' && b === 'kanji') score += 2
+      if (a === 'hira' && b === 'hira') score -= 8
+      if (visible(rest.slice(i)) < 3) score -= 12
       if (score > bestScore) {
         bestScore = score
         best = i
@@ -260,9 +264,9 @@ export function segmentSentence(sentence: string, opts: SegmentOptions): string[
       return joinUpTo(parts, 2, 4)
     }
     case 'bunsetsu': {
-      const parts = phrasesOf(sentence).flatMap((p) => splitLong(p, 10))
+      const parts = phrasesOf(sentence).flatMap((p) => splitLong(p, 12))
       // 1 文字だけの文節は次とつなぐ
-      return joinUpTo(parts, 2, 10)
+      return joinUpTo(parts, 2, 12)
     }
     case 'phrase': {
       const target = Math.max(4, opts.phraseTarget)
