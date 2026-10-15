@@ -24,6 +24,8 @@ export interface Line {
   size: number
   /** text の各文字の位置 [開始, 終了)。ルビの親文字を探すのに使う */
   chars?: [number, number][]
+  /** 段組みのページでの段の番号（0 から）。段組みでなければ無し */
+  column?: number
 }
 
 export interface PageText {
@@ -35,7 +37,15 @@ export interface PageText {
 }
 
 const PARA_OPENERS = /^[　「『（(【〈《〔［[―]/
-const SENTENCE_END = /[。！？!?」』）)…―]$/
+// 欧文のピリオドは、数字の後（12.｜5 のように行をまたぐ小数）では文末とみなさない
+const SENTENCE_END = /(?:[。！？!?」』）)…―]|[A-Za-z]\.)$/
+// 欧文の語の終わりと始まり（後ろに閉じ記号、前に開き記号が付いてもよい）
+const LATIN_END = /[A-Za-z0-9][.,;:!?%)\]"'’”]*$/
+const LATIN_START = /^[(["'‘“]*[A-Za-z0-9]/
+
+/** 欧文の語どうしで、間に空白が要るか。数字どうし（行や断片をまたぐ 12.｜5、1,｜000）には入れない */
+const latinSpaceBetween = (a: string, b: string) =>
+  LATIN_END.test(a) && LATIN_START.test(b) && !(/[0-9][.,]?$/.test(a) && /^[0-9]/.test(b))
 
 export function median(xs: number[]): number {
   if (xs.length === 0) return 0
@@ -147,7 +157,7 @@ export function groupLines(items: RawItem[], vertical: boolean): Line[] {
       for (const it of g) {
         const gap = posOf(it) - prevEnd
         // 横書きの欧文で単語間が空いているときだけ空白を補う
-        if (!vertical && text && gap > body * 0.25 && /[A-Za-z]{2,}[,.;:]?$/.test(text) && /^[A-Za-z]/.test(it.str)) {
+        if (!vertical && text && gap > body * 0.15 && latinSpaceBetween(text, it.str)) {
           text += ' '
           chars.push([prevEnd, posOf(it)])
         }
@@ -248,10 +258,13 @@ export function isPageNumber(s: string): boolean {
 
 /** 行の列から段落を組み立て、ページ本文を作る（柱・ノンブルは除去済みの前提） */
 export function buildPageText(lines: Line[], vertical: boolean): PageText {
-  // 本文の行だけで行頭・行末の基準を測る（短い行は除く）
+  // 本文の行だけで行頭・行末の基準を測る（短い行は除く）。段組みなら段ごとに測る
   const bodyLines = lines.filter((l) => l.text.trim().length >= 3)
-  const lineStart = median(bodyLines.map((l) => l.start))
-  const lineEnd = Math.max(0, ...bodyLines.map((l) => l.end))
+  const metrics = new Map<number | undefined, { start: number; end: number }>()
+  for (const col of new Set(lines.map((l) => l.column))) {
+    const ls = bodyLines.filter((l) => l.column === col)
+    metrics.set(col, { start: median(ls.map((l) => l.start)), end: Math.max(0, ...ls.map((l) => l.end)) })
+  }
   const size = median(bodyLines.map((l) => l.size)) || 10
 
   const paras: string[] = []
@@ -262,6 +275,7 @@ export function buildPageText(lines: Line[], vertical: boolean): PageText {
   for (const l of lines) {
     const t = cleanLine(l.text)
     if (!t) continue
+    const { start: lineStart, end: lineEnd } = metrics.get(l.column)!
     const indented = l.start - lineStart > size * 0.6
     const startsPara = PARA_OPENERS.test(l.text.replace(/^[ ｜]+/, '')) || indented
     const short = lineEnd - l.end > size * 1.5
@@ -288,12 +302,62 @@ function cleanLine(s: string): string {
 
 /** 行をつなぐ。日本語同士なら空白を入れず、欧文同士なら 1 つ入れる */
 export function joinLine(a: string, b: string): string {
-  // 英単語どうしのときだけ空白を補う。数字（12.5 など）や日本語の間には入れない
-  if (/[A-Za-z]{2,}[,.;:]?$/.test(a) && /^[A-Za-z]/.test(b)) {
-    if (a.endsWith('-')) return a.slice(0, -1) + b
-    return a + ' ' + b
-  }
+  // 行末のハイフンで分かれた英単語（exam- / ple）は、ハイフンを外してつなぐ
+  if (/[A-Za-z]-$/.test(a) && /^[a-z]/.test(b)) return a.slice(0, -1) + b
+  // 欧文の語どうしのときだけ空白を補う。日本語の間には入れない
+  if (latinSpaceBetween(a, b)) return a + ' ' + b
   return a + b
+}
+
+/**
+ * 横書きのページが左右 2 段に組まれていれば、段の境目の x を返す。
+ * 中央付近で、行をまたいで文字の無い縦の帯を探す。帯をまたぐ行（題名など）は全体の 15% まで許す。
+ */
+export function findColumnGutter(items: RawItem[]): number | null {
+  if (items.length === 0) return null
+  const size = median(items.map((i) => i.size)) || 10
+  const minX = Math.min(...items.map((i) => i.x))
+  const maxX = Math.max(...items.map((i) => i.x + i.w))
+  const width = maxX - minX
+  if (width < size * 20) return null
+  const lineKey = (it: RawItem) => Math.round(it.y / (size * 0.6))
+  const allLines = new Set(items.map(lineKey)).size
+  if (allLines < 3) return null
+  let best: { g: number; cross: number } | null = null
+  for (let g = minX + width * 0.3; g <= minX + width * 0.7; g += size / 4) {
+    const crossLines = new Set(items.filter((i) => i.x < g && i.x + i.w > g).map(lineKey)).size
+    if (best === null || crossLines < best.cross) best = { g, cross: crossLines }
+  }
+  if (!best || best.cross > allLines * 0.15) return null
+  const g = best.g
+  // 帯の両側に、ある程度の行数がなければ段組みではない（右側だけ短い詩の行など）
+  const left = items.filter((i) => i.x + i.w <= g)
+  const right = items.filter((i) => i.x >= g)
+  const leftLines = new Set(left.map(lineKey)).size
+  const rightLines = new Set(right.map(lineKey)).size
+  if (leftLines < 3 || rightLines < 3 || leftLines < allLines * 0.25 || rightLines < allLines * 0.25) return null
+  // 帯の幅が 1 文字分以上あること
+  const leftEdge = Math.max(...left.map((i) => i.x + i.w))
+  const rightEdge = Math.min(...right.map((i) => i.x))
+  if (rightEdge - leftEdge < size * 0.8) return null
+  return (leftEdge + rightEdge) / 2
+}
+
+/** 横書きの段組みを考えて行にまとめる。段をまたぐ行は、段より上なら先頭に、下なら末尾に置く */
+function groupLinesWithColumns(items: RawItem[]): Line[] {
+  const g = findColumnGutter(items)
+  if (g === null) return groupLines(items, false)
+  const span = items.filter((i) => i.x < g && i.x + i.w > g)
+  const left = items.filter((i) => i.x + i.w <= g)
+  const right = items.filter((i) => i.x >= g)
+  const top = Math.max(...[...left, ...right].map((i) => i.y + i.h))
+  const tag = (ls: Line[], column: number) => ls.map((l) => ({ ...l, column }))
+  return [
+    ...groupLines(span.filter((i) => i.y >= top), false),
+    ...tag(groupLines(left, false), 0),
+    ...tag(groupLines(right, false), 1),
+    ...groupLines(span.filter((i) => i.y < top), false),
+  ]
 }
 
 export interface PageLines {
@@ -307,7 +371,7 @@ export function itemsToLines(items: RawItem[]): PageLines {
   if (usable.length === 0) return { lines: [], vertical: false }
   const vertical = detectVertical(usable)
   const { body, small, bodySize } = splitSmallItems(usable)
-  const lines = groupLines(body, vertical)
+  const lines = vertical ? groupLines(body, true) : groupLinesWithColumns(body)
   attachRuby(lines, small, vertical, bodySize)
   return { lines, vertical }
 }

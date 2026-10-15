@@ -57,6 +57,32 @@ const OPEN = '「『（(【〈《〔［[｛{“‘'
 const CLOSE = '」』）)】〉》〕］]｝}”’'
 const SENT_END = '。！？!?．'
 const COMMA = '、，,'
+// 欧文で、ピリオドが付いても文の終わりではない略語（小文字で比べる）
+const ABBREVIATIONS = new Set([
+  'mr', 'mrs', 'ms', 'dr', 'prof', 'sr', 'jr', 'st', 'mt', 'vs', 'etc', 'fig', 'figs', 'eq', 'eqs', 'no', 'nos',
+  'vol', 'vols', 'pp', 'p', 'al', 'cf', 'approx', 'inc', 'ltd', 'co', 'corp', 'dept', 'univ', 'ed', 'eds',
+  'jan', 'feb', 'mar', 'apr', 'jun', 'jul', 'aug', 'sep', 'sept', 'oct', 'nov', 'dec', 'sec', 'ch', 'ref', 'refs',
+])
+
+/** text[i] の「.」が欧文の文の終わりか。略語・頭文字・小数・次が小文字のものは除く */
+function isLatinSentenceEnd(text: string, i: number): boolean {
+  const next = text[i + 1]
+  if (next !== undefined && !/[\s"'’”)\]]/.test(next)) return false // 小数（12.5）や e.g の途中
+  let w = i
+  while (w > 0 && /[A-Za-z.]/.test(text[w - 1])) w--
+  const word = text.slice(w, i)
+  if (!/[A-Za-z]/.test(word)) return /[0-9]$/.test(text.slice(0, i)) // 数字の後（1999.）は文末
+  if (word.includes('.')) return false // e.g. / p.m. / U.S.
+  if (/^[A-Z]$/.test(word)) return false // 頭文字（J. R. Tolkien）
+  if (ABBREVIATIONS.has(word.toLowerCase())) return false
+  const after = text.slice(i + 1).match(/^[\s"'’”)\]]*(\S)/)
+  return !after || !/[a-z]/.test(after[1]) // 次の文が小文字で始まるなら文の途中
+}
+
+/** 英単語の中のアポストロフィ（don’t）は閉じ括弧として数えない */
+const isApostrophe = (text: string, i: number) =>
+  (text[i] === '’' || text[i] === "'") && /[A-Za-z]/.test(text[i - 1] ?? '') && /[A-Za-z]/.test(text[i + 1] ?? '')
+
 // 句読点・閉じ括弧など、行頭に来てはいけない文字
 const NO_START = new Set([...CLOSE, ...SENT_END, ...COMMA, ...'・：:；;ー～〜ゃゅょっぁぃぅぇぉャュョッァィゥェォ々ヽヾゝゞ…‥―'])
 
@@ -69,10 +95,10 @@ export function splitSentences(text: string): [number, number][] {
   while (i < text.length) {
     const c = text[i]
     if (OPEN.includes(c)) depth++
-    else if (CLOSE.includes(c)) depth = Math.max(0, depth - 1)
+    else if (CLOSE.includes(c) && !isApostrophe(text, i)) depth = Math.max(0, depth - 1)
     // 閉じ括弧は、直後に次の会話が始まるときだけ文の区切りにする（「…」と言った、は 1 文）
     const closesBeforeOpen = depth === 0 && CLOSE.includes(c) && OPEN.includes(text[i + 1] ?? '')
-    if (SENT_END.includes(c) || closesBeforeOpen) {
+    if (SENT_END.includes(c) || closesBeforeOpen || (c === '.' && isLatinSentenceEnd(text, i))) {
       // 続く記号（！？、閉じ括弧）も同じ文に含める
       let j = i + 1
       while (j < text.length && (SENT_END.includes(text[j]) || CLOSE.includes(text[j]))) {
@@ -235,13 +261,48 @@ function phrasesOf(sentence: string): string[] {
   return out
 }
 
+/** 欧文が主の文か（空白以外の文字の半分以上がラテン文字） */
+export function isLatinText(s: string): boolean {
+  const letters = s.replace(/\s/g, '')
+  if (!letters) return false
+  const latin = letters.match(/[A-Za-z\u00C0-\u024F]/g)?.length ?? 0
+  return latin * 2 >= letters.length
+}
+
+/** 欧文の文を単語に分ける。単語の後ろの空白は単語に含める（つなぎ直したときに空白が残るように） */
+const wordsOf = (sentence: string) => sentence.match(/\S+\s*/g) ?? []
+
+/** 欧文の文をモードに応じて分ける。単語の途中では切らない */
+function segmentLatin(sentence: string, opts: SegmentOptions): string[] {
+  const words = wordsOf(sentence)
+  switch (opts.mode) {
+    case 'char':
+    case 'short':
+      return words
+    case 'bunsetsu':
+      // 1 文字の語（a, I）は次の語とつなぐ
+      return joinUpTo(words, 2, 16)
+    case 'phrase': {
+      // 目標文字数は日本語の 1 文字を欧文の 2 文字とみなす（7 字 → 14 字、2〜3 語）
+      const target = Math.max(8, opts.phraseTarget * 2)
+      return joinUpTo(words, target, Math.round(target * 1.6))
+    }
+    case 'sentence': {
+      const max = 80
+      if (visible(sentence) <= max) return [sentence]
+      const clauses = sentence.split(/(?<=[,;:]\s)/)
+      return clauses.flatMap((c) => (visible(c) <= max ? [c] : joinUpTo(wordsOf(c), 40, 60)))
+    }
+  }
+}
+
 function joinUpTo(parts: string[], target: number, max: number): string[] {
   const out: string[] = []
   let cur = ''
   for (const p of parts) {
     const curLen = visible(cur)
     const pLen = visible(p)
-    const endsHard = /[、，,」』）)]$/.test(cur)
+    const endsHard = /[、，,」』）)]$/.test(cur.trimEnd())
     const startsDialogue = OPEN.includes(p[0])
     if (cur && (curLen + pLen > max || curLen >= target || endsHard || startsDialogue)) {
       out.push(cur)
@@ -256,6 +317,7 @@ function joinUpTo(parts: string[], target: number, max: number): string[] {
 
 /** 1 文をモードに応じて分ける */
 export function segmentSentence(sentence: string, opts: SegmentOptions): string[] {
+  if (isLatinText(sentence)) return segmentLatin(sentence, opts)
   switch (opts.mode) {
     case 'char':
       return splitChars(sentence)
@@ -286,10 +348,12 @@ export function segmentSentence(sentence: string, opts: SegmentOptions): string[
   }
 }
 
-function pauseOf(text: string, isLastInPara: boolean): Pause {
+function pauseOf(text: string, isLastInPara: boolean, endsSentence = false): Pause {
   if (isLastInPara) return 'paragraph'
-  const t = text.replace(/[」』）)\]】〉》\s]+$/, '')
+  const t = text.replace(/[」』）)\]】〉》"”’\s]+$/, '')
   if (/[。！？!?．]$/.test(t)) return 'sentence'
+  // 欧文のピリオドは略語（Dr. など）にも付くので、文の最後の単位のときだけ文の間にする
+  if (endsSentence && t.endsWith('.')) return 'sentence'
   if (/[」』]$/.test(text.trim())) return 'sentence'
   if (/[、，,…―]$/.test(t)) return 'comma'
   return 'none'
@@ -321,6 +385,7 @@ const joinPieces = (a: Piece, b: Piece): Piece => ({ text: a.text + b.text, star
 /** 1 冊分をチャンクに分ける */
 export function segmentBook(book: BookText, opts: SegmentOptions): Chunk[] {
   const chunks: Chunk[] = []
+  const sentenceEnds = new Set<number>()
   const minChars = Math.max(1, opts.minChars ?? 1)
   book.paragraphs.forEach((para, pi) => {
     if (para.illust) {
@@ -370,9 +435,10 @@ export function segmentBook(book: BookText, opts: SegmentOptions): Chunk[] {
         const name = nameRanges.some(([s, e]) => s < p.end && p.start < e)
         chunks.push({ text: p.text, para: pi, start: p.start, end: p.end, pause: 'none', len: visible(p.text), ...(name ? { name } : {}) })
       }
+      if (local.length) sentenceEnds.add(chunks.length - 1)
     }
     for (let i = chunks.length - 1; i >= 0 && chunks[i].para === pi; i--) {
-      chunks[i].pause = pauseOf(chunks[i].text, i === chunks.length - 1)
+      chunks[i].pause = pauseOf(chunks[i].text, i === chunks.length - 1, sentenceEnds.has(i))
     }
   })
   return chunks
