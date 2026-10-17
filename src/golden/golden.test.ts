@@ -109,7 +109,9 @@ describe('golden', () => {
       const s = buildSchedule(chunks, { cpm: 600, wpm: 250, pauses, pauseScale: 1, nameBoost: true })
       expected[`pauses=${pauses}`] = { weights: [...s.weights], unit: [...s.unit], blocks: s.blocks, limited: s.limited, totalChars: s.totalChars }
     }
-    golden('buildSchedule', 'buildSchedule(segmentBook(phrase, 7, min3, names), { cpm: 600, wpm: 250, pauses, pauseScale: 1, nameBoost: true })', { paragraphs: paras }, expected)
+    // Swift 版の表示時間の計算を単独で確かめられるよう、分割済みの単位（計算に使う項目だけ）も入力に入れる
+    const units = chunks.map((c) => ({ len: c.len, pause: c.pause, words: c.words, name: !!c.name, illust: !!c.illust }))
+    golden('buildSchedule', 'buildSchedule(chunks, { cpm: 600, wpm: 250, pauses, pauseScale: 1, nameBoost: true })', { paragraphs: paras, chunks: units, options: { cpm: 600, wpm: 250, pauseScale: 1, nameBoost: true } }, expected)
   })
 
   it('cleanOcrText', () => {

@@ -1,5 +1,5 @@
 {
- "fn": "buildSchedule(segmentBook(phrase, 7, min3, names), { cpm: 600, wpm: 250, pauses, pauseScale: 1, nameBoost: true })",
+ "fn": "buildSchedule(chunks, { cpm: 600, wpm: 250, pauses, pauseScale: 1, nameBoost: true })",
  "indexUnit": "utf16",
  "input": {
   "paragraphs": [
@@ -9,7 +9,312 @@
    "Dr. Smith arrived at 3.5 p.m. on Monday. It was late. See Fig. 2 for details, e.g. the map and the timeline.",
    "Reading long documents on a phone is hard, but it gets easier with practice. The internationalization team didn't stop; they revised the report twice.",
    "この論文（Reading Long Documents on Small Screens）では、短い phrase を順に表示する方法を調べた。The results were clear."
-  ]
+  ],
+  "chunks": [
+   {
+    "len": 5,
+    "pause": "comma",
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 11,
+    "pause": "sentence",
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 9,
+    "pause": "none",
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 8,
+    "pause": "none",
+    "name": true,
+    "illust": false
+   },
+   {
+    "len": 4,
+    "pause": "sentence",
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 6,
+    "pause": "none",
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 6,
+    "pause": "none",
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 6,
+    "pause": "comma",
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 3,
+    "pause": "none",
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 10,
+    "pause": "paragraph",
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 6,
+    "pause": "none",
+    "name": true,
+    "illust": false
+   },
+   {
+    "len": 6,
+    "pause": "comma",
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 8,
+    "pause": "none",
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 6,
+    "pause": "sentence",
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 7,
+    "pause": "comma",
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 7,
+    "pause": "none",
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 7,
+    "pause": "comma",
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 8,
+    "pause": "none",
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 6,
+    "pause": "paragraph",
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 9,
+    "pause": "comma",
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 11,
+    "pause": "sentence",
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 4,
+    "pause": "none",
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 8,
+    "pause": "comma",
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 9,
+    "pause": "none",
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 3,
+    "pause": "paragraph",
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 15,
+    "pause": "none",
+    "words": 3,
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 18,
+    "pause": "sentence",
+    "words": 5,
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 10,
+    "pause": "sentence",
+    "words": 3,
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 19,
+    "pause": "comma",
+    "words": 5,
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 16,
+    "pause": "none",
+    "words": 5,
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 9,
+    "pause": "paragraph",
+    "words": 1,
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 20,
+    "pause": "none",
+    "words": 3,
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 15,
+    "pause": "comma",
+    "words": 5,
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 15,
+    "pause": "none",
+    "words": 4,
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 13,
+    "pause": "sentence",
+    "words": 2,
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 3,
+    "pause": "none",
+    "words": 1,
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 20,
+    "pause": "none",
+    "words": 1,
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 15,
+    "pause": "none",
+    "words": 3,
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 14,
+    "pause": "none",
+    "words": 3,
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 12,
+    "pause": "paragraph",
+    "words": 2,
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 16,
+    "pause": "none",
+    "words": 2,
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 16,
+    "pause": "none",
+    "words": 3,
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 19,
+    "pause": "none",
+    "words": 2,
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 14,
+    "pause": "sentence",
+    "words": 1,
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 14,
+    "pause": "none",
+    "words": 3,
+    "name": false,
+    "illust": false
+   },
+   {
+    "len": 6,
+    "pause": "paragraph",
+    "words": 1,
+    "name": false,
+    "illust": false
+   }
+  ],
+  "options": {
+   "cpm": 600,
+   "wpm": 250,
+   "pauseScale": 1,
+   "nameBoost": true
+  }
  },
  "expected": {
   "pauses=true": {
