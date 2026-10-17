@@ -5,7 +5,22 @@
   "paragraphs": [
    "Dr. Smith arrived at 3.5 p.m. on Monday. It was late. See Fig. 2 for details, e.g. the map and the timeline.",
    "Reading long documents on a phone is hard, but it gets easier with practice. The internationalization team didn't stop; they revised the report twice."
-  ]
+  ],
+  "book": [
+   {
+    "text": "Dr. Smith arrived at 3.5 p.m. on Monday. It was late. See Fig. 2 for details, e.g. the map and the timeline.",
+    "ruby": []
+   },
+   {
+    "text": "Reading long documents on a phone is hard, but it gets easier with practice. The internationalization team didn't stop; they revised the report twice.",
+    "ruby": []
+   }
+  ],
+  "names": [
+   "千晴",
+   "湊"
+  ],
+  "phraseTarget": 7
  },
  "expected": {
   "char/min1": [
@@ -453,13 +468,13 @@
     "words": 1
    },
    {
-    "text": "at3.5",
+    "text": "at 3.5",
     "para": 0,
     "start": 18,
     "end": 25,
     "pause": "none",
     "len": 5,
-    "words": 1
+    "words": 2
    },
    {
     "text": "p.m.",
@@ -471,22 +486,22 @@
     "words": 1
    },
    {
-    "text": "onMonday.",
+    "text": "on Monday.",
     "para": 0,
     "start": 30,
     "end": 40,
     "pause": "sentence",
     "len": 9,
-    "words": 1
+    "words": 2
    },
    {
-    "text": "Itwas",
+    "text": "It was",
     "para": 0,
     "start": 41,
     "end": 48,
     "pause": "none",
     "len": 5,
-    "words": 1
+    "words": 2
    },
    {
     "text": "late.",
@@ -516,13 +531,13 @@
     "words": 1
    },
    {
-    "text": "2for",
+    "text": "2 for",
     "para": 0,
     "start": 63,
     "end": 69,
     "pause": "none",
     "len": 4,
-    "words": 1
+    "words": 2
    },
    {
     "text": "details,",
@@ -615,13 +630,13 @@
     "words": 1
    },
    {
-    "text": "ona",
+    "text": "on a",
     "para": 1,
     "start": 23,
     "end": 28,
     "pause": "none",
     "len": 3,
-    "words": 1
+    "words": 2
    },
    {
     "text": "phone",
@@ -633,13 +648,13 @@
     "words": 1
    },
    {
-    "text": "ishard,",
+    "text": "is hard,",
     "para": 1,
     "start": 34,
     "end": 43,
     "pause": "comma",
     "len": 7,
-    "words": 1
+    "words": 2
    },
    {
     "text": "but",
@@ -651,13 +666,13 @@
     "words": 1
    },
    {
-    "text": "itgets",
+    "text": "it gets",
     "para": 1,
     "start": 47,
     "end": 55,
     "pause": "none",
     "len": 6,
-    "words": 1
+    "words": 2
    },
    {
     "text": "easier",
@@ -1222,13 +1237,13 @@
     "words": 1
    },
    {
-    "text": "at3.5",
+    "text": "at 3.5",
     "para": 0,
     "start": 18,
     "end": 25,
     "pause": "none",
     "len": 5,
-    "words": 1
+    "words": 2
    },
    {
     "text": "p.m.",
@@ -1240,22 +1255,22 @@
     "words": 1
    },
    {
-    "text": "onMonday.",
+    "text": "on Monday.",
     "para": 0,
     "start": 30,
     "end": 40,
     "pause": "sentence",
     "len": 9,
-    "words": 1
+    "words": 2
    },
    {
-    "text": "Itwas",
+    "text": "It was",
     "para": 0,
     "start": 41,
     "end": 48,
     "pause": "none",
     "len": 5,
-    "words": 1
+    "words": 2
    },
    {
     "text": "late.",
@@ -1285,13 +1300,13 @@
     "words": 1
    },
    {
-    "text": "2for",
+    "text": "2 for",
     "para": 0,
     "start": 63,
     "end": 69,
     "pause": "none",
     "len": 4,
-    "words": 1
+    "words": 2
    },
    {
     "text": "details,",
@@ -1384,13 +1399,13 @@
     "words": 1
    },
    {
-    "text": "ona",
+    "text": "on a",
     "para": 1,
     "start": 23,
     "end": 28,
     "pause": "none",
     "len": 3,
-    "words": 1
+    "words": 2
    },
    {
     "text": "phone",
@@ -1402,13 +1417,13 @@
     "words": 1
    },
    {
-    "text": "ishard,",
+    "text": "is hard,",
     "para": 1,
     "start": 34,
     "end": 43,
     "pause": "comma",
     "len": 7,
-    "words": 1
+    "words": 2
    },
    {
     "text": "but",
@@ -1420,13 +1435,13 @@
     "words": 1
    },
    {
-    "text": "itgets",
+    "text": "it gets",
     "para": 1,
     "start": 47,
     "end": 55,
     "pause": "none",
     "len": 6,
-    "words": 1
+    "words": 2
    },
    {
     "text": "easier",
@@ -1973,13 +1988,13 @@
     "words": 1
    },
    {
-    "text": "at3.5",
+    "text": "at 3.5",
     "para": 0,
     "start": 18,
     "end": 25,
     "pause": "none",
     "len": 5,
-    "words": 1
+    "words": 2
    },
    {
     "text": "p.m.",
@@ -1991,22 +2006,22 @@
     "words": 1
    },
    {
-    "text": "onMonday.",
+    "text": "on Monday.",
     "para": 0,
     "start": 30,
     "end": 40,
     "pause": "sentence",
     "len": 9,
-    "words": 1
+    "words": 2
    },
    {
-    "text": "Itwas",
+    "text": "It was",
     "para": 0,
     "start": 41,
     "end": 48,
     "pause": "none",
     "len": 5,
-    "words": 1
+    "words": 2
    },
    {
     "text": "late.",
@@ -2135,22 +2150,22 @@
     "words": 1
    },
    {
-    "text": "ona phone",
+    "text": "on a phone",
     "para": 1,
     "start": 23,
     "end": 34,
     "pause": "none",
     "len": 8,
-    "words": 2
+    "words": 3
    },
    {
-    "text": "ishard,",
+    "text": "is hard,",
     "para": 1,
     "start": 34,
     "end": 43,
     "pause": "comma",
     "len": 7,
-    "words": 1
+    "words": 2
    },
    {
     "text": "but",
@@ -2162,13 +2177,13 @@
     "words": 1
    },
    {
-    "text": "itgets",
+    "text": "it gets",
     "para": 1,
     "start": 47,
     "end": 55,
     "pause": "none",
     "len": 6,
-    "words": 1
+    "words": 2
    },
    {
     "text": "easier",

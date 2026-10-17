@@ -4,7 +4,18 @@
  "input": {
   "paragraphs": [
    "この論文（Reading Long Documents on Small Screens）では、短い phrase を順に表示する方法を調べた。The results were clear."
-  ]
+  ],
+  "book": [
+   {
+    "text": "この論文（Reading Long Documents on Small Screens）では、短い phrase を順に表示する方法を調べた。The results were clear.",
+    "ruby": []
+   }
+  ],
+  "names": [
+   "千晴",
+   "湊"
+  ],
+  "phraseTarget": 7
  },
  "expected": {
   "char/min1": [
@@ -146,13 +157,13 @@
     "words": 1
    },
    {
-    "text": "onSmall",
+    "text": "on Small",
     "para": 0,
     "start": 28,
     "end": 37,
     "pause": "none",
     "len": 7,
-    "words": 1
+    "words": 2
    },
    {
     "text": "Screens）では、短い",
@@ -357,13 +368,13 @@
     "words": 1
    },
    {
-    "text": "onSmall",
+    "text": "on Small",
     "para": 0,
     "start": 28,
     "end": 37,
     "pause": "none",
     "len": 7,
-    "words": 1
+    "words": 2
    },
    {
     "text": "Screens）では、短い",
@@ -568,13 +579,13 @@
     "words": 1
    },
    {
-    "text": "onSmall",
+    "text": "on Small",
     "para": 0,
     "start": 28,
     "end": 37,
     "pause": "none",
     "len": 7,
-    "words": 1
+    "words": 2
    },
    {
     "text": "Screens）では、短い",

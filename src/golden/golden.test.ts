@@ -105,7 +105,9 @@ describe('golden', () => {
       const b = bookOf(paras)
       const expected: Record<string, unknown> = {}
       for (const mode of MODES) for (const minChars of [1, 3]) expected[`${mode}/min${minChars}`] = chunkView(b, mode, minChars)
-      golden(`segmentBook-${lang}`, 'segmentBook(buildBookText(paragraphs), { mode, phraseTarget: 7, minChars, names: ["千晴", "湊"] })', { paragraphs: paras }, expected)
+      // Swift 版がルビ記法の解析なしで単独に確かめられるよう、組み立て後の段落（本文とルビの位置）も入力に入れる
+      const book = b.paragraphs.map((p) => ({ text: p.text, ruby: p.ruby }))
+      golden(`segmentBook-${lang}`, 'segmentBook(buildBookText(paragraphs), { mode, phraseTarget: 7, minChars, names: ["千晴", "湊"] })', { paragraphs: paras, book, names: ['千晴', '湊'], phraseTarget: 7 }, expected)
     })
   }
 

@@ -176,3 +176,15 @@ describe('論文の見出し', () => {
     expect(p.text.split('\n')).toEqual(['the previous section ends here.', '2 Method', 'Readers took part in the study and answered questions.', 'Appendix A'])
   })
 })
+
+describe('短い単位をつないだときの英語の空白', () => {
+  it('最小字数でつないだ単位の文字列に、単語の間の空白を残す', () => {
+    const text = 'It was late. See Fig. 2 for details.'
+    const book = buildBookText([{ pageIndex: 0, text, contFromPrev: false }], 1)
+    for (const mode of ['char', 'short', 'bunsetsu'] as const) {
+      const chunks = segmentBook(book, { mode, phraseTarget: 7, minChars: 3 })
+      for (const c of chunks) expect(c.text).toBe(text.slice(c.start, c.end).trim())
+      expect(chunks.map((c) => c.text)).toContain('It was')
+    }
+  })
+})

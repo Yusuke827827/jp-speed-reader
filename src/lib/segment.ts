@@ -382,7 +382,8 @@ interface Piece {
   end: number
 }
 
-const joinPieces = (a: Piece, b: Piece): Piece => ({ text: a.text + b.text, start: a.start, end: b.end })
+/** 隣り合う単位をつなぐ。文字列は元の段落から取り直す（英語の単語の間の空白を残すため） */
+const joinPieces = (source: string, a: Piece, b: Piece): Piece => ({ text: source.slice(a.start, b.end).trim(), start: a.start, end: b.end })
 
 /** 1 冊分をチャンクに分ける */
 export function segmentBook(book: BookText, opts: SegmentOptions): Chunk[] {
@@ -417,7 +418,7 @@ export function segmentBook(book: BookText, opts: SegmentOptions): Chunk[] {
       }
       // 保護範囲の途中で切れていれば、次の単位とつなぐ
       for (let i = 0; i < local.length - 1; ) {
-        if (cutsInside(local[i].end)) local.splice(i, 2, joinPieces(local[i], local[i + 1]))
+        if (cutsInside(local[i].end)) local.splice(i, 2, joinPieces(para.text, local[i], local[i + 1]))
         else i++
       }
       // 最小字数に満たない単位は、同じ文の次の単位（文末なら前の単位）とつなぐ
@@ -425,12 +426,12 @@ export function segmentBook(book: BookText, opts: SegmentOptions): Chunk[] {
         const merged: Piece[] = []
         for (const p of local) {
           const prev = merged[merged.length - 1]
-          if (prev && visible(prev.text) < minChars) merged[merged.length - 1] = joinPieces(prev, p)
+          if (prev && visible(prev.text) < minChars) merged[merged.length - 1] = joinPieces(para.text, prev, p)
           else merged.push(p)
         }
         const last = merged[merged.length - 1]
         if (merged.length >= 2 && visible(last.text) < minChars) {
-          merged.splice(merged.length - 2, 2, joinPieces(merged[merged.length - 2], last))
+          merged.splice(merged.length - 2, 2, joinPieces(para.text, merged[merged.length - 2], last))
         }
         local = merged
       }
