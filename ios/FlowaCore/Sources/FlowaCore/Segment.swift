@@ -534,4 +534,42 @@ public enum Segmenter {
         }
         return chunks
     }
+
+    /// 欧文の本か（挿絵を除く単位の半分以上が単語単位）。速度を語/分で扱うかの判定に使う
+    public static func isLatinBook(_ chunks: [Chunk]) -> Bool {
+        var latin = 0
+        var all = 0
+        for c in chunks where !c.illust {
+            all += 1
+            if c.words != nil { latin += 1 }
+        }
+        return all > 0 && latin * 2 >= all
+    }
+
+    /// 本文の位置を含む（なければその後の最初の）単位の番号
+    public static func chunkIndexAt(_ chunks: [Chunk], _ pos: TextPosition) -> Int {
+        var lo = 0
+        var hi = chunks.count - 1
+        var ans = chunks.count - 1
+        while lo <= hi {
+            let mid = (lo + hi) >> 1
+            let c = chunks[mid]
+            if c.para > pos.para || (c.para == pos.para && c.end > pos.offset) {
+                ans = mid
+                hi = mid - 1
+            } else {
+                lo = mid + 1
+            }
+        }
+        return max(0, ans)
+    }
+
+    /// 単位が含まれる段落の、最初の単位の番号
+    public static func paragraphStartIndex(_ chunks: [Chunk], _ index: Int) -> Int {
+        guard chunks.indices.contains(index) else { return index }
+        let p = chunks[index].para
+        var i = index
+        while i > 0, chunks[i - 1].para == p { i -= 1 }
+        return i
+    }
 }

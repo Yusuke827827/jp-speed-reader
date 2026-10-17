@@ -24,3 +24,9 @@ dist-ssr
 *.sw?
 public/pdfjs
 public/tesseract
+
+# XcodeGen で作る Xcode のプロジェクトと、その Info.plist
+ios/FlowaApp/Flowa.xcodeproj/
+ios/FlowaApp/Info.plist
+ios/**/.build/
+ios/**/.swiftpm/
