@@ -1,0 +1,45 @@
+# Xcode のプロジェクトは XcodeGen でこのファイルから作る（Flowa.xcodeproj はリポジトリに入れない）。
+#   brew install xcodegen
+#   cd ios/FlowaApp && xcodegen generate && open Flowa.xcodeproj
+name: Flowa
+options:
+  deploymentTarget:
+    iOS: "17.0"
+  developmentLanguage: ja
+packages:
+  FlowaCore:
+    path: ../FlowaCore
+targets:
+  Flowa:
+    type: application
+    platform: iOS
+    sources:
+      - Sources
+    dependencies:
+      - package: FlowaCore
+        product: FlowaUI
+    info:
+      path: Info.plist
+      properties:
+        CFBundleDisplayName: Flowa
+        CFBundleDevelopmentRegion: ja
+        CFBundleLocalizations: [ja, en]
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        ITSAppUsesNonExemptEncryption: false
+    settings:
+      base:
+        # 仮の ID。App Store に出す前に、Apple Developer Program で登録する ID に変える
+        PRODUCT_BUNDLE_IDENTIFIER: app.flowa.reader
+        MARKETING_VERSION: 0.1.0
+        CURRENT_PROJECT_VERSION: 1
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SWIFT_VERSION: "5.0"
+        # 自分の Apple ID のチームを Xcode の「Signing & Capabilities」で選ぶ
+        CODE_SIGN_STYLE: Automatic
+    scheme: {}
