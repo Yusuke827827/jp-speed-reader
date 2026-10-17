@@ -6,8 +6,8 @@ import en from '../i18n/en'
 
 export type UiLang = 'ja' | 'en'
 
-/** アプリ名。名前が決まったらここを変える */
-export const APP_NAME = { ja: '速読リーダー', en: 'Speed Reader' } as const
+/** アプリ名（日本語・英語とも Flowa） */
+export const APP_NAME = { ja: 'Flowa', en: 'Flowa' } as const
 
 const dictionaries: Record<UiLang, Record<string, string> | null> = { ja: null, en }
 

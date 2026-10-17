@@ -12,9 +12,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: '速読リーダー',
-        short_name: '速読',
-        description: '日本語の小説PDFやテキストを、画面中央に短い単位で表示して読む高速読書アプリ',
+        name: 'Flowa',
+        short_name: 'Flowa',
+        description: 'スクロールせずに、本もPDFも句ごとに読む / Read books and PDFs without scrolling, phrase by phrase',
         lang: 'ja',
         display: 'standalone',
         orientation: 'any',
