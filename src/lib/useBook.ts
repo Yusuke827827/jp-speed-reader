@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { buildBookText, type BookText } from './book'
 import { getBook, getPages, getProgress, type BookMeta, type Progress } from './db'
+import { t } from './i18n'
 
 export interface LoadedBook {
   meta: BookMeta
@@ -17,7 +18,7 @@ export function useBook(id: string | undefined) {
     ;(async () => {
       try {
         const meta = await getBook(id)
-        if (!meta) throw new Error('この本は見つかりませんでした。本棚から削除された可能性があります。')
+        if (!meta) throw new Error(t('この本は見つかりませんでした。本棚から削除された可能性があります。'))
         const pages = await getPages(id)
         const text = buildBookText(pages, meta.pageCount)
         const progress = await getProgress(id)

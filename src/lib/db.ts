@@ -1,10 +1,11 @@
 // 端末内（IndexedDB）への保存。本文・読書位置・履歴を外部へ送ることはない。
 
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb'
+import { t } from './i18n'
 
 export type PageSource = 'text' | 'ocr' | 'edited' | 'empty'
 export type OcrStatus = 'none' | 'needed' | 'running' | 'paused' | 'done' | 'error'
-export type OcrLang = 'jpn' | 'jpn_vert'
+export type OcrLang = 'jpn' | 'jpn_vert' | 'eng'
 
 export interface TocEntry {
   title: string
@@ -141,12 +142,12 @@ export function db() {
 export function describeStorageError(e: unknown): string {
   const name = (e as { name?: string })?.name
   if (name === 'QuotaExceededError') {
-    return '端末の保存容量が足りません。読み終えた本を本棚から削除するか、ストレージの空きを増やしてから、もう一度試してください。'
+    return t('端末の保存容量が足りません。読み終えた本を本棚から削除するか、ストレージの空きを増やしてから、もう一度試してください。')
   }
   if (name === 'InvalidStateError' || name === 'UnknownError') {
-    return 'ブラウザの保存領域にアクセスできませんでした。プライベートブラウズを使っている場合は通常モードで開いてください。'
+    return t('ブラウザの保存領域にアクセスできませんでした。プライベートブラウズを使っている場合は通常モードで開いてください。')
   }
-  return `保存に失敗しました（${name ?? '不明なエラー'}）。ページを再読み込みしてから、もう一度試してください。`
+  return t('保存に失敗しました（{name}）。ページを再読み込みしてから、もう一度試してください。', { name: name ?? t('不明なエラー') })
 }
 
 export async function listBooks(): Promise<BookMeta[]> {

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { deleteBook, listBooks, listProgress, type BookMeta, type Progress } from '../lib/db'
 import { ConfirmDialog, ErrorBox, formatDate, formatDuration, go, Icon, toast } from './common'
+import { t } from '../lib/i18n'
 
 export function Library() {
   const [books, setBooks] = useState<BookMeta[] | null>(null)
@@ -29,10 +30,10 @@ export function Library() {
     setToDelete(null)
     try {
       await deleteBook(b.id)
-      toast(`「${b.title}」を削除しました`)
+      toast(t('「{title}」を削除しました', { title: b.title }))
       load()
     } catch (e) {
-      toast(`削除できませんでした: ${(e as Error).message}`)
+      toast(t('削除できませんでした: {message}', { message: (e as Error).message }))
     }
   }
 
@@ -41,49 +42,49 @@ export function Library() {
   return (
     <div className="screen">
       <header className="topbar">
-        <h1>本棚</h1>
-        <button className="icon-btn" aria-label="読書履歴" title="読書履歴" onClick={() => go('/history')}>
+        <h1>{t('本棚')}</h1>
+        <button className="icon-btn" aria-label={t('読書履歴')} title={t('読書履歴')} onClick={() => go('/history')}>
           <Icon name="history" />
         </button>
-        <button className="icon-btn" aria-label="設定" title="設定" onClick={() => go('/settings')}>
+        <button className="icon-btn" aria-label={t('設定')} title={t('設定')} onClick={() => go('/settings')}>
           <Icon name="settings" />
         </button>
         <button className="btn primary" onClick={() => go('/import')}>
-          <Icon name="plus" /> PDFを追加
+          <Icon name="plus" /> {t('PDFを追加')}
         </button>
       </header>
 
       {error && (
-        <ErrorBox title="本棚を読み込めませんでした">
+        <ErrorBox title={t('本棚を読み込めませんでした')}>
           {error}
           <br />
-          プライベートブラウズでは保存が使えません。通常のタブで開き直してください。
+          {t('プライベートブラウズでは保存が使えません。通常のタブで開き直してください。')}
         </ErrorBox>
       )}
 
       {last && (
         <div className="card row" style={{ marginBottom: 16 }}>
           <div className="grow">
-            <div className="small muted">前回の続き</div>
+            <div className="small muted">{t('前回の続き')}</div>
             <div style={{ fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{last.title}</div>
             <div className="small muted">
-              {progress.get(last.id)!.percent.toFixed(1)}%{last.kind === 'text' ? '' : `・p.${progress.get(last.id)!.page + 1}`}
+              {progress.get(last.id)!.percent.toFixed(1)}%{last.kind === 'text' ? '' : t('・p.{page}', { page: progress.get(last.id)!.page + 1 })}
             </div>
           </div>
           <button className="btn primary" onClick={() => go(`/read/${last.id}`)}>
-            <Icon name="play" /> 続きから読む
+            <Icon name="play" /> {t('続きから読む')}
           </button>
         </div>
       )}
 
       {books === null ? (
-        <p className="muted">読み込み中…</p>
+        <p className="muted">{t('読み込み中…')}</p>
       ) : books.length === 0 ? (
         <div className="empty-state">
-          <p style={{ fontSize: 18, fontWeight: 700 }}>本棚は空です</p>
-          <p className="muted">日本語の小説PDFやテキスト（青空文庫形式も可）を追加すると、画面中央に短い単位で表示して読めます。</p>
+          <p style={{ fontSize: 18, fontWeight: 700 }}>{t('本棚は空です')}</p>
+          <p className="muted">{t('日本語の小説PDFやテキスト（青空文庫形式も可）を追加すると、画面中央に短い単位で表示して読めます。')}</p>
           <button className="btn primary" onClick={() => go('/import')}>
-            <Icon name="plus" /> PDFを追加
+            <Icon name="plus" /> {t('PDFを追加')}
           </button>
         </div>
       ) : (
@@ -97,28 +98,28 @@ export function Library() {
                   className="cover"
                   style={{ backgroundImage: b.cover ? `url(${b.cover})` : undefined }}
                   data-text={b.kind === 'text' ? 'true' : undefined}
-                  aria-label={`${b.title}を開く`}
+                  aria-label={t('{title}を開く', { title: b.title })}
                   onClick={() => go(b.ocr.status === 'needed' && b.emptyPages === b.pageCount ? `/ocr/${b.id}` : `/read/${b.id}`)}
                 >
                   {!b.cover && <span className="cover-title">{b.title}</span>}
-                  {b.emptyPages > 0 && <span className="badge">{b.ocr.status === 'error' ? 'OCRエラー' : 'OCR未完了'}</span>}
+                  {b.emptyPages > 0 && <span className="badge">{b.ocr.status === 'error' ? t('OCRエラー') : t('OCR未完了')}</span>}
                 </button>
                 <div className="grow stack" style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <h3 title={b.title}>{b.title}</h3>
-                  <div className="progress" aria-label={`読了率 ${pct.toFixed(0)}%`}>
+                  <div className="progress" aria-label={t('読了率 {pct}%', { pct: pct.toFixed(0) })}>
                     <div style={{ width: `${pct}%` }} />
                   </div>
                   <div className="small muted">
-                    {b.author ? `${b.author}・` : ''}
-                    {pct.toFixed(1)}%{b.kind === 'text' ? '' : p ? `・p.${p.page + 1}/${b.pageCount}` : `・${b.pageCount}ページ`}
+                    {b.author ? t('{author}・', { author: b.author }) : ''}
+                    {pct.toFixed(1)}%{b.kind === 'text' ? '' : p ? t('・p.{page}/{total}', { page: p.page + 1, total: b.pageCount }) : t('・{n}ページ', { n: b.pageCount })}
                     <br />
-                    {p ? `${formatDate(p.lastReadAt)}・計${formatDuration(p.readingMs)}` : '未読'}
+                    {p ? t('{date}・計{duration}', { date: formatDate(p.lastReadAt), duration: formatDuration(p.readingMs) }) : t('未読')}
                   </div>
                   <div className="row" style={{ marginTop: 'auto' }}>
                     <button className="btn primary small grow" onClick={() => go(`/read/${b.id}`)}>
-                      {p ? '続きから' : '読む'}
+                      {p ? t('続きから') : t('読む')}
                     </button>
-                    <button className="icon-btn" aria-label="その他の操作" aria-expanded={menu === b.id} onClick={() => setMenu(menu === b.id ? null : b.id)}>
+                    <button className="icon-btn" aria-label={t('その他の操作')} aria-expanded={menu === b.id} onClick={() => setMenu(menu === b.id ? null : b.id)}>
                       <Icon name="more" />
                     </button>
                   </div>
@@ -126,7 +127,7 @@ export function Library() {
                     <div className="row wrap">
                       {b.kind !== 'text' && (
                         <button className="btn small" onClick={() => go(`/pdf/${b.id}`)}>
-                          <Icon name="pdf" /> PDF表示
+                          <Icon name="pdf" /> {t('PDF表示')}
                         </button>
                       )}
                       {b.emptyPages > 0 && (
@@ -135,7 +136,7 @@ export function Library() {
                         </button>
                       )}
                       <button className="btn small danger" onClick={() => setToDelete(b)}>
-                        <Icon name="trash" /> 削除
+                        <Icon name="trash" /> {t('削除')}
                       </button>
                     </div>
                   )}
@@ -148,13 +149,13 @@ export function Library() {
 
       {toDelete && (
         <ConfirmDialog
-          title="本棚から削除しますか？"
+          title={t('本棚から削除しますか？')}
           body={
             <>
-              「{toDelete.title}」のPDF・抽出した本文・読書位置・しおり・履歴をこの端末から削除します。元に戻せません。
+              {t('「{title}」のPDF・抽出した本文・読書位置・しおり・履歴をこの端末から削除します。元に戻せません。', { title: toDelete.title })}
             </>
           }
-          confirmLabel="削除する"
+          confirmLabel={t('削除する')}
           danger
           onConfirm={() => remove(toDelete)}
           onCancel={() => setToDelete(null)}

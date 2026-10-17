@@ -124,3 +124,27 @@ export function percentAt(book: BookText, pos: TextPosition): number {
   if (book.totalChars === 0) return 0
   return Math.min(100, (globalOffset(book, pos) / book.totalChars) * 100)
 }
+
+/** 前の単位の終わり（prevEnd）から次の単位の始まり（start）までの空白。全文パネルで単位の間に描く */
+export function gapBefore(para: Paragraph, prevEnd: number, start: number): string {
+  if (start <= prevEnd) return ''
+  const gap = para.text.slice(prevEnd, start)
+  return /^\s+$/.test(gap) ? gap : ''
+}
+
+// 参考文献の見出しと、その後に続く節（付録など）の見出し。論文の番号付き見出し（7. References）も許す
+const REFERENCES_HEADING = /^(?:[0-9]+\.?\s*)?(?:references|bibliography|works cited|literature cited|参考文献|引用文献)$/i
+const AFTER_REFERENCES = /^(?:[0-9A-Z]+\.?\s*)?(?:appendix|appendices|supplementary|付録)/i
+
+/** 参考文献の段落（見出しから、次の付録などの見出しの手前まで）。速読で飛ばすのに使う */
+export function referenceParagraphs(book: BookText): Set<number> {
+  const out = new Set<number>()
+  let inRefs = false
+  book.paragraphs.forEach((p, i) => {
+    const t = p.text.trim()
+    if (REFERENCES_HEADING.test(t)) inRefs = true
+    else if (inRefs && AFTER_REFERENCES.test(t)) inRefs = false
+    if (inRefs) out.add(i)
+  })
+  return out
+}

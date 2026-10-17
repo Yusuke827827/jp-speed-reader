@@ -2,13 +2,14 @@ import { useEffect, useRef, useState } from 'react'
 import { ImportError, importPdf, type ImportProgress } from '../lib/importer'
 import { requestPersist, storageInfo } from '../lib/db'
 import { ErrorBox, formatBytes, go, Icon } from './common'
+import { t } from '../lib/i18n'
 
 const SAMPLES = [
-  { file: 'sample-horizontal.pdf', label: '横書きの短編（テキストPDF）' },
-  { file: 'sample-vertical.pdf', label: '縦書きの短編（テキストPDF）' },
-  { file: 'sample-scanned.pdf', label: '画像だけのPDF（OCRの確認用）' },
-  { file: 'sample-illustrated.pdf', label: '挿絵入りのPDF' },
-  { file: 'sample-aozora.txt', label: '青空文庫形式のテキスト（ルビ・人物名）' },
+  { file: 'sample-horizontal.pdf', label: () => t('横書きの短編（テキストPDF）') },
+  { file: 'sample-vertical.pdf', label: () => t('縦書きの短編（テキストPDF）') },
+  { file: 'sample-scanned.pdf', label: () => t('画像だけのPDF（OCRの確認用）') },
+  { file: 'sample-illustrated.pdf', label: () => t('挿絵入りのPDF') },
+  { file: 'sample-aozora.txt', label: () => t('青空文庫形式のテキスト（ルビ・人物名）') },
 ]
 
 export function Import() {
@@ -40,7 +41,10 @@ export function Import() {
       setProgress(null)
       if ((e as Error).name === 'AbortError') return
       if (e instanceof ImportError) setError({ title: e.message, hint: e.hint })
-      else setError({ title: '取り込み中に問題が起きました。', hint: `${(e as Error)?.message ?? e}。別の PDF で試すか、ページを再読み込みしてください。` })
+      else setError({
+          title: t('取り込み中に問題が起きました。'),
+          hint: t('{message}。別の PDF で試すか、ページを再読み込みしてください。', { message: String((e as Error)?.message ?? e) }),
+        })
     }
   }
 
@@ -52,7 +56,7 @@ export function Import() {
       const type = name.endsWith('.txt') ? 'text/plain' : 'application/pdf'
       await handle(new File([blob], name, { type, lastModified: Date.now() }))
     } catch (e) {
-      setError({ title: 'サンプルを読み込めませんでした。', hint: (e as Error).message })
+      setError({ title: t('サンプルを読み込めませんでした。'), hint: (e as Error).message })
     }
   }
 
@@ -62,10 +66,10 @@ export function Import() {
   return (
     <div className="screen">
       <header className="topbar">
-        <button className="icon-btn" aria-label="本棚へ戻る" onClick={() => go('/')} disabled={busy}>
+        <button className="icon-btn" aria-label={t('本棚へ戻る')} onClick={() => go('/')} disabled={busy}>
           <Icon name="back" />
         </button>
-        <h1>本を追加</h1>
+        <h1>{t('本を追加')}</h1>
       </header>
 
       <div className="stack">
@@ -86,26 +90,26 @@ export function Import() {
           {busy ? (
             <div className="stack" aria-live="polite">
               <div style={{ fontWeight: 700 }}>
-                {progress!.phase === 'reading' && 'ファイルを読み込んでいます'}
-                {progress!.phase === 'extracting' && `本文を取り出しています（${progress!.done} / ${progress!.total} ページ）`}
-                {progress!.phase === 'repairing' && `欠けた文字を補っています（${progress!.done} / ${progress!.total} ページ）`}
-                {progress!.phase === 'saving' && '端末に保存しています'}
+                {progress!.phase === 'reading' && t('ファイルを読み込んでいます')}
+                {progress!.phase === 'extracting' && t('本文を取り出しています（{done} / {total} ページ）', { done: progress!.done, total: progress!.total })}
+                {progress!.phase === 'repairing' && t('欠けた文字を補っています（{done} / {total} ページ）', { done: progress!.done, total: progress!.total })}
+                {progress!.phase === 'saving' && t('端末に保存しています')}
               </div>
               <div className="progress">
                 <div style={{ width: `${progress!.phase === 'extracting' || progress!.phase === 'repairing' ? pct : progress!.phase === 'saving' ? 100 : 5}%` }} />
               </div>
               <button className="btn" onClick={() => abort.current?.abort()}>
-                中止
+                {t('中止')}
               </button>
             </div>
           ) : (
             <>
-              <p style={{ fontSize: 17, fontWeight: 700, margin: '0 0 4px' }}>小説のPDFかテキストを選んでください</p>
+              <p style={{ fontSize: 17, fontWeight: 700, margin: '0 0 4px' }}>{t('小説のPDFかテキストを選んでください')}</p>
               <p className="muted small" style={{ margin: '0 0 16px' }}>
-                PCではここにドラッグ＆ドロップもできます。iPhoneでは「ファイル」アプリやiCloud Driveから選べます。
+                {t('PCではここにドラッグ＆ドロップもできます。iPhoneでは「ファイル」アプリやiCloud Driveから選べます。')}
               </p>
               <button className="btn primary" onClick={() => input.current?.click()}>
-                <Icon name="plus" /> ファイルを選ぶ
+                <Icon name="plus" /> {t('ファイルを選ぶ')}
               </button>
               <input
                 ref={input}
@@ -129,22 +133,22 @@ export function Import() {
         )}
 
         <div className="card">
-          <div style={{ fontWeight: 700, marginBottom: 6 }}>読み込みの流れ</div>
+          <div style={{ fontWeight: 700, marginBottom: 6 }}>{t('読み込みの流れ')}</div>
           <ol className="small muted" style={{ margin: 0, paddingLeft: 20 }}>
-            <li>PDFに含まれる文字を取り出し、柱（ページ上部の書名など）・ノンブル・ルビを除いて段落に組み立てます。</li>
-            <li>文字が入っていないページ（スキャン画像）は、続けて日本語OCRにかけられます。</li>
-            <li>テキスト（.txt）は UTF-8 と Shift_JIS に対応します。青空文庫形式なら題名・著者・見出し・ルビを読み取ります。</li>
-            <li>PDFと本文はこの端末のブラウザ内にだけ保存されます。外部のサーバーには送りません。</li>
+            <li>{t('PDFに含まれる文字を取り出し、柱（ページ上部の書名など）・ノンブル・ルビを除いて段落に組み立てます。')}</li>
+            <li>{t('文字が入っていないページ（スキャン画像）は、続けて日本語OCRにかけられます。')}</li>
+            <li>{t('テキスト（.txt）は UTF-8 と Shift_JIS に対応します。青空文庫形式なら題名・著者・見出し・ルビを読み取ります。')}</li>
+            <li>{t('PDFと本文はこの端末のブラウザ内にだけ保存されます。外部のサーバーには送りません。')}</li>
           </ol>
         </div>
 
         <div className="card">
-          <div style={{ fontWeight: 700, marginBottom: 6 }}>サンプルで試す</div>
-          <p className="small muted" style={{ marginTop: 0 }}>このアプリ用に書いた短い文章です。</p>
+          <div style={{ fontWeight: 700, marginBottom: 6 }}>{t('サンプルで試す')}</div>
+          <p className="small muted" style={{ marginTop: 0 }}>{t('このアプリ用に書いた短い文章です。')}</p>
           <div className="row wrap">
             {SAMPLES.map((s) => (
               <button key={s.file} className="btn small" disabled={busy} onClick={() => loadSample(s.file)}>
-                {s.label}
+                {s.label()}
               </button>
             ))}
           </div>
@@ -152,8 +156,8 @@ export function Import() {
 
         {storage && storage.quota > 0 && (
           <p className="small muted">
-            保存容量: {formatBytes(storage.usage)} 使用 / 上限の目安 {formatBytes(storage.quota)}
-            {storage.persisted ? '（自動削除されない設定）' : ''}
+            {t('保存容量: {used} 使用 / 上限の目安 {quota}', { used: formatBytes(storage.usage), quota: formatBytes(storage.quota) })}
+            {storage.persisted ? t('（自動削除されない設定）') : ''}
           </p>
         )}
       </div>

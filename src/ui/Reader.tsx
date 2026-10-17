@@ -1,27 +1,28 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { globalOffset, pageAt, percentAt, positionForPage, type BookText, type Paragraph, type TextPosition } from '../lib/book'
+import { gapBefore, globalOffset, pageAt, referenceParagraphs, percentAt, positionForPage, type BookText, type Paragraph, type TextPosition } from '../lib/book'
 import { addSession, describeStorageError, listBookmarks, saveProgress, getFile, updateBook, type Bookmark, type Person, type TocEntry } from '../lib/db'
 import { newId } from '../lib/importer'
 import { chapterStarts, personRanges, personTerms, suggestPeople, PERSON_COLORS, type PersonRange } from '../lib/people'
 import { closePdf, openPdf, readOutline } from '../lib/pdf'
-import { chunkIndexAt, paragraphStartIndex, segmentBook, CHUNK_MODES, visible, type Chunk } from '../lib/segment'
+import { chunkIndexAt, isLatinBook, paragraphStartIndex, segmentBook, CHUNK_MODES, visible, type Chunk } from '../lib/segment'
 import { THEMES, themeOf, useSettings, type Settings } from '../lib/settings'
-import { buildSchedule, durationOf, remainingMs, SPEED_PRESETS, CPM_MAX, CPM_MIN } from '../lib/timing'
+import { buildSchedule, durationOf, remainingMs, SPEED_PRESETS, CPM_MAX, CPM_MIN, WPM_PRESETS, WPM_MAX, WPM_MIN } from '../lib/timing'
 import { useBook, type LoadedBook } from '../lib/useBook'
 import { ConfirmDialog, ErrorBox, formatDuration, go, Icon, toast } from './common'
 import { RichText } from './rich'
 import { IllustView, loadIllust, releaseIllusts } from './IllustView'
+import { t } from '../lib/i18n'
 
 export function Reader({ id, startPage }: { id: string; startPage?: number }) {
   const { book, error, loading } = useBook(id)
   const [settings] = useSettings()
-  if (loading) return <div className="screen muted">読み込み中…</div>
+  if (loading) return <div className="screen muted">{t('読み込み中…')}</div>
   if (error || !book)
     return (
       <div className="screen">
-        <ErrorBox title="本を開けませんでした">{error}</ErrorBox>
+        <ErrorBox title={t('本を開けませんでした')}>{error}</ErrorBox>
         <button className="btn" style={{ marginTop: 12 }} onClick={() => go('/')}>
-          本棚へ戻る
+          {t('本棚へ戻る')}
         </button>
       </div>
     )
@@ -29,20 +30,20 @@ export function Reader({ id, startPage }: { id: string; startPage?: number }) {
     return (
       <div className="screen">
         <header className="topbar">
-          <button className="icon-btn" aria-label="本棚へ戻る" onClick={() => go('/')}>
+          <button className="icon-btn" aria-label={t('本棚へ戻る')} onClick={() => go('/')}>
             <Icon name="back" />
           </button>
           <h1>{book.meta.title}</h1>
         </header>
         <div className="notice">
-          <strong>まだ読める本文がありません</strong>
-          このPDFは画像だけでできているため、文字認識（OCR）が必要です。
+          <strong>{t('まだ読める本文がありません')}</strong>
+          {t('このPDFは画像だけでできているため、文字認識（OCR）が必要です。')}
           <div className="row" style={{ marginTop: 10 }}>
             <button className="btn primary" onClick={() => go(`/ocr/${id}`)}>
-              <Icon name="scan" /> OCRへ進む
+              <Icon name="scan" /> {t('OCRへ進む')}
             </button>
             <button className="btn" onClick={() => go(`/pdf/${id}`)}>
-              PDFをそのまま見る
+              {t('PDFをそのまま見る')}
             </button>
           </div>
         </div>
@@ -62,18 +63,23 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
   const chunks = useMemo(() => {
     const all = segmentBook(text, { mode: settings.mode, phraseTarget: settings.phraseTarget, minChars: settings.minChars, names })
     // テキストの本には挿絵が無い。「飛ばす」設定なら挿絵の単位を除く
-    return !isPdf || settings.illustMode === 'skip' ? all.filter((c) => !c.illust) : all
-  }, [text, settings.mode, settings.phraseTarget, settings.minChars, names, settings.illustMode, isPdf])
+    const noIllust = !isPdf || settings.illustMode === 'skip'
+    // 参考文献の節を飛ばす（全部が参考文献と判定された場合は飛ばさない）
+    const refs = settings.skipReferences ? referenceParagraphs(text) : new Set<number>()
+    const skipRefs = refs.size > 0 && refs.size < text.paragraphs.length
+    return noIllust || skipRefs ? all.filter((c) => !(noIllust && c.illust) && !(skipRefs && refs.has(c.para))) : all
+  }, [text, settings.mode, settings.phraseTarget, settings.minChars, names, settings.illustMode, settings.skipReferences, isPdf])
   const schedule = useMemo(
     () =>
       buildSchedule(chunks, {
         cpm: settings.cpm,
+        wpm: settings.wpm,
         pauses: settings.pauses,
         pauseScale: settings.pauseScale,
         nameBoost: settings.nameBoost && people.length > 0,
         illustMs: settings.illustSeconds * 1000,
       }),
-    [chunks, settings.cpm, settings.pauses, settings.pauseScale, settings.nameBoost, people.length, settings.illustSeconds],
+    [chunks, settings.cpm, settings.wpm, settings.pauses, settings.pauseScale, settings.nameBoost, people.length, settings.illustSeconds],
   )
 
   // 段落ごとの人物名の位置（表示のたびに探さないよう覚えておく）
@@ -117,7 +123,7 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
   const savePeople = useCallback(
     (next: Person[]) => {
       setPeople(next)
-      updateBook(meta.id, (b) => (b.people = next)).catch(() => toast('人物の保存に失敗しました'))
+      updateBook(meta.id, (b) => (b.people = next)).catch(() => toast(t('人物の保存に失敗しました')))
     },
     [meta.id],
   )
@@ -209,7 +215,7 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
       const i = indexRef.current
       if (i >= chunks.length - 1) {
         setPlaying(false)
-        toast('最後まで読みました')
+        toast(t('最後まで読みました'))
         return
       }
       const next = i + 1
@@ -332,7 +338,12 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
     moveTo(i)
   }
   const [confirmRestart, setConfirmRestart] = useState(false)
-  const setSpeed = (cpm: number) => update({ cpm: Math.max(CPM_MIN, Math.min(CPM_MAX, Math.round(cpm))) })
+  // 欧文が主の本は語/分（WPM）、それ以外は字/分で速度を表示・調整する
+  const latin = useMemo(() => isLatinBook(chunks), [chunks])
+  const changeSpeed = (dir: 1 | -1) =>
+    latin
+      ? update({ wpm: Math.max(WPM_MIN, Math.min(WPM_MAX, settings.wpm + dir * 10)) })
+      : update({ cpm: Math.max(CPM_MIN, Math.min(CPM_MAX, Math.round(settings.cpm + dir * 50))) })
 
   // ---------- 操作 ----------
   const [sheet, setSheet] = useState<null | 'settings' | 'toc' | 'people'>(null)
@@ -377,10 +388,10 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
           break
         case '+':
         case '=':
-          setSpeed(settings.cpm + 50)
+          changeSpeed(1)
           break
         case '-':
-          setSpeed(settings.cpm - 50)
+          changeSpeed(-1)
           break
         case ']':
           update({ fontSize: Math.min(120, settings.fontSize + 4) })
@@ -466,7 +477,7 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
       }
     >
       <div className="r-top">
-        <button className="icon-btn" aria-label="本棚へ戻る" title="本棚へ戻る (Esc)" onClick={() => go('/')}>
+        <button className="icon-btn" aria-label={t('本棚へ戻る')} title={t('本棚へ戻る (Esc)')} onClick={() => go('/')}>
           <Icon name="back" />
         </button>
         <div className="r-title">
@@ -474,28 +485,28 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
           {meta.author && <span className="r-author">{meta.author}</span>}
         </div>
         <div className="r-keys" aria-hidden="true">
-          Space 再生/停止・←→ 1単位・Shift+←→ 段落・+− 速度
+          {t('Space 再生/停止・←→ 1単位・Shift+←→ 段落・+− 速度')}
         </div>
-        <button className="icon-btn" aria-label="目次・ページ移動" title="目次・ページ移動" onClick={() => setSheet('toc')}>
+        <button className="icon-btn" aria-label={t('目次・ページ移動')} title={t('目次・ページ移動')} onClick={() => setSheet('toc')}>
           <Icon name="list" />
         </button>
-        <button className="icon-btn" aria-label="人物" title="人物の登録と色分け" onClick={() => setSheet('people')}>
+        <button className="icon-btn" aria-label={t('人物')} title={t('人物の登録と色分け')} onClick={() => setSheet('people')}>
           <Icon name="people" />
         </button>
         {isPdf && (
-          <button className="icon-btn" aria-label="元のPDFを見る" title="元のPDFを見る (P)" onClick={openPdfView}>
+          <button className="icon-btn" aria-label={t('元のPDFを見る')} title={t('元のPDFを見る (P)')} onClick={openPdfView}>
             <Icon name="pdf" />
           </button>
         )}
-        <button className="icon-btn" aria-label="読書設定" title="読書設定" onClick={() => setSheet('settings')}>
+        <button className="icon-btn" aria-label={t('読書設定')} title={t('読書設定')} onClick={() => setSheet('settings')}>
           <Icon name="settings" />
         </button>
       </div>
 
       <div className={`stage${showPanel ? ' with-panel' : ''}`}>
-        <div className="word-area" onPointerDown={onPointerDown} onPointerUp={onPointerUp} role="button" aria-label={playing ? '一時停止' : '再生'}>
+        <div className="word-area" onPointerDown={onPointerDown} onPointerUp={onPointerUp} role="button" aria-label={playing ? t('一時停止') : t('再生')}>
           {chunk?.illust ? (
-            <IllustView bookId={meta.id} illust={chunk.illust} note={settings.illustMode === 'pause' && !playing ? 'タップで続きを読む' : ''} />
+            <IllustView bookId={meta.id} illust={chunk.illust} note={settings.illustMode === 'pause' && !playing ? t('タップで続きを読む') : ''} />
           ) : (
             chunk && <Word chunk={chunk} para={text.paragraphs[chunk.para]} names={rangesOf(chunk.para)} labels={labels.get(index)} settings={settings} />
           )}
@@ -506,23 +517,23 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
       <div className="r-bottom">
         {saveError && (
           <div className="notice error small" style={{ marginBottom: 8, color: 'var(--text)' }}>
-            読書位置を保存できませんでした。{saveError}
+            {t('読書位置を保存できませんでした。')}{saveError}
           </div>
         )}
         {showBars && (
           <>
             <div className="r-meta">
               <span>
-                {readChars.toLocaleString()} / {text.totalChars.toLocaleString()}字・{percent.toFixed(1)}%
-                {isPdf && `・p.${page + 1}/${meta.pageCount}`}
+                {t('{read} / {total}字・{percent}%', { read: readChars.toLocaleString(), total: text.totalChars.toLocaleString(), percent: percent.toFixed(1) })}
+                {isPdf && t('・p.{page}/{pages}', { page: page + 1, pages: meta.pageCount })}
               </span>
               <span>
                 {measured !== null && !playing ? (
-                  <span title="直前の再生で実際に表示した文字数 ÷ 経過時間。再生直後の減速と、句読点の間を含みます">実測 {measured}字/分・</span>
+                  <span title={t('直前の再生で実際に表示した文字数 ÷ 経過時間。再生直後の減速と、句読点の間を含みます')}>{t('実測 {n}字/分・', { n: measured })}</span>
                 ) : (
                   ''
                 )}
-                残り{formatDuration(remain)}
+                {t('残り{time}', { time: formatDuration(remain) })}
               </span>
             </div>
             {playing ? (
@@ -536,46 +547,47 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
                 min={0}
                 max={Math.max(0, chunks.length - 1)}
                 value={index}
-                aria-label="読書位置"
+                aria-label={t('読書位置')}
                 onChange={(e) => setIndex(Number(e.target.value))}
               />
             )}
           </>
         )}
         <div className="controls">
-          <button className="icon-btn" aria-label="前の段落" title="前の段落 (↑)" onClick={prevPara}>
+          <button className="icon-btn" aria-label={t('前の段落')} title={t('前の段落 (↑)')} onClick={prevPara}>
             <Icon name="prevPara" />
           </button>
-          <button className="icon-btn" aria-label="1単位戻る" title="1単位戻る (←)" onClick={prev}>
+          <button className="icon-btn" aria-label={t('1単位戻る')} title={t('1単位戻る (←)')} onClick={prev}>
             <Icon name="prev" />
           </button>
-          <button className="icon-btn play" aria-label={playing ? '一時停止' : '再生'} title="再生／一時停止 (Space)" onClick={toggle}>
+          <button className="icon-btn play" aria-label={playing ? t('一時停止') : t('再生')} title={t('再生／一時停止 (Space)')} onClick={toggle}>
             <Icon name={playing ? 'pause' : 'play'} />
           </button>
-          <button className="icon-btn" aria-label="1単位進む" title="1単位進む (→)" onClick={next}>
+          <button className="icon-btn" aria-label={t('1単位進む')} title={t('1単位進む (→)')} onClick={next}>
             <Icon name="next" />
           </button>
-          <button className="icon-btn" aria-label="次の段落" title="次の段落 (↓)" onClick={nextPara}>
+          <button className="icon-btn" aria-label={t('次の段落')} title={t('次の段落 (↓)')} onClick={nextPara}>
             <Icon name="nextPara" />
           </button>
         </div>
         <div className="speedrow">
-          <button className="speed-btn" aria-label="遅くする" onClick={() => setSpeed(settings.cpm - 50)}>
+          <button className="speed-btn" aria-label={t('遅くする')} onClick={() => changeSpeed(-1)}>
             −
           </button>
-          <button className="speed-btn grow" onClick={() => setSheet('settings')} aria-label="速度と表示の設定">
-            {settings.cpm} 字/分{schedule.limited ? '（上限）' : ''}
+          <button className="speed-btn grow" onClick={() => setSheet('settings')} aria-label={t('速度と表示の設定')}>
+            {latin ? `${settings.wpm} WPM` : t('{n} 字/分', { n: settings.cpm })}
+            {schedule.limited ? t('（上限）') : ''}
           </button>
-          <button className="speed-btn" aria-label="速くする" onClick={() => setSpeed(settings.cpm + 50)}>
-            ＋
+          <button className="speed-btn" aria-label={t('速くする')} onClick={() => changeSpeed(1)}>
+            {'\uFF0B'}
           </button>
-          <button className="speed-btn" aria-label="最初から読む" title="最初から読む (Home)" onClick={() => setConfirmRestart(true)}>
+          <button className="speed-btn" aria-label={t('最初から読む')} title={t('最初から読む (Home)')} onClick={() => setConfirmRestart(true)}>
             <Icon name="restart" />
           </button>
         </div>
       </div>
 
-      {sheet === 'settings' && <QuickSettings onClose={() => setSheet(null)} chunks={chunks} />}
+      {sheet === 'settings' && <QuickSettings onClose={() => setSheet(null)} chunks={chunks} latin={latin} />}
       {sheet === 'people' && <PeopleSheet book={book} people={people} onChange={savePeople} onClose={() => setSheet(null)} />}
       {sheet === 'toc' && (
         <TocSheet
@@ -596,9 +608,9 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
       )}
       {confirmRestart && (
         <ConfirmDialog
-          title="最初から読みますか？"
-          body="読書位置を本の先頭に戻します。今の位置は「目次・ページ移動」から割合やページで戻れます。"
-          confirmLabel="最初から読む"
+          title={t('最初から読みますか？')}
+          body={t('読書位置を本の先頭に戻します。今の位置は「目次・ページ移動」から割合やページで戻れます。')}
+          confirmLabel={t('最初から読む')}
           onCancel={() => setConfirmRestart(false)}
           onConfirm={() => {
             setConfirmRestart(false)
@@ -670,7 +682,7 @@ function Word({ chunk, para, names, labels, settings }: { chunk: Chunk; para: Pa
         style={{ fontSize: size, fontFamily: family, transform: vertical ? `translateY(${shift}px)` : `translateX(${shift}px)` }}
         aria-live="off"
       >
-        <RichText para={para} start={chunk.start} end={chunk.end} names={names} opts={{ ruby: true, colors: settings.personColors, focusAt: fi, focusRef, trimEdges: true }} />
+        <RichText para={para} start={chunk.start} end={chunk.end} names={names} opts={{ ruby: true, colors: settings.personColors, focusAt: fi, focusRef, trimEdges: true, keepSpaces: true }} />
       </div>
       {labels && labels.length > 0 && (
         <div className="person-label" style={vertical ? { bottom: 4 } : { top: `calc(50% + ${size * 0.75 + 26}px)` }}>
@@ -690,13 +702,13 @@ function visibleWidth(s: string): number {
   let w = 0
   for (const c of s) {
     if (/\s/.test(c)) continue
-    w += /[\x20-\x7E｡-ﾟ]/.test(c) ? 0.55 : 1
+    w += /[\x20-\x7E｡-ﾟ]/.test(c) ? 0.55 : 1 // i18n-ignore: 半角カナの範囲（文字幅の判定。画面の文言ではない）
   }
   return w
 }
 
 function focusIndex(chars: string[]): number {
-  const isMark = (c: string) => /[「『（(【〈《〔、。，．！？!?」』）)】〉》〕…―]/.test(c)
+  const isMark = (c: string) => /[「『（(【〈《〔、。，．！？!?」』）)】〉》〕…―]/.test(c) // i18n-ignore: 括弧・句読点の判定（画面の文言ではない）
   let target = Math.floor((chars.length - 1) / 3)
   // 括弧や句読点を避け、近い文字に寄せる
   while (target < chars.length - 1 && isMark(chars[target])) target++
@@ -739,13 +751,18 @@ function TextPanel(props: {
     const para = book.paragraphs[pi]
     const names = props.rangesOf(pi)
     const spans: ReactNode[] = []
+    let prevEnd = -1
     while (i < chunks.length && chunks[i].para === pi) {
       const c = chunks[i]
       const k = i
+      // 欧文の文と文の間の空白は、どの単位にも含まれないので、ここで描く
+      const gap = prevEnd >= 0 ? gapBefore(para, prevEnd, c.start) : ''
+      if (gap) spans.push(gap)
+      prevEnd = c.end
       if (c.illust) {
         spans.push(
           <span key={k} ref={k === index ? currentRef : undefined} className={`illust-ref${k === index ? ' cur' : ''}`} onClick={() => props.onPick(k)}>
-            ［挿絵 p.{c.illust.page + 1}］
+            {t('［挿絵 p.{page}］', { page: c.illust.page + 1 })}
           </span>,
         )
         i++
@@ -761,7 +778,7 @@ function TextPanel(props: {
     paras.push(<p key={pi}>{spans}</p>)
   }
   return (
-    <div className="text-panel" aria-label="本文" onPointerDown={(e) => e.stopPropagation()} onPointerUp={(e) => e.stopPropagation()}>
+    <div className="text-panel" aria-label={t('本文')} onPointerDown={(e) => e.stopPropagation()} onPointerUp={(e) => e.stopPropagation()}>
       {from > 0 && <p className="muted-line">…</p>}
       {paras}
       {to < book.paragraphs.length && <p className="muted-line">…</p>}
@@ -769,7 +786,7 @@ function TextPanel(props: {
   )
 }
 
-function QuickSettings({ onClose, chunks }: { onClose: () => void; chunks: Chunk[] }) {
+function QuickSettings({ onClose, chunks, latin }: { onClose: () => void; chunks: Chunk[]; latin: boolean }) {
   const [s, update] = useSettings()
   const [custom, setCustom] = useState(String(s.cpm))
   useEffect(() => setCustom(String(s.cpm)), [s.cpm])
@@ -784,34 +801,36 @@ function QuickSettings({ onClose, chunks }: { onClose: () => void; chunks: Chunk
   return (
     <>
       <div className="sheet-backdrop" onClick={onClose} />
-      <div className="sheet stack" role="dialog" aria-label="読書設定">
+      <div className="sheet stack" role="dialog" aria-label={t('読書設定')}>
         <div className="row">
           <div className="grow" style={{ fontWeight: 700, fontSize: 17 }}>
-            読書設定
+            {t('読書設定')}
           </div>
-          <button className="icon-btn" aria-label="閉じる" onClick={onClose}>
+          <button className="icon-btn" aria-label={t('閉じる')} onClick={onClose}>
             <Icon name="close" />
           </button>
         </div>
 
-        <div className="field">
+        {latin && <WpmField />}
+
+        <div className="field" hidden={latin}>
           <div className="label">
-            <span>速度</span>
+            <span>{t('速度')}</span>
             <span>
-              {s.cpm}字/分・{avgLen ? Math.round(s.cpm / avgLen) : 0}単位/分・参考 約{Math.round(s.cpm * wordsPerChunk)}WPM
+              {t('{cpm}字/分・{units}単位/分・参考 約{wpm}WPM', { cpm: s.cpm, units: avgLen ? Math.round(s.cpm / avgLen) : 0, wpm: Math.round(s.cpm * wordsPerChunk) })}
             </span>
           </div>
-          <div className="segmented" role="group" aria-label="速度のプリセット">
+          <div className="segmented" role="group" aria-label={t('速度のプリセット')}>
             {SPEED_PRESETS.map((p) => (
               <button key={p.cpm} aria-pressed={s.cpm === p.cpm} onClick={() => update({ cpm: p.cpm })}>
-                {p.label}
+                {t(p.label)}
                 <span className="small muted"> {p.cpm}</span>
               </button>
             ))}
           </div>
-          <input type="range" min={CPM_MIN} max={2000} step={10} value={Math.min(2000, s.cpm)} onChange={(e) => update({ cpm: Number(e.target.value) })} aria-label="速度（字/分）" />
+          <input type="range" min={CPM_MIN} max={2000} step={10} value={Math.min(2000, s.cpm)} onChange={(e) => update({ cpm: Number(e.target.value) })} aria-label={t('速度（字/分）')} />
           <div className="row">
-            <span className="small muted">数値で指定</span>
+            <span className="small muted">{t('数値で指定')}</span>
             <input
               type="number"
               inputMode="numeric"
@@ -826,50 +845,50 @@ function QuickSettings({ onClose, chunks }: { onClose: () => void; chunks: Chunk
                 else setCustom(String(s.cpm))
               }}
               onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
-              aria-label="速度を数値で入力"
+              aria-label={t('速度を数値で入力')}
             />
-            <span className="small muted">字/分（{CPM_MIN}〜{CPM_MAX}）</span>
+            <span className="small muted">{t('字/分（{min}〜{max}）', { min: CPM_MIN, max: CPM_MAX })}</span>
           </div>
         </div>
 
         <div className="field">
-          <div className="label">分割の単位</div>
+          <div className="label">{t('分割の単位')}</div>
           <div className="segmented" role="group">
             {CHUNK_MODES.map((m) => (
-              <button key={m.id} aria-pressed={s.mode === m.id} title={m.hint} onClick={() => update({ mode: m.id })}>
-                {m.label}
+              <button key={m.id} aria-pressed={s.mode === m.id} title={t(m.hint)} onClick={() => update({ mode: m.id })}>
+                {t(m.label)}
               </button>
             ))}
           </div>
           <div className="label" style={{ marginTop: 8 }}>
-            <span>最小の字数（これより短い単位は隣とつなぐ）</span>
+            <span>{t('最小の字数（これより短い単位は隣とつなぐ）')}</span>
           </div>
-          <div className="segmented" role="group" aria-label="最小の字数">
+          <div className="segmented" role="group" aria-label={t('最小の字数')}>
             {[1, 2, 3, 4].map((n) => (
               <button key={n} aria-pressed={s.minChars === n} onClick={() => update({ minChars: n })}>
-                {n === 1 ? 'なし' : `${n}字以上`}
+                {n === 1 ? t('なし') : t('{n}字以上', { n })}
               </button>
             ))}
           </div>
           {s.mode === 'phrase' && (
             <>
               <div className="label" style={{ marginTop: 8 }}>
-                <span>フレーズの目標文字数</span>
-                <span>{s.phraseTarget}文字</span>
+                <span>{t('フレーズの目標文字数')}</span>
+                <span>{t('{n}文字', { n: s.phraseTarget })}</span>
               </div>
-              <input type="range" min={4} max={14} value={s.phraseTarget} onChange={(e) => update({ phraseTarget: Number(e.target.value) })} aria-label="フレーズの目標文字数" />
+              <input type="range" min={4} max={14} value={s.phraseTarget} onChange={(e) => update({ phraseTarget: Number(e.target.value) })} aria-label={t('フレーズの目標文字数')} />
             </>
           )}
         </div>
 
         <div className="field">
-          <div className="label">挿絵の位置に来たら</div>
+          <div className="label">{t('挿絵の位置に来たら')}</div>
           <div className="segmented" role="group">
             {(
               [
-                ['pause', '止まる'],
-                ['show', `${s.illustSeconds}秒表示`],
-                ['skip', '飛ばす'],
+                ['pause', t('止まる')],
+                ['show', t('{n}秒表示', { n: s.illustSeconds })],
+                ['skip', t('飛ばす')],
               ] as const
             ).map(([v, l]) => (
               <button key={v} aria-pressed={s.illustMode === v} onClick={() => update({ illustMode: v })}>
@@ -878,43 +897,43 @@ function QuickSettings({ onClose, chunks }: { onClose: () => void; chunks: Chunk
             ))}
           </div>
           {s.illustMode === 'show' && (
-            <input type="range" min={1} max={15} value={s.illustSeconds} onChange={(e) => update({ illustSeconds: Number(e.target.value) })} aria-label="挿絵を表示する秒数" />
+            <input type="range" min={1} max={15} value={s.illustSeconds} onChange={(e) => update({ illustSeconds: Number(e.target.value) })} aria-label={t('挿絵を表示する秒数')} />
           )}
         </div>
 
         <div className="field">
           <div className="label">
-            <span>文字サイズ</span>
+            <span>{t('文字サイズ')}</span>
             <span>{s.fontSize}px</span>
           </div>
-          <input type="range" min={20} max={120} step={2} value={s.fontSize} onChange={(e) => update({ fontSize: Number(e.target.value) })} aria-label="文字サイズ" />
+          <input type="range" min={20} max={120} step={2} value={s.fontSize} onChange={(e) => update({ fontSize: Number(e.target.value) })} aria-label={t('文字サイズ')} />
         </div>
 
         <div className="field">
-          <div className="label">配色</div>
+          <div className="label">{t('配色')}</div>
           <div className="row wrap">
-            {THEMES.map((t) => (
+            {THEMES.map((th) => (
               <button
-                key={t.id}
-                className={`btn small bg-${t.id}`}
-                aria-pressed={s.theme === t.id}
-                style={{ background: t.bg, color: t.fg, borderColor: s.theme === t.id ? 'var(--accent)' : 'var(--line)', borderWidth: 2 }}
-                onClick={() => update({ theme: t.id })}
+                key={th.id}
+                className={`btn small bg-${th.id}`}
+                aria-pressed={s.theme === th.id}
+                style={{ background: th.bg, color: th.fg, borderColor: s.theme === th.id ? 'var(--accent)' : 'var(--line)', borderWidth: 2 }}
+                onClick={() => update({ theme: th.id })}
               >
-                {t.label}
+                {t(th.label)}
               </button>
             ))}
           </div>
         </div>
 
         <div className="field">
-          <div className="label">視線のガイド</div>
+          <div className="label">{t('視線のガイド')}</div>
           <div className="segmented" role="group">
             {(
               [
-                ['none', 'なし'],
-                ['center', '中央の目印'],
-                ['focus', '注視点を強調'],
+                ['none', t('なし')],
+                ['center', t('中央の目印')],
+                ['focus', t('注視点を強調')],
               ] as const
             ).map(([v, l]) => (
               <button key={v} aria-pressed={s.guide === v} onClick={() => update({ guide: v })}>
@@ -926,38 +945,89 @@ function QuickSettings({ onClose, chunks }: { onClose: () => void; chunks: Chunk
 
         <div className="row wrap">
           <div className="field grow">
-            <div className="label">文字の向き</div>
+            <div className="label">{t('文字の向き')}</div>
             <div className="segmented" role="group">
               <button aria-pressed={s.direction === 'horizontal'} onClick={() => update({ direction: 'horizontal' })}>
-                横
+                {t('横')}
               </button>
               <button aria-pressed={s.direction === 'vertical'} onClick={() => update({ direction: 'vertical' })}>
-                縦
+                {t('縦')}
               </button>
             </div>
           </div>
           <div className="field grow">
-            <div className="label">書体</div>
+            <div className="label">{t('書体')}</div>
             <div className="segmented" role="group">
               <button aria-pressed={s.font === 'mincho'} onClick={() => update({ font: 'mincho' })}>
-                明朝
+                {t('明朝')}
               </button>
               <button aria-pressed={s.font === 'gothic'} onClick={() => update({ font: 'gothic' })}>
-                ゴシック
+                {t('ゴシック')}
               </button>
             </div>
           </div>
         </div>
 
         <label className="switch">
-          <span>句読点・段落末で間をとる</span>
+          <span>{t('句読点・段落末で間をとる')}</span>
           <input type="checkbox" checked={s.pauses} onChange={(e) => update({ pauses: e.target.checked })} />
         </label>
         <button className="btn" onClick={() => go('/settings')}>
-          詳細設定を開く
+          {t('詳細設定を開く')}
         </button>
       </div>
     </>
+  )
+}
+
+/** 欧文の本の速度（語/分）の設定 */
+function WpmField() {
+  const [s, update] = useSettings()
+  const [custom, setCustom] = useState(String(s.wpm))
+  // 設定が外から変わったら入力欄も合わせる（描画中に前回の値と比べる）
+  const [shown, setShown] = useState(s.wpm)
+  if (shown !== s.wpm) {
+    setShown(s.wpm)
+    setCustom(String(s.wpm))
+  }
+  return (
+    <div className="field">
+      <div className="label">
+        <span>{t('速度（英語など）')}</span>
+        <span>{t('{n} WPM（語/分）', { n: s.wpm })}</span>
+      </div>
+      <div className="segmented" role="group" aria-label={t('速度のプリセット（語/分）')}>
+        {WPM_PRESETS.map((p) => (
+          <button key={p.wpm} aria-pressed={s.wpm === p.wpm} onClick={() => update({ wpm: p.wpm })}>
+            {t(p.label)}
+            <span className="small muted"> {p.wpm}</span>
+          </button>
+        ))}
+      </div>
+      <input type="range" min={WPM_MIN} max={800} step={10} value={Math.min(800, s.wpm)} onChange={(e) => update({ wpm: Number(e.target.value) })} aria-label={t('速度（語/分）')} />
+      <div className="row">
+        <span className="small muted">{t('数値で指定')}</span>
+        <input
+          type="number"
+          inputMode="numeric"
+          min={WPM_MIN}
+          max={WPM_MAX}
+          value={custom}
+          style={{ maxWidth: 120 }}
+          onChange={(e) => setCustom(e.target.value)}
+          onBlur={() => {
+            const v = Number(custom)
+            if (Number.isFinite(v) && v > 0) update({ wpm: Math.max(WPM_MIN, Math.min(WPM_MAX, Math.round(v))) })
+            else setCustom(String(s.wpm))
+          }}
+          onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
+          aria-label={t('速度を語/分で入力')}
+        />
+        <span className="small muted">
+          {t('WPM（{min}〜{max}）', { min: WPM_MIN, max: WPM_MAX })}
+        </span>
+      </div>
+    </div>
   )
 }
 
@@ -996,18 +1066,18 @@ function TocSheet(props: { book: LoadedBook; currentPage: number; onClose: () =>
   return (
     <>
       <div className="sheet-backdrop" onClick={props.onClose} />
-      <div className="sheet stack" role="dialog" aria-label="目次とページ移動">
+      <div className="sheet stack" role="dialog" aria-label={t('目次とページ移動')}>
         <div className="row">
           <div className="grow" style={{ fontWeight: 700, fontSize: 17 }}>
-            目次・ページ移動
+            {t('目次・ページ移動')}
           </div>
-          <button className="icon-btn" aria-label="閉じる" onClick={props.onClose}>
+          <button className="icon-btn" aria-label={t('閉じる')} onClick={props.onClose}>
             <Icon name="close" />
           </button>
         </div>
         <div className="row" hidden={!isPdf}>
-          <span className="small muted">ページ</span>
-          <input type="number" inputMode="numeric" min={1} max={book.meta.pageCount} value={pageInput} onChange={(e) => setPageInput(e.target.value)} style={{ maxWidth: 100 }} aria-label="移動先のページ" />
+          <span className="small muted">{t('ページ')}</span>
+          <input type="number" inputMode="numeric" min={1} max={book.meta.pageCount} value={pageInput} onChange={(e) => setPageInput(e.target.value)} style={{ maxWidth: 100 }} aria-label={t('移動先のページ')} />
           <span className="small muted">/ {book.meta.pageCount}</span>
           <button
             className="btn small primary"
@@ -1016,7 +1086,7 @@ function TocSheet(props: { book: LoadedBook; currentPage: number; onClose: () =>
               if (n >= 1 && n <= book.meta.pageCount) props.onJump(n - 1)
             }}
           >
-            移動
+            {t('移動')}
           </button>
         </div>
         <div className="row wrap">
@@ -1029,7 +1099,7 @@ function TocSheet(props: { book: LoadedBook; currentPage: number; onClose: () =>
         {marks.length > 0 && (
           <div>
             <div className="section-title" style={{ marginTop: 8 }}>
-              しおり
+              {t('しおり')}
             </div>
             <ul className="list">
               {marks.map((m) => (
@@ -1046,12 +1116,12 @@ function TocSheet(props: { book: LoadedBook; currentPage: number; onClose: () =>
         )}
         <div>
           <div className="section-title" style={{ marginTop: 8 }}>
-            目次
+            {t('目次')}
           </div>
           {outline === null ? (
-            <p className="small muted">読み込み中…</p>
+            <p className="small muted">{t('読み込み中…')}</p>
           ) : outline.length === 0 ? (
-            <p className="small muted">{isPdf ? 'このPDFには目次（しおり）が入っていません。ページ番号で移動してください。' : 'このテキストには見出しがありません。割合で移動してください。'}</p>
+            <p className="small muted">{isPdf ? t('このPDFには目次（しおり）が入っていません。ページ番号で移動してください。') : t('このテキストには見出しがありません。割合で移動してください。')}</p>
           ) : (
             <ul className="list">
               {outline.map((o, i) => (
@@ -1085,35 +1155,35 @@ function PeopleSheet(props: { book: LoadedBook; people: Person[]; onChange: (p: 
   return (
     <>
       <div className="sheet-backdrop" onClick={props.onClose} />
-      <div className="sheet stack" role="dialog" aria-label="人物">
+      <div className="sheet stack" role="dialog" aria-label={t('人物')}>
         <div className="row">
           <div className="grow" style={{ fontWeight: 700, fontSize: 17 }}>
-            人物
+            {t('人物')}
           </div>
-          <button className="icon-btn" aria-label="閉じる" onClick={props.onClose}>
+          <button className="icon-btn" aria-label={t('閉じる')} onClick={props.onClose}>
             <Icon name="close" />
           </button>
         </div>
         <p className="small muted" style={{ margin: 0 }}>
-          登録した名前は本文中で色分けし、途中で区切らずに表示します。説明は名前の下に小さく出します。
+          {t('登録した名前は本文中で色分けし、途中で区切らずに表示します。説明は名前の下に小さく出します。')}
         </p>
         <label className="switch">
-          <span>名前を色分け</span>
+          <span>{t('名前を色分け')}</span>
           <input type="checkbox" checked={s.personColors} onChange={(e) => update({ personColors: e.target.checked })} />
         </label>
         <label className="switch">
-          <span>名前を含む単位を少し長く表示</span>
+          <span>{t('名前を含む単位を少し長く表示')}</span>
           <input type="checkbox" checked={s.nameBoost} onChange={(e) => update({ nameBoost: e.target.checked })} />
         </label>
         <div className="field">
-          <div className="label">説明を出すとき</div>
+          <div className="label">{t('説明を出すとき')}</div>
           <div className="segmented" role="group">
             {(
               [
-                ['off', '出さない'],
-                ['chapter3', '章の最初3回'],
-                ['first3', '本の最初3回'],
-                ['always', '毎回'],
+                ['off', t('出さない')],
+                ['chapter3', t('章の最初3回')],
+                ['first3', t('本の最初3回')],
+                ['always', t('毎回')],
               ] as const
             ).map(([v, l]) => (
               <button key={v} aria-pressed={s.personLabel === v} onClick={() => update({ personLabel: v })}>
@@ -1126,43 +1196,43 @@ function PeopleSheet(props: { book: LoadedBook; people: Person[]; onChange: (p: 
         {people.map((p) => (
           <div key={p.id} className="card stack" style={{ padding: 12 }}>
             <div className="row">
-              <input type="text" value={p.name} aria-label="名前" onChange={(e) => patch(p.id, (x) => ({ ...x, name: e.target.value }))} style={{ color: p.color, fontWeight: 700 }} />
-              <button className="icon-btn" aria-label={`${p.name}を削除`} onClick={() => onChange(people.filter((x) => x.id !== p.id))}>
+              <input type="text" value={p.name} aria-label={t('名前')} onChange={(e) => patch(p.id, (x) => ({ ...x, name: e.target.value }))} style={{ color: p.color, fontWeight: 700 }} />
+              <button className="icon-btn" aria-label={t('{name}を削除', { name: p.name })} onClick={() => onChange(people.filter((x) => x.id !== p.id))}>
                 <Icon name="trash" />
               </button>
             </div>
-            <input type="text" placeholder="説明（例：主人公の幼なじみ）" value={p.label} aria-label="説明" onChange={(e) => patch(p.id, (x) => ({ ...x, label: e.target.value }))} />
+            <input type="text" placeholder={t('説明（例：主人公の幼なじみ）')} value={p.label} aria-label={t('説明')} onChange={(e) => patch(p.id, (x) => ({ ...x, label: e.target.value }))} />
             <input
               type="text"
-              placeholder="別名（読点区切り。例：千ちゃん、千晴さん）"
-              value={p.aliases.join('、')}
-              aria-label="別名"
-              onChange={(e) => patch(p.id, (x) => ({ ...x, aliases: e.target.value.split(/[、,，]/).map((t) => t.trim()).filter(Boolean) }))}
+              placeholder={t('別名（読点区切り。例：千ちゃん、千晴さん）')}
+              value={p.aliases.join(t('、'))}
+              aria-label={t('別名')}
+              onChange={(e) => patch(p.id, (x) => ({ ...x, aliases: e.target.value.split(/[、,，]/).map((t) => t.trim()).filter(Boolean) }))} // i18n-ignore: 別名の区切り文字（入力の分割。画面の文言ではない）
             />
-            <div className="row wrap" role="group" aria-label="色">
+            <div className="row wrap" role="group" aria-label={t('色')}>
               {PERSON_COLORS.map((c) => (
-                <button key={c} className="swatch" aria-label={`色 ${c}`} aria-pressed={p.color === c} style={{ background: c }} onClick={() => patch(p.id, (x) => ({ ...x, color: c }))} />
+                <button key={c} className="swatch" aria-label={t('色 {color}', { color: c })} aria-pressed={p.color === c} style={{ background: c }} onClick={() => patch(p.id, (x) => ({ ...x, color: c }))} />
               ))}
             </div>
           </div>
         ))}
 
         <div className="row">
-          <input type="text" placeholder="名前を追加" value={newName} onChange={(e) => setNewName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && add(newName)} aria-label="追加する名前" />
+          <input type="text" placeholder={t('名前を追加')} value={newName} onChange={(e) => setNewName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && add(newName)} aria-label={t('追加する名前')} />
           <button className="btn small primary" onClick={() => add(newName)} disabled={!newName.trim()}>
-            追加
+            {t('追加')}
           </button>
         </div>
 
         {candidates.length > 0 && (
           <div>
             <div className="section-title" style={{ marginTop: 4 }}>
-              候補（本文から自動で拾った語。人名でないものも含みます）
+              {t('候補（本文から自動で拾った語。人名でないものも含みます）')}
             </div>
             <div className="row wrap">
               {candidates.map((c) => (
-                <button key={c.word} className="btn small" title={`${c.reason}・${c.count}回`} onClick={() => add(c.word)}>
-                  ＋{c.word}
+                <button key={c.word} className="btn small" title={t('{reason}・{count}回', { reason: t(c.reason), count: c.count })} onClick={() => add(c.word)}>
+                  {'\uFF0B'}{c.word}
                   <span className="small muted">{c.count}</span>
                 </button>
               ))}

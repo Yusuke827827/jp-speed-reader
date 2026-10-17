@@ -3,7 +3,7 @@
 // - 1 ページずつ描画 → 認識 → 保存 を繰り返すので、メモリを使い切らず、
 //   途中でアプリが落ちても次回は未処理のページから再開できる。
 // - Tesseract.js の本体（worker と wasm）は public/tesseract に同梱している。
-// - 日本語の学習データ（jpn / jpn_vert、各数 MB）は初回だけ CDN から取得し、
+// - 学習データ（日本語の jpn / jpn_vert、英語の eng、各数 MB）は初回だけ CDN から取得し、
 //   以後はブラウザ内（IndexedDB）にキャッシュされる。本文や画像は外部に送らない。
 
 import { createWorker, PSM, type Worker } from 'tesseract.js'
@@ -11,6 +11,10 @@ import { getPages, needsOcr, putPages, updateBook, type BookMeta, type OcrLang, 
 import { BLANK_INK, FULL_PAGE, inkRatio } from './illust'
 import { closePdf, openPdf, renderToCanvas, type PDFDocumentProxy } from './pdf'
 import { getFile } from './db'
+import { cleanOcrText, shouldTryEnglish } from './ocrText'
+import { t } from './i18n'
+
+export { cleanOcrText }
 
 const BASE = import.meta.env.BASE_URL
 
@@ -41,29 +45,6 @@ export async function createOcrWorker(lang: OcrLang, onLog?: (p: number, status:
   return worker
 }
 
-/** Tesseract の出力を本文に整える。日本語の文字間の空白を消し、空行で段落を分ける */
-export function cleanOcrText(raw: string): { text: string; contFromPrev: boolean } {
-  const CJK = '[\\u3000-\\u30FF\\u3400-\\u9FFF\\uFF00-\\uFFEF々〆〇ー]'
-  const noSpace = new RegExp(`(${CJK})[ \\t]+(?=${CJK})`, 'g')
-  const paras: string[] = []
-  let cur = ''
-  for (const line of raw.split(/\r?\n/)) {
-    const t = line.replace(noSpace, '$1').replace(noSpace, '$1').trim()
-    if (!t) {
-      if (cur) paras.push(cur)
-      cur = ''
-      continue
-    }
-    if (cur && /^[「『（　]/.test(t)) {
-      paras.push(cur)
-      cur = t
-    } else cur += t
-  }
-  if (cur) paras.push(cur)
-  const first = raw.trimStart()
-  return { text: paras.join('\n'), contFromPrev: !/^[「『（　]/.test(first) }
-}
-
 export interface OcrRun {
   promise: Promise<void>
   cancel: () => void
@@ -90,7 +71,7 @@ export function runOcr(
 
   const promise = (async () => {
     const blob = await getFile(book.id)
-    if (!blob) throw new Error('元の PDF が見つかりません。本棚から取り込み直してください。')
+    if (!blob) throw new Error(t('元の PDF が見つかりません。本棚から取り込み直してください。'))
     doc = await openPdf(await blob.arrayBuffer())
     const all = await getPages(book.id)
     const targets = opts.pages ?? all.filter(needsOcr).map((p) => p.pageIndex)
@@ -110,13 +91,13 @@ export function runOcr(
 
     for (const pageIndex of targets) {
       if (cancelled) break
-      report(pageIndex, 0, 'ページを画像にしています')
+      report(pageIndex, 0, t('ページを画像にしています'))
       const canvas = await renderToCanvas(doc, pageIndex, OCR_LONG_SIDE)
       const ink = inkRatio(canvas.getContext('2d')!.getImageData(0, 0, canvas.width, canvas.height).data)
 
       if (!lang) {
         // 縦横の自動判定: 両方で認識して平均信頼度を比べる
-        report(pageIndex, 0, '縦書きか横書きかを判定しています（初回は学習データを取得します）')
+        report(pageIndex, 0, t('縦書きか横書きかを判定しています（初回は学習データを取得します）'))
         const results: { lang: OcrLang; conf: number; text: string }[] = []
         for (const l of ['jpn_vert', 'jpn'] as OcrLang[]) {
           if (cancelled) break
@@ -128,6 +109,16 @@ export function runOcr(
         }
         if (cancelled || results.length < 2) break
         results.sort((a, b) => b.conf - a.conf)
+        // 欧文主体のページなら英語の学習データでも読み、信頼度の高い方を使う（日本語の本では読み直さない）
+        if (shouldTryEnglish(results[0].text) && !cancelled) {
+          report(pageIndex, 0, t('英語の文書として読み直しています'))
+          worker = await createOcrWorker('eng', (p, s) => report(pageIndex, p, statusLabel(s)))
+          const r = await worker.recognize(canvas)
+          await worker.terminate()
+          worker = null
+          if (r.data.confidence >= results[0].conf) results.unshift({ lang: 'eng', conf: r.data.confidence, text: r.data.text })
+        }
+        if (cancelled) break
         lang = results[0].lang
         const chosen = lang
         await updateBook(book.id, (b) => (b.ocr.lang = chosen))
@@ -145,7 +136,7 @@ export function runOcr(
         b.ocr.updatedAt = Date.now()
         b.textVersion++
       })
-      report(pageIndex, 1, '保存しました')
+      report(pageIndex, 1, t('保存しました'))
     }
 
     const remaining = (await getPages(book.id)).filter(needsOcr).length
@@ -197,9 +188,9 @@ async function savePage(bookId: string, pageIndex: number, raw: string, confiden
 }
 
 function statusLabel(s: string): string {
-  if (s.includes('loading language')) return '日本語の学習データを読み込んでいます'
-  if (s.includes('loading tesseract core')) return 'OCR エンジンを読み込んでいます'
-  if (s.includes('initializ')) return 'OCR エンジンを準備しています'
-  if (s.includes('recognizing')) return '文字を認識しています'
+  if (s.includes('loading language')) return t('学習データを読み込んでいます')
+  if (s.includes('loading tesseract core')) return t('OCR エンジンを読み込んでいます')
+  if (s.includes('initializ')) return t('OCR エンジンを準備しています')
+  if (s.includes('recognizing')) return t('文字を認識しています')
   return s
 }
