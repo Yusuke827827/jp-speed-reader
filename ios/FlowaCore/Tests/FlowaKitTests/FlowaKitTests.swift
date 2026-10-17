@@ -122,6 +122,23 @@ final class FlowaKitTests: XCTestCase {
         XCTAssertEqual(model.percent, model.text.percentAt(model.position))
     }
 
+    func testVerticalForms() {
+        let cells = VerticalForms.cells("「12時、ゲーム」123")
+        XCTAssertEqual(cells.map(\.text), ["﹁", "12", "時", "︑", "ゲ", "ー", "ム", "﹂", "1", "2", "3"])
+        XCTAssertEqual(cells.map(\.rotated), [false, false, false, false, false, true, false, false, true, true, true])
+        XCTAssertEqual(VerticalForms.cells("OK").map(\.narrow), [true, true])
+    }
+
+    func testShowsVertical() {
+        var s = ReaderSettings()
+        XCTAssertTrue(s.showsVertical(bookIsVertical: true))
+        XCTAssertFalse(s.showsVertical(bookIsVertical: false))
+        s.direction = "vertical"
+        XCTAssertTrue(s.showsVertical(bookIsVertical: false))
+        s.direction = "horizontal"
+        XCTAssertFalse(s.showsVertical(bookIsVertical: true))
+    }
+
     func testSettingsDecodeOldData() throws {
         let s = try JSONDecoder().decode(ReaderSettings.self, from: Data(#"{"cpm": 900}"#.utf8))
         XCTAssertEqual(s.cpm, 900)

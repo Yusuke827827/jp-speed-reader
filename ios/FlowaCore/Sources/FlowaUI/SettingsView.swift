@@ -45,6 +45,23 @@ struct SettingsView: View {
                     Slider(value: $settings.fontSize, in: 24...96, step: 2)
                 }
                 Toggle(L("明朝体で表示"), isOn: $settings.serif)
+                Picker(L("文字の向き"), selection: $settings.direction) {
+                    Text(L("本に合わせる")).tag("auto")
+                    Text(L("横書き")).tag("horizontal")
+                    Text(L("縦書き")).tag("vertical")
+                }
+                Picker(L("テーマ"), selection: $settings.theme) {
+                    Text(L("端末の設定に合わせる")).tag("auto")
+                    ForEach(ReaderTheme.all) { t in
+                        HStack {
+                            Text(L(String.LocalizationValue(t.label)))
+                            Spacer()
+                            Circle().fill(t.bg).overlay(Circle().stroke(.secondary.opacity(0.4))).frame(width: 18, height: 18)
+                        }
+                        .tag(t.id)
+                    }
+                }
+                .pickerStyle(.navigationLink)
             }
 
             Section(L("再生")) {
