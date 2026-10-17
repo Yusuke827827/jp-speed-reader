@@ -1,0 +1,27 @@
+# iOS 版の共通処理（ios/FlowaCore）を Mac でビルドし、正解データ（fixtures/golden）と比べるテストを実行する
+name: iOS core tests
+
+on:
+  push:
+    paths:
+      - 'ios/**'
+      - 'fixtures/golden/**'
+      - '.github/workflows/ios-core.yml'
+  pull_request:
+    paths:
+      - 'ios/**'
+      - 'fixtures/golden/**'
+      - '.github/workflows/ios-core.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: swift --version
+      - run: swift test
+        working-directory: ios/FlowaCore

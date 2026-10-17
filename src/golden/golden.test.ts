@@ -16,6 +16,7 @@ import { itemsToLines, joinLine, linesToPageTexts, type RawItem } from '../lib/l
 import { normalizeChars, parseRuby, stripNotes } from '../lib/normalize'
 import { cleanOcrText } from '../lib/ocrText'
 import { toRawItems } from '../lib/pdfItems'
+import { loadDefaultJapaneseParser } from 'budoux'
 import { segmentBook, splitSentences, type ChunkMode } from '../lib/segment'
 import { decodeText, parseTextBook } from '../lib/textImport'
 import { buildSchedule } from '../lib/timing'
@@ -78,6 +79,13 @@ describe('golden', () => {
     golden('splitSentences', 'splitSentences', inputs, inputs.map((s) => splitSentences(s)))
   })
 
+  it('budoux', () => {
+    // BudouX の日本語モデルの区切り位置（UTF-16 の位置）。Swift 版の推論の移植を確かめる
+    const parser = loadDefaultJapaneseParser()
+    const inputs = [...CORPUS.ja, ...CORPUS.mixed, 'あ', '', '今日は良い天気ですね。', '𠮟𠮟𠮟られた🌙🌙']
+    golden('budoux-ja', 'loadDefaultJapaneseParser().parseBoundaries(sentence)', inputs, inputs.map((s) => parser.parseBoundaries(s)))
+  })
+
   it('joinLine', () => {
     const inputs: [string, string][] = [
       ['this is an exam-', 'ple'],
@@ -97,7 +105,9 @@ describe('golden', () => {
       const b = bookOf(paras)
       const expected: Record<string, unknown> = {}
       for (const mode of MODES) for (const minChars of [1, 3]) expected[`${mode}/min${minChars}`] = chunkView(b, mode, minChars)
-      golden(`segmentBook-${lang}`, 'segmentBook(buildBookText(paragraphs), { mode, phraseTarget: 7, minChars, names: ["千晴", "湊"] })', { paragraphs: paras }, expected)
+      // Swift 版がルビ記法の解析なしで単独に確かめられるよう、組み立て後の段落（本文とルビの位置）も入力に入れる
+      const book = b.paragraphs.map((p) => ({ text: p.text, ruby: p.ruby }))
+      golden(`segmentBook-${lang}`, 'segmentBook(buildBookText(paragraphs), { mode, phraseTarget: 7, minChars, names: ["千晴", "湊"] })', { paragraphs: paras, book, names: ['千晴', '湊'], phraseTarget: 7 }, expected)
     })
   }
 
@@ -109,7 +119,9 @@ describe('golden', () => {
       const s = buildSchedule(chunks, { cpm: 600, wpm: 250, pauses, pauseScale: 1, nameBoost: true })
       expected[`pauses=${pauses}`] = { weights: [...s.weights], unit: [...s.unit], blocks: s.blocks, limited: s.limited, totalChars: s.totalChars }
     }
-    golden('buildSchedule', 'buildSchedule(segmentBook(phrase, 7, min3, names), { cpm: 600, wpm: 250, pauses, pauseScale: 1, nameBoost: true })', { paragraphs: paras }, expected)
+    // Swift 版の表示時間の計算を単独で確かめられるよう、分割済みの単位（計算に使う項目だけ）も入力に入れる
+    const units = chunks.map((c) => ({ len: c.len, pause: c.pause, words: c.words, name: !!c.name, illust: !!c.illust }))
+    golden('buildSchedule', 'buildSchedule(chunks, { cpm: 600, wpm: 250, pauses, pauseScale: 1, nameBoost: true })', { paragraphs: paras, chunks: units, options: { cpm: 600, wpm: 250, pauseScale: 1, nameBoost: true } }, expected)
   })
 
   it('cleanOcrText', () => {
