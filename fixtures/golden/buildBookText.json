@@ -1,0 +1,270 @@
+{
+ "fn": "buildBookText(pages, 8) と pageAt / globalOffset / percentAt / positionForPage",
+ "indexUnit": "utf16",
+ "input": {
+  "pages": [
+   {
+    "pageIndex": 3,
+    "text": "続きの段落です。\n｜湊《みなと》は走った︒",
+    "contFromPrev": true
+   },
+   {
+    "pageIndex": 0,
+    "text": "一つ目の段落です。\n二つ目の段落は次の",
+    "contFromPrev": false
+   },
+   {
+    "pageIndex": 1,
+    "text": "",
+    "contFromPrev": false,
+    "image": "illust",
+    "illustRect": [
+     0.1,
+     0.2,
+     0.8,
+     0.5
+    ]
+   },
+   {
+    "pageIndex": 2,
+    "text": "",
+    "contFromPrev": false,
+    "image": "blank"
+   },
+   {
+    "pageIndex": 5,
+    "text": "離れたページの文。\n",
+    "contFromPrev": true
+   },
+   {
+    "pageIndex": 6,
+    "text": "",
+    "contFromPrev": false,
+    "image": "illust"
+   },
+   {
+    "pageIndex": 7,
+    "text": "最後の段落。",
+    "contFromPrev": false
+   }
+  ],
+  "pageCount": 8,
+  "positions": [
+   {
+    "para": 0,
+    "offset": 0
+   },
+   {
+    "para": 1,
+    "offset": 3
+   },
+   {
+    "para": 1,
+    "offset": 9
+   },
+   {
+    "para": 2,
+    "offset": 0
+   },
+   {
+    "para": 4,
+    "offset": 2
+   },
+   {
+    "para": 99,
+    "offset": 0
+   },
+   {
+    "para": 1,
+    "offset": 100
+   }
+  ],
+  "pageQueries": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8
+  ]
+ },
+ "expected": {
+  "paragraphs": [
+   {
+    "text": "一つ目の段落です。",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ],
+    "globalStart": 0
+   },
+   {
+    "text": "二つ目の段落は次の続きの段落です。",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ],
+     [
+      9,
+      3
+     ]
+    ],
+    "globalStart": 9
+   },
+   {
+    "text": "",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      1
+     ]
+    ],
+    "globalStart": 26,
+    "illust": {
+     "page": 1,
+     "rect": [
+      0.1,
+      0.2,
+      0.8,
+      0.5
+     ]
+    }
+   },
+   {
+    "text": "湊は走った。",
+    "ruby": [
+     {
+      "start": 0,
+      "end": 1,
+      "text": "みなと"
+     }
+    ],
+    "pageMarks": [
+     [
+      0,
+      3
+     ]
+    ],
+    "globalStart": 26
+   },
+   {
+    "text": "離れたページの文。",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      5
+     ]
+    ],
+    "globalStart": 32
+   },
+   {
+    "text": "",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      6
+     ]
+    ],
+    "globalStart": 41,
+    "illust": {
+     "page": 6,
+     "rect": [
+      0,
+      0,
+      1,
+      1
+     ]
+    }
+   },
+   {
+    "text": "最後の段落。",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      7
+     ]
+    ],
+    "globalStart": 41
+   }
+  ],
+  "totalChars": 47,
+  "pageCount": 8,
+  "pageAt": [
+   0,
+   0,
+   3,
+   1,
+   5,
+   0,
+   3
+  ],
+  "globalOffset": [
+   0,
+   12,
+   18,
+   26,
+   34,
+   0,
+   109
+  ],
+  "percentAt": [
+   0,
+   25.5319,
+   38.2979,
+   55.3191,
+   72.3404,
+   0,
+   100
+  ],
+  "positionForPage": [
+   {
+    "para": 0,
+    "offset": 0
+   },
+   {
+    "para": 1,
+    "offset": 9
+   },
+   {
+    "para": 1,
+    "offset": 9
+   },
+   {
+    "para": 1,
+    "offset": 9
+   },
+   {
+    "para": 4,
+    "offset": 0
+   },
+   {
+    "para": 4,
+    "offset": 0
+   },
+   {
+    "para": 5,
+    "offset": 0
+   },
+   {
+    "para": 6,
+    "offset": 0
+   },
+   {
+    "para": 6,
+    "offset": 0
+   }
+  ]
+ }
+}
