@@ -10,6 +10,7 @@ const SAMPLES = [
   { file: 'sample-scanned.pdf', label: () => t('画像だけのPDF（OCRの確認用）') },
   { file: 'sample-illustrated.pdf', label: () => t('挿絵入りのPDF') },
   { file: 'sample-aozora.txt', label: () => t('青空文庫形式のテキスト（ルビ・人物名）') },
+  { file: 'sample-english-paper.pdf', label: () => t('英語の論文（2段組み・脚注・参考文献）') },
 ]
 
 export function Import() {

@@ -1,5 +1,6 @@
 // 英語の訳（キーは画面の日本語の文）
 const dict: Record<string, string> = {
+  '英語の論文（2段組み・脚注・参考文献）': 'English paper (two columns, footnotes, references)',
   '横書きの短編（テキストPDF）': 'Horizontal short story (text PDF)',
   '縦書きの短編（テキストPDF）': 'Vertical short story (text PDF)',
   '画像だけのPDF（OCRの確認用）': 'Image-only PDF (for testing OCR)',
