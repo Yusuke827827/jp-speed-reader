@@ -1,0 +1,18 @@
+{
+ "fn": "cleanOcrText",
+ "indexUnit": "utf16",
+ "input": [
+  "This is an exam-\nple of text that\ncontinues here.\n\nA new paragraph\nstarts.\n",
+  "坂 の 上 の 図 書 館 は 、\n月 曜 日 だ け 休 み に な る 。\n\n「今 日 は」\n"
+ ],
+ "expected": [
+  {
+   "text": "This is an example of text that continues here.\nA new paragraph starts.",
+   "contFromPrev": true
+  },
+  {
+   "text": "坂の上の図書館は、月曜日だけ休みになる。\n「今日は」",
+   "contFromPrev": true
+  }
+ ]
+}

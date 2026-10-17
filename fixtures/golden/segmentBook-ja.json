@@ -1,0 +1,3469 @@
+{
+ "fn": "segmentBook(buildBookText(paragraphs), { mode, phraseTarget: 7, minChars, names: [\"千晴\", \"湊\"] })",
+ "indexUnit": "utf16",
+ "input": {
+  "paragraphs": [
+   "朝の駅は、思ったより静かだった。「おはよう。今日は早いね」と｜千晴《ちはる》は言った。改札の時計は７時４５分を指していて、気温は12.5度しかない。",
+   "湊は自転車を押しながら、少し眠そうな顔で手を振った。……それから、二人は川沿いの道を歩いた――鉄橋の上を電車が渡っていく。",
+   "𠮟られた子どもは、窓の外の🌙を見上げた。ＰＤＦの２ページ目には、ver.2の説明がある。"
+  ]
+ },
+ "expected": {
+  "char/min1": [
+   {
+    "text": "朝",
+    "para": 0,
+    "start": 0,
+    "end": 1,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "の",
+    "para": 0,
+    "start": 1,
+    "end": 2,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "駅",
+    "para": 0,
+    "start": 2,
+    "end": 3,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "は、",
+    "para": 0,
+    "start": 3,
+    "end": 5,
+    "pause": "comma",
+    "len": 2
+   },
+   {
+    "text": "思っ",
+    "para": 0,
+    "start": 5,
+    "end": 7,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "た",
+    "para": 0,
+    "start": 7,
+    "end": 8,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "よ",
+    "para": 0,
+    "start": 8,
+    "end": 9,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "り",
+    "para": 0,
+    "start": 9,
+    "end": 10,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "静",
+    "para": 0,
+    "start": 10,
+    "end": 11,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "か",
+    "para": 0,
+    "start": 11,
+    "end": 12,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "だっ",
+    "para": 0,
+    "start": 12,
+    "end": 14,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "た。",
+    "para": 0,
+    "start": 14,
+    "end": 16,
+    "pause": "sentence",
+    "len": 2
+   },
+   {
+    "text": "「お",
+    "para": 0,
+    "start": 16,
+    "end": 18,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "は",
+    "para": 0,
+    "start": 18,
+    "end": 19,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "よ",
+    "para": 0,
+    "start": 19,
+    "end": 20,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "う。",
+    "para": 0,
+    "start": 20,
+    "end": 22,
+    "pause": "sentence",
+    "len": 2
+   },
+   {
+    "text": "今",
+    "para": 0,
+    "start": 22,
+    "end": 23,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "日",
+    "para": 0,
+    "start": 23,
+    "end": 24,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "は",
+    "para": 0,
+    "start": 24,
+    "end": 25,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "早",
+    "para": 0,
+    "start": 25,
+    "end": 26,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "い",
+    "para": 0,
+    "start": 26,
+    "end": 27,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "ね」",
+    "para": 0,
+    "start": 27,
+    "end": 29,
+    "pause": "sentence",
+    "len": 2
+   },
+   {
+    "text": "と",
+    "para": 0,
+    "start": 29,
+    "end": 30,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "千晴",
+    "para": 0,
+    "start": 30,
+    "end": 32,
+    "pause": "none",
+    "len": 2,
+    "name": true
+   },
+   {
+    "text": "は",
+    "para": 0,
+    "start": 32,
+    "end": 33,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "言っ",
+    "para": 0,
+    "start": 33,
+    "end": 35,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "た。",
+    "para": 0,
+    "start": 35,
+    "end": 37,
+    "pause": "sentence",
+    "len": 2
+   },
+   {
+    "text": "改",
+    "para": 0,
+    "start": 37,
+    "end": 38,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "札",
+    "para": 0,
+    "start": 38,
+    "end": 39,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "の",
+    "para": 0,
+    "start": 39,
+    "end": 40,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "時",
+    "para": 0,
+    "start": 40,
+    "end": 41,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "計",
+    "para": 0,
+    "start": 41,
+    "end": 42,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "は",
+    "para": 0,
+    "start": 42,
+    "end": 43,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "７",
+    "para": 0,
+    "start": 43,
+    "end": 44,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "時",
+    "para": 0,
+    "start": 44,
+    "end": 45,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "４５",
+    "para": 0,
+    "start": 45,
+    "end": 47,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "分",
+    "para": 0,
+    "start": 47,
+    "end": 48,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "を",
+    "para": 0,
+    "start": 48,
+    "end": 49,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "指",
+    "para": 0,
+    "start": 49,
+    "end": 50,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "し",
+    "para": 0,
+    "start": 50,
+    "end": 51,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "て",
+    "para": 0,
+    "start": 51,
+    "end": 52,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "い",
+    "para": 0,
+    "start": 52,
+    "end": 53,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "て、",
+    "para": 0,
+    "start": 53,
+    "end": 55,
+    "pause": "comma",
+    "len": 2
+   },
+   {
+    "text": "気",
+    "para": 0,
+    "start": 55,
+    "end": 56,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "温",
+    "para": 0,
+    "start": 56,
+    "end": 57,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "は",
+    "para": 0,
+    "start": 57,
+    "end": 58,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "12.5",
+    "para": 0,
+    "start": 58,
+    "end": 62,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "度",
+    "para": 0,
+    "start": 62,
+    "end": 63,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "し",
+    "para": 0,
+    "start": 63,
+    "end": 64,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "か",
+    "para": 0,
+    "start": 64,
+    "end": 65,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "な",
+    "para": 0,
+    "start": 65,
+    "end": 66,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "い。",
+    "para": 0,
+    "start": 66,
+    "end": 68,
+    "pause": "paragraph",
+    "len": 2
+   },
+   {
+    "text": "湊",
+    "para": 1,
+    "start": 0,
+    "end": 1,
+    "pause": "none",
+    "len": 1,
+    "name": true
+   },
+   {
+    "text": "は",
+    "para": 1,
+    "start": 1,
+    "end": 2,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "自",
+    "para": 1,
+    "start": 2,
+    "end": 3,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "転",
+    "para": 1,
+    "start": 3,
+    "end": 4,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "車",
+    "para": 1,
+    "start": 4,
+    "end": 5,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "を",
+    "para": 1,
+    "start": 5,
+    "end": 6,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "押",
+    "para": 1,
+    "start": 6,
+    "end": 7,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "し",
+    "para": 1,
+    "start": 7,
+    "end": 8,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "な",
+    "para": 1,
+    "start": 8,
+    "end": 9,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "が",
+    "para": 1,
+    "start": 9,
+    "end": 10,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "ら、",
+    "para": 1,
+    "start": 10,
+    "end": 12,
+    "pause": "comma",
+    "len": 2
+   },
+   {
+    "text": "少",
+    "para": 1,
+    "start": 12,
+    "end": 13,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "し",
+    "para": 1,
+    "start": 13,
+    "end": 14,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "眠",
+    "para": 1,
+    "start": 14,
+    "end": 15,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "そ",
+    "para": 1,
+    "start": 15,
+    "end": 16,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "う",
+    "para": 1,
+    "start": 16,
+    "end": 17,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "な",
+    "para": 1,
+    "start": 17,
+    "end": 18,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "顔",
+    "para": 1,
+    "start": 18,
+    "end": 19,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "で",
+    "para": 1,
+    "start": 19,
+    "end": 20,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "手",
+    "para": 1,
+    "start": 20,
+    "end": 21,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "を",
+    "para": 1,
+    "start": 21,
+    "end": 22,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "振っ",
+    "para": 1,
+    "start": 22,
+    "end": 24,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "た。",
+    "para": 1,
+    "start": 24,
+    "end": 26,
+    "pause": "sentence",
+    "len": 2
+   },
+   {
+    "text": "……",
+    "para": 1,
+    "start": 26,
+    "end": 28,
+    "pause": "comma",
+    "len": 2
+   },
+   {
+    "text": "そ",
+    "para": 1,
+    "start": 28,
+    "end": 29,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "れ",
+    "para": 1,
+    "start": 29,
+    "end": 30,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "か",
+    "para": 1,
+    "start": 30,
+    "end": 31,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "ら、",
+    "para": 1,
+    "start": 31,
+    "end": 33,
+    "pause": "comma",
+    "len": 2
+   },
+   {
+    "text": "二",
+    "para": 1,
+    "start": 33,
+    "end": 34,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "人",
+    "para": 1,
+    "start": 34,
+    "end": 35,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "は",
+    "para": 1,
+    "start": 35,
+    "end": 36,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "川",
+    "para": 1,
+    "start": 36,
+    "end": 37,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "沿",
+    "para": 1,
+    "start": 37,
+    "end": 38,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "い",
+    "para": 1,
+    "start": 38,
+    "end": 39,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "の",
+    "para": 1,
+    "start": 39,
+    "end": 40,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "道",
+    "para": 1,
+    "start": 40,
+    "end": 41,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "を",
+    "para": 1,
+    "start": 41,
+    "end": 42,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "歩",
+    "para": 1,
+    "start": 42,
+    "end": 43,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "い",
+    "para": 1,
+    "start": 43,
+    "end": 44,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "た――",
+    "para": 1,
+    "start": 44,
+    "end": 47,
+    "pause": "comma",
+    "len": 3
+   },
+   {
+    "text": "鉄",
+    "para": 1,
+    "start": 47,
+    "end": 48,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "橋",
+    "para": 1,
+    "start": 48,
+    "end": 49,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "の",
+    "para": 1,
+    "start": 49,
+    "end": 50,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "上",
+    "para": 1,
+    "start": 50,
+    "end": 51,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "を",
+    "para": 1,
+    "start": 51,
+    "end": 52,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "電",
+    "para": 1,
+    "start": 52,
+    "end": 53,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "車",
+    "para": 1,
+    "start": 53,
+    "end": 54,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "が",
+    "para": 1,
+    "start": 54,
+    "end": 55,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "渡っ",
+    "para": 1,
+    "start": 55,
+    "end": 57,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "て",
+    "para": 1,
+    "start": 57,
+    "end": 58,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "い",
+    "para": 1,
+    "start": 58,
+    "end": 59,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "く。",
+    "para": 1,
+    "start": 59,
+    "end": 61,
+    "pause": "paragraph",
+    "len": 2
+   },
+   {
+    "text": "𠮟",
+    "para": 2,
+    "start": 0,
+    "end": 2,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "ら",
+    "para": 2,
+    "start": 2,
+    "end": 3,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "れ",
+    "para": 2,
+    "start": 3,
+    "end": 4,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "た",
+    "para": 2,
+    "start": 4,
+    "end": 5,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "子",
+    "para": 2,
+    "start": 5,
+    "end": 6,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "ど",
+    "para": 2,
+    "start": 6,
+    "end": 7,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "も",
+    "para": 2,
+    "start": 7,
+    "end": 8,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "は、",
+    "para": 2,
+    "start": 8,
+    "end": 10,
+    "pause": "comma",
+    "len": 2
+   },
+   {
+    "text": "窓",
+    "para": 2,
+    "start": 10,
+    "end": 11,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "の",
+    "para": 2,
+    "start": 11,
+    "end": 12,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "外",
+    "para": 2,
+    "start": 12,
+    "end": 13,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "の",
+    "para": 2,
+    "start": 13,
+    "end": 14,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "🌙",
+    "para": 2,
+    "start": 14,
+    "end": 16,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "を",
+    "para": 2,
+    "start": 16,
+    "end": 17,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "見",
+    "para": 2,
+    "start": 17,
+    "end": 18,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "上",
+    "para": 2,
+    "start": 18,
+    "end": 19,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "げ",
+    "para": 2,
+    "start": 19,
+    "end": 20,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "た。",
+    "para": 2,
+    "start": 20,
+    "end": 22,
+    "pause": "sentence",
+    "len": 2
+   },
+   {
+    "text": "ＰＤＦ",
+    "para": 2,
+    "start": 22,
+    "end": 25,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "の",
+    "para": 2,
+    "start": 25,
+    "end": 26,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "２",
+    "para": 2,
+    "start": 26,
+    "end": 27,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "ペー",
+    "para": 2,
+    "start": 27,
+    "end": 29,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "ジ",
+    "para": 2,
+    "start": 29,
+    "end": 30,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "目",
+    "para": 2,
+    "start": 30,
+    "end": 31,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "に",
+    "para": 2,
+    "start": 31,
+    "end": 32,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "は、",
+    "para": 2,
+    "start": 32,
+    "end": 34,
+    "pause": "comma",
+    "len": 2
+   },
+   {
+    "text": "ver.2",
+    "para": 2,
+    "start": 34,
+    "end": 39,
+    "pause": "none",
+    "len": 5
+   },
+   {
+    "text": "の",
+    "para": 2,
+    "start": 39,
+    "end": 40,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "説",
+    "para": 2,
+    "start": 40,
+    "end": 41,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "明",
+    "para": 2,
+    "start": 41,
+    "end": 42,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "が",
+    "para": 2,
+    "start": 42,
+    "end": 43,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "あ",
+    "para": 2,
+    "start": 43,
+    "end": 44,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "る。",
+    "para": 2,
+    "start": 44,
+    "end": 46,
+    "pause": "paragraph",
+    "len": 2
+   }
+  ],
+  "char/min3": [
+   {
+    "text": "朝の駅",
+    "para": 0,
+    "start": 0,
+    "end": 3,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "は、思っ",
+    "para": 0,
+    "start": 3,
+    "end": 7,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "たより",
+    "para": 0,
+    "start": 7,
+    "end": 10,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "静かだった。",
+    "para": 0,
+    "start": 10,
+    "end": 16,
+    "pause": "sentence",
+    "len": 6
+   },
+   {
+    "text": "「おは",
+    "para": 0,
+    "start": 16,
+    "end": 19,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "よう。",
+    "para": 0,
+    "start": 19,
+    "end": 22,
+    "pause": "sentence",
+    "len": 3
+   },
+   {
+    "text": "今日は",
+    "para": 0,
+    "start": 22,
+    "end": 25,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "早いね」",
+    "para": 0,
+    "start": 25,
+    "end": 29,
+    "pause": "sentence",
+    "len": 4
+   },
+   {
+    "text": "と千晴",
+    "para": 0,
+    "start": 29,
+    "end": 32,
+    "pause": "none",
+    "len": 3,
+    "name": true
+   },
+   {
+    "text": "は言った。",
+    "para": 0,
+    "start": 32,
+    "end": 37,
+    "pause": "sentence",
+    "len": 5
+   },
+   {
+    "text": "改札の",
+    "para": 0,
+    "start": 37,
+    "end": 40,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "時計は",
+    "para": 0,
+    "start": 40,
+    "end": 43,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "７時４５",
+    "para": 0,
+    "start": 43,
+    "end": 47,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "分を指",
+    "para": 0,
+    "start": 47,
+    "end": 50,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "してい",
+    "para": 0,
+    "start": 50,
+    "end": 53,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "て、気",
+    "para": 0,
+    "start": 53,
+    "end": 56,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "温は12.5",
+    "para": 0,
+    "start": 56,
+    "end": 62,
+    "pause": "none",
+    "len": 6
+   },
+   {
+    "text": "度しか",
+    "para": 0,
+    "start": 62,
+    "end": 65,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "ない。",
+    "para": 0,
+    "start": 65,
+    "end": 68,
+    "pause": "paragraph",
+    "len": 3
+   },
+   {
+    "text": "湊は自",
+    "para": 1,
+    "start": 0,
+    "end": 3,
+    "pause": "none",
+    "len": 3,
+    "name": true
+   },
+   {
+    "text": "転車を",
+    "para": 1,
+    "start": 3,
+    "end": 6,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "押しな",
+    "para": 1,
+    "start": 6,
+    "end": 9,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "がら、",
+    "para": 1,
+    "start": 9,
+    "end": 12,
+    "pause": "comma",
+    "len": 3
+   },
+   {
+    "text": "少し眠",
+    "para": 1,
+    "start": 12,
+    "end": 15,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "そうな",
+    "para": 1,
+    "start": 15,
+    "end": 18,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "顔で手",
+    "para": 1,
+    "start": 18,
+    "end": 21,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "を振った。",
+    "para": 1,
+    "start": 21,
+    "end": 26,
+    "pause": "sentence",
+    "len": 5
+   },
+   {
+    "text": "……そ",
+    "para": 1,
+    "start": 26,
+    "end": 29,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "れから、",
+    "para": 1,
+    "start": 29,
+    "end": 33,
+    "pause": "comma",
+    "len": 4
+   },
+   {
+    "text": "二人は",
+    "para": 1,
+    "start": 33,
+    "end": 36,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "川沿い",
+    "para": 1,
+    "start": 36,
+    "end": 39,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "の道を",
+    "para": 1,
+    "start": 39,
+    "end": 42,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "歩いた――",
+    "para": 1,
+    "start": 42,
+    "end": 47,
+    "pause": "comma",
+    "len": 5
+   },
+   {
+    "text": "鉄橋の",
+    "para": 1,
+    "start": 47,
+    "end": 50,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "上を電",
+    "para": 1,
+    "start": 50,
+    "end": 53,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "車が渡っ",
+    "para": 1,
+    "start": 53,
+    "end": 57,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "ていく。",
+    "para": 1,
+    "start": 57,
+    "end": 61,
+    "pause": "paragraph",
+    "len": 4
+   },
+   {
+    "text": "𠮟られ",
+    "para": 2,
+    "start": 0,
+    "end": 4,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "た子ど",
+    "para": 2,
+    "start": 4,
+    "end": 7,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "もは、",
+    "para": 2,
+    "start": 7,
+    "end": 10,
+    "pause": "comma",
+    "len": 3
+   },
+   {
+    "text": "窓の外",
+    "para": 2,
+    "start": 10,
+    "end": 13,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "の🌙を",
+    "para": 2,
+    "start": 13,
+    "end": 17,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "見上げた。",
+    "para": 2,
+    "start": 17,
+    "end": 22,
+    "pause": "sentence",
+    "len": 5
+   },
+   {
+    "text": "ＰＤＦ",
+    "para": 2,
+    "start": 22,
+    "end": 25,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "の２ペー",
+    "para": 2,
+    "start": 25,
+    "end": 29,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "ジ目に",
+    "para": 2,
+    "start": 29,
+    "end": 32,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "は、ver.2",
+    "para": 2,
+    "start": 32,
+    "end": 39,
+    "pause": "none",
+    "len": 7
+   },
+   {
+    "text": "の説明",
+    "para": 2,
+    "start": 39,
+    "end": 42,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "がある。",
+    "para": 2,
+    "start": 42,
+    "end": 46,
+    "pause": "paragraph",
+    "len": 4
+   }
+  ],
+  "short/min1": [
+   {
+    "text": "朝の",
+    "para": 0,
+    "start": 0,
+    "end": 2,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "駅は、",
+    "para": 0,
+    "start": 2,
+    "end": 5,
+    "pause": "comma",
+    "len": 3
+   },
+   {
+    "text": "思ったより",
+    "para": 0,
+    "start": 5,
+    "end": 10,
+    "pause": "none",
+    "len": 5
+   },
+   {
+    "text": "静",
+    "para": 0,
+    "start": 10,
+    "end": 11,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "かだった。",
+    "para": 0,
+    "start": 11,
+    "end": 16,
+    "pause": "sentence",
+    "len": 5
+   },
+   {
+    "text": "「おは",
+    "para": 0,
+    "start": 16,
+    "end": 19,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "よう。",
+    "para": 0,
+    "start": 19,
+    "end": 22,
+    "pause": "sentence",
+    "len": 3
+   },
+   {
+    "text": "今日は",
+    "para": 0,
+    "start": 22,
+    "end": 25,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "早いね」と",
+    "para": 0,
+    "start": 25,
+    "end": 30,
+    "pause": "none",
+    "len": 5
+   },
+   {
+    "text": "千晴は",
+    "para": 0,
+    "start": 30,
+    "end": 33,
+    "pause": "none",
+    "len": 3,
+    "name": true
+   },
+   {
+    "text": "言った。",
+    "para": 0,
+    "start": 33,
+    "end": 37,
+    "pause": "sentence",
+    "len": 4
+   },
+   {
+    "text": "改札の",
+    "para": 0,
+    "start": 37,
+    "end": 40,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "時計は",
+    "para": 0,
+    "start": 40,
+    "end": 43,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "７時",
+    "para": 0,
+    "start": 43,
+    "end": 45,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "４５分を",
+    "para": 0,
+    "start": 45,
+    "end": 49,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "指",
+    "para": 0,
+    "start": 49,
+    "end": 50,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "していて、",
+    "para": 0,
+    "start": 50,
+    "end": 55,
+    "pause": "comma",
+    "len": 5
+   },
+   {
+    "text": "気温は",
+    "para": 0,
+    "start": 55,
+    "end": 58,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "12.5",
+    "para": 0,
+    "start": 58,
+    "end": 62,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "度",
+    "para": 0,
+    "start": 62,
+    "end": 63,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "しかない。",
+    "para": 0,
+    "start": 63,
+    "end": 68,
+    "pause": "paragraph",
+    "len": 5
+   },
+   {
+    "text": "湊は",
+    "para": 1,
+    "start": 0,
+    "end": 2,
+    "pause": "none",
+    "len": 2,
+    "name": true
+   },
+   {
+    "text": "自転車を",
+    "para": 1,
+    "start": 2,
+    "end": 6,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "押",
+    "para": 1,
+    "start": 6,
+    "end": 7,
+    "pause": "none",
+    "len": 1
+   },
+   {
+    "text": "しながら、",
+    "para": 1,
+    "start": 7,
+    "end": 12,
+    "pause": "comma",
+    "len": 5
+   },
+   {
+    "text": "少し",
+    "para": 1,
+    "start": 12,
+    "end": 14,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "眠そうな",
+    "para": 1,
+    "start": 14,
+    "end": 18,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "顔で",
+    "para": 1,
+    "start": 18,
+    "end": 20,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "手を",
+    "para": 1,
+    "start": 20,
+    "end": 22,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "振った。",
+    "para": 1,
+    "start": 22,
+    "end": 26,
+    "pause": "sentence",
+    "len": 4
+   },
+   {
+    "text": "……",
+    "para": 1,
+    "start": 26,
+    "end": 28,
+    "pause": "comma",
+    "len": 2
+   },
+   {
+    "text": "それから、",
+    "para": 1,
+    "start": 28,
+    "end": 33,
+    "pause": "comma",
+    "len": 5
+   },
+   {
+    "text": "二人は",
+    "para": 1,
+    "start": 33,
+    "end": 36,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "川沿いの",
+    "para": 1,
+    "start": 36,
+    "end": 40,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "道を",
+    "para": 1,
+    "start": 40,
+    "end": 42,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "歩いた――",
+    "para": 1,
+    "start": 42,
+    "end": 47,
+    "pause": "comma",
+    "len": 5
+   },
+   {
+    "text": "鉄橋の",
+    "para": 1,
+    "start": 47,
+    "end": 50,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "上を",
+    "para": 1,
+    "start": 50,
+    "end": 52,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "電車が",
+    "para": 1,
+    "start": 52,
+    "end": 55,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "渡って",
+    "para": 1,
+    "start": 55,
+    "end": 58,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "いく。",
+    "para": 1,
+    "start": 58,
+    "end": 61,
+    "pause": "paragraph",
+    "len": 3
+   },
+   {
+    "text": "𠮟られた",
+    "para": 2,
+    "start": 0,
+    "end": 5,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "子どもは、",
+    "para": 2,
+    "start": 5,
+    "end": 10,
+    "pause": "comma",
+    "len": 5
+   },
+   {
+    "text": "窓の",
+    "para": 2,
+    "start": 10,
+    "end": 12,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "外の",
+    "para": 2,
+    "start": 12,
+    "end": 14,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "🌙を",
+    "para": 2,
+    "start": 14,
+    "end": 17,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "見上げた。",
+    "para": 2,
+    "start": 17,
+    "end": 22,
+    "pause": "sentence",
+    "len": 5
+   },
+   {
+    "text": "ＰＤＦの",
+    "para": 2,
+    "start": 22,
+    "end": 26,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "２ページ",
+    "para": 2,
+    "start": 26,
+    "end": 30,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "目には、",
+    "para": 2,
+    "start": 30,
+    "end": 34,
+    "pause": "comma",
+    "len": 4
+   },
+   {
+    "text": "ver.2",
+    "para": 2,
+    "start": 34,
+    "end": 39,
+    "pause": "none",
+    "len": 5
+   },
+   {
+    "text": "の説明が",
+    "para": 2,
+    "start": 39,
+    "end": 43,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "ある。",
+    "para": 2,
+    "start": 43,
+    "end": 46,
+    "pause": "paragraph",
+    "len": 3
+   }
+  ],
+  "short/min3": [
+   {
+    "text": "朝の駅は、",
+    "para": 0,
+    "start": 0,
+    "end": 5,
+    "pause": "comma",
+    "len": 5
+   },
+   {
+    "text": "思ったより",
+    "para": 0,
+    "start": 5,
+    "end": 10,
+    "pause": "none",
+    "len": 5
+   },
+   {
+    "text": "静かだった。",
+    "para": 0,
+    "start": 10,
+    "end": 16,
+    "pause": "sentence",
+    "len": 6
+   },
+   {
+    "text": "「おは",
+    "para": 0,
+    "start": 16,
+    "end": 19,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "よう。",
+    "para": 0,
+    "start": 19,
+    "end": 22,
+    "pause": "sentence",
+    "len": 3
+   },
+   {
+    "text": "今日は",
+    "para": 0,
+    "start": 22,
+    "end": 25,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "早いね」と",
+    "para": 0,
+    "start": 25,
+    "end": 30,
+    "pause": "none",
+    "len": 5
+   },
+   {
+    "text": "千晴は",
+    "para": 0,
+    "start": 30,
+    "end": 33,
+    "pause": "none",
+    "len": 3,
+    "name": true
+   },
+   {
+    "text": "言った。",
+    "para": 0,
+    "start": 33,
+    "end": 37,
+    "pause": "sentence",
+    "len": 4
+   },
+   {
+    "text": "改札の",
+    "para": 0,
+    "start": 37,
+    "end": 40,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "時計は",
+    "para": 0,
+    "start": 40,
+    "end": 43,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "７時４５分を",
+    "para": 0,
+    "start": 43,
+    "end": 49,
+    "pause": "none",
+    "len": 6
+   },
+   {
+    "text": "指していて、",
+    "para": 0,
+    "start": 49,
+    "end": 55,
+    "pause": "comma",
+    "len": 6
+   },
+   {
+    "text": "気温は",
+    "para": 0,
+    "start": 55,
+    "end": 58,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "12.5",
+    "para": 0,
+    "start": 58,
+    "end": 62,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "度しかない。",
+    "para": 0,
+    "start": 62,
+    "end": 68,
+    "pause": "paragraph",
+    "len": 6
+   },
+   {
+    "text": "湊は自転車を",
+    "para": 1,
+    "start": 0,
+    "end": 6,
+    "pause": "none",
+    "len": 6,
+    "name": true
+   },
+   {
+    "text": "押しながら、",
+    "para": 1,
+    "start": 6,
+    "end": 12,
+    "pause": "comma",
+    "len": 6
+   },
+   {
+    "text": "少し眠そうな",
+    "para": 1,
+    "start": 12,
+    "end": 18,
+    "pause": "none",
+    "len": 6
+   },
+   {
+    "text": "顔で手を",
+    "para": 1,
+    "start": 18,
+    "end": 22,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "振った。",
+    "para": 1,
+    "start": 22,
+    "end": 26,
+    "pause": "sentence",
+    "len": 4
+   },
+   {
+    "text": "……それから、",
+    "para": 1,
+    "start": 26,
+    "end": 33,
+    "pause": "comma",
+    "len": 7
+   },
+   {
+    "text": "二人は",
+    "para": 1,
+    "start": 33,
+    "end": 36,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "川沿いの",
+    "para": 1,
+    "start": 36,
+    "end": 40,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "道を歩いた――",
+    "para": 1,
+    "start": 40,
+    "end": 47,
+    "pause": "comma",
+    "len": 7
+   },
+   {
+    "text": "鉄橋の",
+    "para": 1,
+    "start": 47,
+    "end": 50,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "上を電車が",
+    "para": 1,
+    "start": 50,
+    "end": 55,
+    "pause": "none",
+    "len": 5
+   },
+   {
+    "text": "渡って",
+    "para": 1,
+    "start": 55,
+    "end": 58,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "いく。",
+    "para": 1,
+    "start": 58,
+    "end": 61,
+    "pause": "paragraph",
+    "len": 3
+   },
+   {
+    "text": "𠮟られた",
+    "para": 2,
+    "start": 0,
+    "end": 5,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "子どもは、",
+    "para": 2,
+    "start": 5,
+    "end": 10,
+    "pause": "comma",
+    "len": 5
+   },
+   {
+    "text": "窓の外の",
+    "para": 2,
+    "start": 10,
+    "end": 14,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "🌙を見上げた。",
+    "para": 2,
+    "start": 14,
+    "end": 22,
+    "pause": "sentence",
+    "len": 7
+   },
+   {
+    "text": "ＰＤＦの",
+    "para": 2,
+    "start": 22,
+    "end": 26,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "２ページ",
+    "para": 2,
+    "start": 26,
+    "end": 30,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "目には、",
+    "para": 2,
+    "start": 30,
+    "end": 34,
+    "pause": "comma",
+    "len": 4
+   },
+   {
+    "text": "ver.2",
+    "para": 2,
+    "start": 34,
+    "end": 39,
+    "pause": "none",
+    "len": 5
+   },
+   {
+    "text": "の説明が",
+    "para": 2,
+    "start": 39,
+    "end": 43,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "ある。",
+    "para": 2,
+    "start": 43,
+    "end": 46,
+    "pause": "paragraph",
+    "len": 3
+   }
+  ],
+  "bunsetsu/min1": [
+   {
+    "text": "朝の",
+    "para": 0,
+    "start": 0,
+    "end": 2,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "駅は、",
+    "para": 0,
+    "start": 2,
+    "end": 5,
+    "pause": "comma",
+    "len": 3
+   },
+   {
+    "text": "思ったより",
+    "para": 0,
+    "start": 5,
+    "end": 10,
+    "pause": "none",
+    "len": 5
+   },
+   {
+    "text": "静かだった。",
+    "para": 0,
+    "start": 10,
+    "end": 16,
+    "pause": "sentence",
+    "len": 6
+   },
+   {
+    "text": "「おは",
+    "para": 0,
+    "start": 16,
+    "end": 19,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "よう。",
+    "para": 0,
+    "start": 19,
+    "end": 22,
+    "pause": "sentence",
+    "len": 3
+   },
+   {
+    "text": "今日は",
+    "para": 0,
+    "start": 22,
+    "end": 25,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "早いね」と",
+    "para": 0,
+    "start": 25,
+    "end": 30,
+    "pause": "none",
+    "len": 5
+   },
+   {
+    "text": "千晴は",
+    "para": 0,
+    "start": 30,
+    "end": 33,
+    "pause": "none",
+    "len": 3,
+    "name": true
+   },
+   {
+    "text": "言った。",
+    "para": 0,
+    "start": 33,
+    "end": 37,
+    "pause": "sentence",
+    "len": 4
+   },
+   {
+    "text": "改札の",
+    "para": 0,
+    "start": 37,
+    "end": 40,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "時計は",
+    "para": 0,
+    "start": 40,
+    "end": 43,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "７時４５分を",
+    "para": 0,
+    "start": 43,
+    "end": 49,
+    "pause": "none",
+    "len": 6
+   },
+   {
+    "text": "指していて、",
+    "para": 0,
+    "start": 49,
+    "end": 55,
+    "pause": "comma",
+    "len": 6
+   },
+   {
+    "text": "気温は",
+    "para": 0,
+    "start": 55,
+    "end": 58,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "12.5度しかない。",
+    "para": 0,
+    "start": 58,
+    "end": 68,
+    "pause": "paragraph",
+    "len": 10
+   },
+   {
+    "text": "湊は",
+    "para": 1,
+    "start": 0,
+    "end": 2,
+    "pause": "none",
+    "len": 2,
+    "name": true
+   },
+   {
+    "text": "自転車を",
+    "para": 1,
+    "start": 2,
+    "end": 6,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "押しながら、",
+    "para": 1,
+    "start": 6,
+    "end": 12,
+    "pause": "comma",
+    "len": 6
+   },
+   {
+    "text": "少し",
+    "para": 1,
+    "start": 12,
+    "end": 14,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "眠そうな",
+    "para": 1,
+    "start": 14,
+    "end": 18,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "顔で",
+    "para": 1,
+    "start": 18,
+    "end": 20,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "手を",
+    "para": 1,
+    "start": 20,
+    "end": 22,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "振った。",
+    "para": 1,
+    "start": 22,
+    "end": 26,
+    "pause": "sentence",
+    "len": 4
+   },
+   {
+    "text": "……",
+    "para": 1,
+    "start": 26,
+    "end": 28,
+    "pause": "comma",
+    "len": 2
+   },
+   {
+    "text": "それから、",
+    "para": 1,
+    "start": 28,
+    "end": 33,
+    "pause": "comma",
+    "len": 5
+   },
+   {
+    "text": "二人は",
+    "para": 1,
+    "start": 33,
+    "end": 36,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "川沿いの",
+    "para": 1,
+    "start": 36,
+    "end": 40,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "道を",
+    "para": 1,
+    "start": 40,
+    "end": 42,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "歩いた――",
+    "para": 1,
+    "start": 42,
+    "end": 47,
+    "pause": "comma",
+    "len": 5
+   },
+   {
+    "text": "鉄橋の",
+    "para": 1,
+    "start": 47,
+    "end": 50,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "上を",
+    "para": 1,
+    "start": 50,
+    "end": 52,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "電車が",
+    "para": 1,
+    "start": 52,
+    "end": 55,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "渡っていく。",
+    "para": 1,
+    "start": 55,
+    "end": 61,
+    "pause": "paragraph",
+    "len": 6
+   },
+   {
+    "text": "𠮟られた",
+    "para": 2,
+    "start": 0,
+    "end": 5,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "子どもは、",
+    "para": 2,
+    "start": 5,
+    "end": 10,
+    "pause": "comma",
+    "len": 5
+   },
+   {
+    "text": "窓の",
+    "para": 2,
+    "start": 10,
+    "end": 12,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "外の",
+    "para": 2,
+    "start": 12,
+    "end": 14,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "🌙を",
+    "para": 2,
+    "start": 14,
+    "end": 17,
+    "pause": "none",
+    "len": 2
+   },
+   {
+    "text": "見上げた。",
+    "para": 2,
+    "start": 17,
+    "end": 22,
+    "pause": "sentence",
+    "len": 5
+   },
+   {
+    "text": "ＰＤＦの",
+    "para": 2,
+    "start": 22,
+    "end": 26,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "２ページ目には、",
+    "para": 2,
+    "start": 26,
+    "end": 34,
+    "pause": "comma",
+    "len": 8
+   },
+   {
+    "text": "ver.2の",
+    "para": 2,
+    "start": 34,
+    "end": 40,
+    "pause": "none",
+    "len": 6
+   },
+   {
+    "text": "説明が",
+    "para": 2,
+    "start": 40,
+    "end": 43,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "ある。",
+    "para": 2,
+    "start": 43,
+    "end": 46,
+    "pause": "paragraph",
+    "len": 3
+   }
+  ],
+  "bunsetsu/min3": [
+   {
+    "text": "朝の駅は、",
+    "para": 0,
+    "start": 0,
+    "end": 5,
+    "pause": "comma",
+    "len": 5
+   },
+   {
+    "text": "思ったより",
+    "para": 0,
+    "start": 5,
+    "end": 10,
+    "pause": "none",
+    "len": 5
+   },
+   {
+    "text": "静かだった。",
+    "para": 0,
+    "start": 10,
+    "end": 16,
+    "pause": "sentence",
+    "len": 6
+   },
+   {
+    "text": "「おは",
+    "para": 0,
+    "start": 16,
+    "end": 19,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "よう。",
+    "para": 0,
+    "start": 19,
+    "end": 22,
+    "pause": "sentence",
+    "len": 3
+   },
+   {
+    "text": "今日は",
+    "para": 0,
+    "start": 22,
+    "end": 25,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "早いね」と",
+    "para": 0,
+    "start": 25,
+    "end": 30,
+    "pause": "none",
+    "len": 5
+   },
+   {
+    "text": "千晴は",
+    "para": 0,
+    "start": 30,
+    "end": 33,
+    "pause": "none",
+    "len": 3,
+    "name": true
+   },
+   {
+    "text": "言った。",
+    "para": 0,
+    "start": 33,
+    "end": 37,
+    "pause": "sentence",
+    "len": 4
+   },
+   {
+    "text": "改札の",
+    "para": 0,
+    "start": 37,
+    "end": 40,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "時計は",
+    "para": 0,
+    "start": 40,
+    "end": 43,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "７時４５分を",
+    "para": 0,
+    "start": 43,
+    "end": 49,
+    "pause": "none",
+    "len": 6
+   },
+   {
+    "text": "指していて、",
+    "para": 0,
+    "start": 49,
+    "end": 55,
+    "pause": "comma",
+    "len": 6
+   },
+   {
+    "text": "気温は",
+    "para": 0,
+    "start": 55,
+    "end": 58,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "12.5度しかない。",
+    "para": 0,
+    "start": 58,
+    "end": 68,
+    "pause": "paragraph",
+    "len": 10
+   },
+   {
+    "text": "湊は自転車を",
+    "para": 1,
+    "start": 0,
+    "end": 6,
+    "pause": "none",
+    "len": 6,
+    "name": true
+   },
+   {
+    "text": "押しながら、",
+    "para": 1,
+    "start": 6,
+    "end": 12,
+    "pause": "comma",
+    "len": 6
+   },
+   {
+    "text": "少し眠そうな",
+    "para": 1,
+    "start": 12,
+    "end": 18,
+    "pause": "none",
+    "len": 6
+   },
+   {
+    "text": "顔で手を",
+    "para": 1,
+    "start": 18,
+    "end": 22,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "振った。",
+    "para": 1,
+    "start": 22,
+    "end": 26,
+    "pause": "sentence",
+    "len": 4
+   },
+   {
+    "text": "……それから、",
+    "para": 1,
+    "start": 26,
+    "end": 33,
+    "pause": "comma",
+    "len": 7
+   },
+   {
+    "text": "二人は",
+    "para": 1,
+    "start": 33,
+    "end": 36,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "川沿いの",
+    "para": 1,
+    "start": 36,
+    "end": 40,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "道を歩いた――",
+    "para": 1,
+    "start": 40,
+    "end": 47,
+    "pause": "comma",
+    "len": 7
+   },
+   {
+    "text": "鉄橋の",
+    "para": 1,
+    "start": 47,
+    "end": 50,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "上を電車が",
+    "para": 1,
+    "start": 50,
+    "end": 55,
+    "pause": "none",
+    "len": 5
+   },
+   {
+    "text": "渡っていく。",
+    "para": 1,
+    "start": 55,
+    "end": 61,
+    "pause": "paragraph",
+    "len": 6
+   },
+   {
+    "text": "𠮟られた",
+    "para": 2,
+    "start": 0,
+    "end": 5,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "子どもは、",
+    "para": 2,
+    "start": 5,
+    "end": 10,
+    "pause": "comma",
+    "len": 5
+   },
+   {
+    "text": "窓の外の",
+    "para": 2,
+    "start": 10,
+    "end": 14,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "🌙を見上げた。",
+    "para": 2,
+    "start": 14,
+    "end": 22,
+    "pause": "sentence",
+    "len": 7
+   },
+   {
+    "text": "ＰＤＦの",
+    "para": 2,
+    "start": 22,
+    "end": 26,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "２ページ目には、",
+    "para": 2,
+    "start": 26,
+    "end": 34,
+    "pause": "comma",
+    "len": 8
+   },
+   {
+    "text": "ver.2の",
+    "para": 2,
+    "start": 34,
+    "end": 40,
+    "pause": "none",
+    "len": 6
+   },
+   {
+    "text": "説明が",
+    "para": 2,
+    "start": 40,
+    "end": 43,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "ある。",
+    "para": 2,
+    "start": 43,
+    "end": 46,
+    "pause": "paragraph",
+    "len": 3
+   }
+  ],
+  "phrase/min1": [
+   {
+    "text": "朝の駅は、",
+    "para": 0,
+    "start": 0,
+    "end": 5,
+    "pause": "comma",
+    "len": 5
+   },
+   {
+    "text": "思ったより静かだった。",
+    "para": 0,
+    "start": 5,
+    "end": 16,
+    "pause": "sentence",
+    "len": 11
+   },
+   {
+    "text": "「おはよう。今日は",
+    "para": 0,
+    "start": 16,
+    "end": 25,
+    "pause": "none",
+    "len": 9
+   },
+   {
+    "text": "早いね」と千晴は",
+    "para": 0,
+    "start": 25,
+    "end": 33,
+    "pause": "none",
+    "len": 8,
+    "name": true
+   },
+   {
+    "text": "言った。",
+    "para": 0,
+    "start": 33,
+    "end": 37,
+    "pause": "sentence",
+    "len": 4
+   },
+   {
+    "text": "改札の時計は",
+    "para": 0,
+    "start": 37,
+    "end": 43,
+    "pause": "none",
+    "len": 6
+   },
+   {
+    "text": "７時４５分を",
+    "para": 0,
+    "start": 43,
+    "end": 49,
+    "pause": "none",
+    "len": 6
+   },
+   {
+    "text": "指していて、",
+    "para": 0,
+    "start": 49,
+    "end": 55,
+    "pause": "comma",
+    "len": 6
+   },
+   {
+    "text": "気温は",
+    "para": 0,
+    "start": 55,
+    "end": 58,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "12.5度しかない。",
+    "para": 0,
+    "start": 58,
+    "end": 68,
+    "pause": "paragraph",
+    "len": 10
+   },
+   {
+    "text": "湊は自転車を",
+    "para": 1,
+    "start": 0,
+    "end": 6,
+    "pause": "none",
+    "len": 6,
+    "name": true
+   },
+   {
+    "text": "押しながら、",
+    "para": 1,
+    "start": 6,
+    "end": 12,
+    "pause": "comma",
+    "len": 6
+   },
+   {
+    "text": "少し眠そうな顔で",
+    "para": 1,
+    "start": 12,
+    "end": 20,
+    "pause": "none",
+    "len": 8
+   },
+   {
+    "text": "手を振った。",
+    "para": 1,
+    "start": 20,
+    "end": 26,
+    "pause": "sentence",
+    "len": 6
+   },
+   {
+    "text": "……それから、",
+    "para": 1,
+    "start": 26,
+    "end": 33,
+    "pause": "comma",
+    "len": 7
+   },
+   {
+    "text": "二人は川沿いの",
+    "para": 1,
+    "start": 33,
+    "end": 40,
+    "pause": "none",
+    "len": 7
+   },
+   {
+    "text": "道を歩いた――",
+    "para": 1,
+    "start": 40,
+    "end": 47,
+    "pause": "comma",
+    "len": 7
+   },
+   {
+    "text": "鉄橋の上を電車が",
+    "para": 1,
+    "start": 47,
+    "end": 55,
+    "pause": "none",
+    "len": 8
+   },
+   {
+    "text": "渡っていく。",
+    "para": 1,
+    "start": 55,
+    "end": 61,
+    "pause": "paragraph",
+    "len": 6
+   },
+   {
+    "text": "𠮟られた子どもは、",
+    "para": 2,
+    "start": 0,
+    "end": 10,
+    "pause": "comma",
+    "len": 9
+   },
+   {
+    "text": "窓の外の🌙を見上げた。",
+    "para": 2,
+    "start": 10,
+    "end": 22,
+    "pause": "sentence",
+    "len": 11
+   },
+   {
+    "text": "ＰＤＦの",
+    "para": 2,
+    "start": 22,
+    "end": 26,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "２ページ目には、",
+    "para": 2,
+    "start": 26,
+    "end": 34,
+    "pause": "comma",
+    "len": 8
+   },
+   {
+    "text": "ver.2の説明が",
+    "para": 2,
+    "start": 34,
+    "end": 43,
+    "pause": "none",
+    "len": 9
+   },
+   {
+    "text": "ある。",
+    "para": 2,
+    "start": 43,
+    "end": 46,
+    "pause": "paragraph",
+    "len": 3
+   }
+  ],
+  "phrase/min3": [
+   {
+    "text": "朝の駅は、",
+    "para": 0,
+    "start": 0,
+    "end": 5,
+    "pause": "comma",
+    "len": 5
+   },
+   {
+    "text": "思ったより静かだった。",
+    "para": 0,
+    "start": 5,
+    "end": 16,
+    "pause": "sentence",
+    "len": 11
+   },
+   {
+    "text": "「おはよう。今日は",
+    "para": 0,
+    "start": 16,
+    "end": 25,
+    "pause": "none",
+    "len": 9
+   },
+   {
+    "text": "早いね」と千晴は",
+    "para": 0,
+    "start": 25,
+    "end": 33,
+    "pause": "none",
+    "len": 8,
+    "name": true
+   },
+   {
+    "text": "言った。",
+    "para": 0,
+    "start": 33,
+    "end": 37,
+    "pause": "sentence",
+    "len": 4
+   },
+   {
+    "text": "改札の時計は",
+    "para": 0,
+    "start": 37,
+    "end": 43,
+    "pause": "none",
+    "len": 6
+   },
+   {
+    "text": "７時４５分を",
+    "para": 0,
+    "start": 43,
+    "end": 49,
+    "pause": "none",
+    "len": 6
+   },
+   {
+    "text": "指していて、",
+    "para": 0,
+    "start": 49,
+    "end": 55,
+    "pause": "comma",
+    "len": 6
+   },
+   {
+    "text": "気温は",
+    "para": 0,
+    "start": 55,
+    "end": 58,
+    "pause": "none",
+    "len": 3
+   },
+   {
+    "text": "12.5度しかない。",
+    "para": 0,
+    "start": 58,
+    "end": 68,
+    "pause": "paragraph",
+    "len": 10
+   },
+   {
+    "text": "湊は自転車を",
+    "para": 1,
+    "start": 0,
+    "end": 6,
+    "pause": "none",
+    "len": 6,
+    "name": true
+   },
+   {
+    "text": "押しながら、",
+    "para": 1,
+    "start": 6,
+    "end": 12,
+    "pause": "comma",
+    "len": 6
+   },
+   {
+    "text": "少し眠そうな顔で",
+    "para": 1,
+    "start": 12,
+    "end": 20,
+    "pause": "none",
+    "len": 8
+   },
+   {
+    "text": "手を振った。",
+    "para": 1,
+    "start": 20,
+    "end": 26,
+    "pause": "sentence",
+    "len": 6
+   },
+   {
+    "text": "……それから、",
+    "para": 1,
+    "start": 26,
+    "end": 33,
+    "pause": "comma",
+    "len": 7
+   },
+   {
+    "text": "二人は川沿いの",
+    "para": 1,
+    "start": 33,
+    "end": 40,
+    "pause": "none",
+    "len": 7
+   },
+   {
+    "text": "道を歩いた――",
+    "para": 1,
+    "start": 40,
+    "end": 47,
+    "pause": "comma",
+    "len": 7
+   },
+   {
+    "text": "鉄橋の上を電車が",
+    "para": 1,
+    "start": 47,
+    "end": 55,
+    "pause": "none",
+    "len": 8
+   },
+   {
+    "text": "渡っていく。",
+    "para": 1,
+    "start": 55,
+    "end": 61,
+    "pause": "paragraph",
+    "len": 6
+   },
+   {
+    "text": "𠮟られた子どもは、",
+    "para": 2,
+    "start": 0,
+    "end": 10,
+    "pause": "comma",
+    "len": 9
+   },
+   {
+    "text": "窓の外の🌙を見上げた。",
+    "para": 2,
+    "start": 10,
+    "end": 22,
+    "pause": "sentence",
+    "len": 11
+   },
+   {
+    "text": "ＰＤＦの",
+    "para": 2,
+    "start": 22,
+    "end": 26,
+    "pause": "none",
+    "len": 4
+   },
+   {
+    "text": "２ページ目には、",
+    "para": 2,
+    "start": 26,
+    "end": 34,
+    "pause": "comma",
+    "len": 8
+   },
+   {
+    "text": "ver.2の説明が",
+    "para": 2,
+    "start": 34,
+    "end": 43,
+    "pause": "none",
+    "len": 9
+   },
+   {
+    "text": "ある。",
+    "para": 2,
+    "start": 43,
+    "end": 46,
+    "pause": "paragraph",
+    "len": 3
+   }
+  ],
+  "sentence/min1": [
+   {
+    "text": "朝の駅は、思ったより静かだった。",
+    "para": 0,
+    "start": 0,
+    "end": 16,
+    "pause": "sentence",
+    "len": 16
+   },
+   {
+    "text": "「おはよう。今日は早いね」と千晴は言った。",
+    "para": 0,
+    "start": 16,
+    "end": 37,
+    "pause": "sentence",
+    "len": 21,
+    "name": true
+   },
+   {
+    "text": "改札の時計は７時４５分を指していて、",
+    "para": 0,
+    "start": 37,
+    "end": 55,
+    "pause": "comma",
+    "len": 18
+   },
+   {
+    "text": "気温は12.5度しかない。",
+    "para": 0,
+    "start": 55,
+    "end": 68,
+    "pause": "paragraph",
+    "len": 13
+   },
+   {
+    "text": "湊は自転車を押しながら、少し眠そうな顔で手を振った。",
+    "para": 1,
+    "start": 0,
+    "end": 26,
+    "pause": "sentence",
+    "len": 26,
+    "name": true
+   },
+   {
+    "text": "……それから、",
+    "para": 1,
+    "start": 26,
+    "end": 33,
+    "pause": "comma",
+    "len": 7
+   },
+   {
+    "text": "二人は川沿いの道を歩いた――鉄橋の上を電車が渡っていく。",
+    "para": 1,
+    "start": 33,
+    "end": 61,
+    "pause": "paragraph",
+    "len": 28
+   },
+   {
+    "text": "𠮟られた子どもは、窓の外の🌙を見上げた。",
+    "para": 2,
+    "start": 0,
+    "end": 22,
+    "pause": "sentence",
+    "len": 20
+   },
+   {
+    "text": "ＰＤＦの２ページ目には、ver.2の説明がある。",
+    "para": 2,
+    "start": 22,
+    "end": 46,
+    "pause": "paragraph",
+    "len": 24
+   }
+  ],
+  "sentence/min3": [
+   {
+    "text": "朝の駅は、思ったより静かだった。",
+    "para": 0,
+    "start": 0,
+    "end": 16,
+    "pause": "sentence",
+    "len": 16
+   },
+   {
+    "text": "「おはよう。今日は早いね」と千晴は言った。",
+    "para": 0,
+    "start": 16,
+    "end": 37,
+    "pause": "sentence",
+    "len": 21,
+    "name": true
+   },
+   {
+    "text": "改札の時計は７時４５分を指していて、",
+    "para": 0,
+    "start": 37,
+    "end": 55,
+    "pause": "comma",
+    "len": 18
+   },
+   {
+    "text": "気温は12.5度しかない。",
+    "para": 0,
+    "start": 55,
+    "end": 68,
+    "pause": "paragraph",
+    "len": 13
+   },
+   {
+    "text": "湊は自転車を押しながら、少し眠そうな顔で手を振った。",
+    "para": 1,
+    "start": 0,
+    "end": 26,
+    "pause": "sentence",
+    "len": 26,
+    "name": true
+   },
+   {
+    "text": "……それから、",
+    "para": 1,
+    "start": 26,
+    "end": 33,
+    "pause": "comma",
+    "len": 7
+   },
+   {
+    "text": "二人は川沿いの道を歩いた――鉄橋の上を電車が渡っていく。",
+    "para": 1,
+    "start": 33,
+    "end": 61,
+    "pause": "paragraph",
+    "len": 28
+   },
+   {
+    "text": "𠮟られた子どもは、窓の外の🌙を見上げた。",
+    "para": 2,
+    "start": 0,
+    "end": 22,
+    "pause": "sentence",
+    "len": 20
+   },
+   {
+    "text": "ＰＤＦの２ページ目には、ver.2の説明がある。",
+    "para": 2,
+    "start": 22,
+    "end": 46,
+    "pause": "paragraph",
+    "len": 24
+   }
+  ]
+ }
+}

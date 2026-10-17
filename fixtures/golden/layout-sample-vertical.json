@@ -1,0 +1,4889 @@
+{
+ "fn": "linesToPageTexts(pages.map(itemsToLines)) → buildBookText → referenceParagraphs",
+ "indexUnit": "utf16",
+ "input": {
+  "pages": [
+   [
+    {
+     "str": "雨上がりの図書館",
+     "x": 270,
+     "y": 565,
+     "w": 64,
+     "h": 8,
+     "size": 8,
+     "vertical": false
+    },
+    {
+     "str": "坂",
+     "x": 370,
+     "y": 506,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 370,
+     "y": 491,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "上",
+     "x": 370,
+     "y": 476,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 370,
+     "y": 461,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "図",
+     "x": 370,
+     "y": 446,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "書",
+     "x": 370,
+     "y": 431,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "館",
+     "x": 370,
+     "y": 416,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "は",
+     "x": 370,
+     "y": 401,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "、",
+     "x": 377.7,
+     "y": 393.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "月",
+     "x": 370,
+     "y": 371,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "曜",
+     "x": 370,
+     "y": 356,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "日",
+     "x": 370,
+     "y": 341,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "だ",
+     "x": 370,
+     "y": 326,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "け",
+     "x": 370,
+     "y": 311,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "休",
+     "x": 370,
+     "y": 296,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "み",
+     "x": 370,
+     "y": 281,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "に",
+     "x": 370,
+     "y": 266,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "な",
+     "x": 370,
+     "y": 251,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "る",
+     "x": 370,
+     "y": 236,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "。",
+     "x": 377.7,
+     "y": 228.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "そ",
+     "x": 370,
+     "y": 206,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "れ",
+     "x": 370,
+     "y": 191,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "を",
+     "x": 370,
+     "y": 176,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "知",
+     "x": 370,
+     "y": 161,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ら",
+     "x": 370,
+     "y": 146,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ず",
+     "x": 370,
+     "y": 131,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "に",
+     "x": 370,
+     "y": 116,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "来",
+     "x": 370,
+     "y": 101,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 370,
+     "y": 86,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "と",
+     "x": 385,
+     "y": 452,
+     "w": 6,
+     "h": 6,
+     "size": 6,
+     "vertical": false
+    },
+    {
+     "str": "し",
+     "x": 385,
+     "y": 443,
+     "w": 6,
+     "h": 6,
+     "size": 6,
+     "vertical": false
+    },
+    {
+     "str": "ょ",
+     "x": 385,
+     "y": 434,
+     "w": 6,
+     "h": 6,
+     "size": 6,
+     "vertical": false
+    },
+    {
+     "str": "か",
+     "x": 385,
+     "y": 425,
+     "w": 6,
+     "h": 6,
+     "size": 6,
+     "vertical": false
+    },
+    {
+     "str": "ん",
+     "x": 385,
+     "y": 416,
+     "w": 6,
+     "h": 6,
+     "size": 6,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 344,
+     "y": 521,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "は",
+     "x": 344,
+     "y": 506,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "、",
+     "x": 351.7,
+     "y": 498.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "今",
+     "x": 344,
+     "y": 476,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "月",
+     "x": 344,
+     "y": 461,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "に",
+     "x": 344,
+     "y": 446,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "入",
+     "x": 344,
+     "y": 431,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "っ",
+     "x": 344,
+     "y": 416,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "て",
+     "x": 344,
+     "y": 401,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "二",
+     "x": 344,
+     "y": 386,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "度",
+     "x": 344,
+     "y": 371,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "目",
+     "x": 344,
+     "y": 356,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "だ",
+     "x": 344,
+     "y": 341,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "っ",
+     "x": 344,
+     "y": 326,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 344,
+     "y": 311,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "。",
+     "x": 351.7,
+     "y": 303.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "「",
+     "x": 318,
+     "y": 521,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "今",
+     "x": 318,
+     "y": 506,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "日",
+     "x": 318,
+     "y": 491,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "も",
+     "x": 318,
+     "y": 476,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "閉",
+     "x": 318,
+     "y": 461,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ま",
+     "x": 318,
+     "y": 446,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "っ",
+     "x": 318,
+     "y": 431,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "て",
+     "x": 318,
+     "y": 416,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "る",
+     "x": 318,
+     "y": 401,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "よ",
+     "x": 318,
+     "y": 386,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "」",
+     "x": 318,
+     "y": 371,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "振",
+     "x": 292,
+     "y": 506,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "り",
+     "x": 292,
+     "y": 491,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "返",
+     "x": 292,
+     "y": 476,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "る",
+     "x": 292,
+     "y": 461,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "と",
+     "x": 292,
+     "y": 446,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "、",
+     "x": 299.7,
+     "y": 438.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "傘",
+     "x": 292,
+     "y": 416,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "を",
+     "x": 292,
+     "y": 401,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "畳",
+     "x": 292,
+     "y": 386,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "み",
+     "x": 292,
+     "y": 371,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "か",
+     "x": 292,
+     "y": 356,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "け",
+     "x": 292,
+     "y": 341,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 292,
+     "y": 326,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "少",
+     "x": 292,
+     "y": 311,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "女",
+     "x": 292,
+     "y": 296,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "が",
+     "x": 292,
+     "y": 281,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "立",
+     "x": 292,
+     "y": 266,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "っ",
+     "x": 292,
+     "y": 251,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "て",
+     "x": 292,
+     "y": 236,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "い",
+     "x": 292,
+     "y": 221,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 292,
+     "y": 206,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "。",
+     "x": 299.7,
+     "y": 198.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "近",
+     "x": 292,
+     "y": 176,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "所",
+     "x": 292,
+     "y": 161,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 292,
+     "y": 146,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "中",
+     "x": 292,
+     "y": 131,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "学",
+     "x": 292,
+     "y": 116,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "校",
+     "x": 292,
+     "y": 101,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 292,
+     "y": 86,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "制",
+     "x": 266,
+     "y": 521,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "服",
+     "x": 266,
+     "y": 506,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "を",
+     "x": 266,
+     "y": 491,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "着",
+     "x": 266,
+     "y": 476,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "て",
+     "x": 266,
+     "y": 461,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "い",
+     "x": 266,
+     "y": 446,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "て",
+     "x": 266,
+     "y": 431,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "、",
+     "x": 273.7,
+     "y": 423.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "肩",
+     "x": 266,
+     "y": 401,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 266,
+     "y": 386,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "あ",
+     "x": 266,
+     "y": 371,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 266,
+     "y": 356,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "り",
+     "x": 266,
+     "y": 341,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "が",
+     "x": 266,
+     "y": 326,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "少",
+     "x": 266,
+     "y": 311,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "し",
+     "x": 266,
+     "y": 296,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "濡",
+     "x": 266,
+     "y": 281,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "れ",
+     "x": 266,
+     "y": 266,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "て",
+     "x": 266,
+     "y": 251,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "い",
+     "x": 266,
+     "y": 236,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "る",
+     "x": 266,
+     "y": 221,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "。",
+     "x": 273.7,
+     "y": 213.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "「",
+     "x": 240,
+     "y": 521,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "知",
+     "x": 240,
+     "y": 506,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "っ",
+     "x": 240,
+     "y": 491,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "て",
+     "x": 240,
+     "y": 476,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 240,
+     "y": 461,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "？",
+     "x": 240,
+     "y": 446,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "」",
+     "x": 240,
+     "y": 431,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "と",
+     "x": 240,
+     "y": 416,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "僕",
+     "x": 240,
+     "y": 401,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "が",
+     "x": 240,
+     "y": 386,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "聞",
+     "x": 240,
+     "y": 371,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "く",
+     "x": 240,
+     "y": 356,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "と",
+     "x": 240,
+     "y": 341,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "、",
+     "x": 247.7,
+     "y": 333.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "彼",
+     "x": 240,
+     "y": 311,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "女",
+     "x": 240,
+     "y": 296,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "は",
+     "x": 240,
+     "y": 281,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "首",
+     "x": 240,
+     "y": 266,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "を",
+     "x": 240,
+     "y": 251,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "横",
+     "x": 240,
+     "y": 236,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "に",
+     "x": 240,
+     "y": 221,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "振",
+     "x": 240,
+     "y": 206,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "っ",
+     "x": 240,
+     "y": 191,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 240,
+     "y": 176,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "。",
+     "x": 247.7,
+     "y": 168.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "「",
+     "x": 240,
+     "y": 146,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "知",
+     "x": 240,
+     "y": 131,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ら",
+     "x": 240,
+     "y": 116,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "な",
+     "x": 240,
+     "y": 101,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "か",
+     "x": 240,
+     "y": 86,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "っ",
+     "x": 214,
+     "y": 521,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 214,
+     "y": 506,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "。",
+     "x": 221.7,
+     "y": 498.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "で",
+     "x": 214,
+     "y": 476,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "も",
+     "x": 214,
+     "y": 461,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "、",
+     "x": 221.7,
+     "y": 453.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "雨",
+     "x": 214,
+     "y": 431,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "が",
+     "x": 214,
+     "y": 416,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "止",
+     "x": 214,
+     "y": 401,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "む",
+     "x": 214,
+     "y": 386,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ま",
+     "x": 214,
+     "y": 371,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "で",
+     "x": 214,
+     "y": 356,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "こ",
+     "x": 214,
+     "y": 341,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "こ",
+     "x": 214,
+     "y": 326,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "に",
+     "x": 214,
+     "y": 311,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "い",
+     "x": 214,
+     "y": 296,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "よ",
+     "x": 214,
+     "y": 281,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "う",
+     "x": 214,
+     "y": 266,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "と",
+     "x": 214,
+     "y": 251,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "思",
+     "x": 214,
+     "y": 236,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "っ",
+     "x": 214,
+     "y": 221,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "て",
+     "x": 214,
+     "y": 206,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "」",
+     "x": 214,
+     "y": 191,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "軒",
+     "x": 188,
+     "y": 506,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "下",
+     "x": 188,
+     "y": 491,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "は",
+     "x": 188,
+     "y": 476,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "二",
+     "x": 188,
+     "y": 461,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "人",
+     "x": 188,
+     "y": 446,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "で",
+     "x": 188,
+     "y": 431,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "並",
+     "x": 188,
+     "y": 416,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ぶ",
+     "x": 188,
+     "y": 401,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "と",
+     "x": 188,
+     "y": 386,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ち",
+     "x": 188,
+     "y": 371,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ょ",
+     "x": 188,
+     "y": 356,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "う",
+     "x": 188,
+     "y": 341,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ど",
+     "x": 188,
+     "y": 326,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "い",
+     "x": 188,
+     "y": 311,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "い",
+     "x": 188,
+     "y": 296,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "幅",
+     "x": 188,
+     "y": 281,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "だ",
+     "x": 188,
+     "y": 266,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "っ",
+     "x": 188,
+     "y": 251,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 188,
+     "y": 236,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "。",
+     "x": 195.7,
+     "y": 228.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "屋",
+     "x": 188,
+     "y": 206,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "根",
+     "x": 188,
+     "y": 191,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "を",
+     "x": 188,
+     "y": 176,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "叩",
+     "x": 188,
+     "y": 161,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "く",
+     "x": 188,
+     "y": 146,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "音",
+     "x": 188,
+     "y": 131,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "が",
+     "x": 188,
+     "y": 116,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "、",
+     "x": 195.7,
+     "y": 108.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "少",
+     "x": 188,
+     "y": 86,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "し",
+     "x": 162,
+     "y": 521,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ず",
+     "x": 162,
+     "y": 506,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "つ",
+     "x": 162,
+     "y": 491,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "間",
+     "x": 162,
+     "y": 476,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "遠",
+     "x": 162,
+     "y": 461,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "に",
+     "x": 162,
+     "y": 446,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "な",
+     "x": 162,
+     "y": 431,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "っ",
+     "x": 162,
+     "y": 416,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "て",
+     "x": 162,
+     "y": 401,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "い",
+     "x": 162,
+     "y": 386,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "く",
+     "x": 162,
+     "y": 371,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "。",
+     "x": 169.7,
+     "y": 363.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "向",
+     "x": 162,
+     "y": 341,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "か",
+     "x": 162,
+     "y": 326,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "い",
+     "x": 162,
+     "y": 311,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 162,
+     "y": 296,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "家",
+     "x": 162,
+     "y": 281,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 162,
+     "y": 266,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "雨",
+     "x": 162,
+     "y": 251,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ど",
+     "x": 162,
+     "y": 236,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "い",
+     "x": 162,
+     "y": 221,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "か",
+     "x": 162,
+     "y": 206,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ら",
+     "x": 162,
+     "y": 191,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "、",
+     "x": 169.7,
+     "y": 183.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "細",
+     "x": 162,
+     "y": 161,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "い",
+     "x": 162,
+     "y": 146,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "水",
+     "x": 162,
+     "y": 131,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 162,
+     "y": 116,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "糸",
+     "x": 162,
+     "y": 101,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "が",
+     "x": 162,
+     "y": 86,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "途",
+     "x": 136,
+     "y": 521,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "切",
+     "x": 136,
+     "y": 506,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "れ",
+     "x": 136,
+     "y": 491,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ず",
+     "x": 136,
+     "y": 476,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "に",
+     "x": 136,
+     "y": 461,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "落",
+     "x": 136,
+     "y": 446,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ち",
+     "x": 136,
+     "y": 431,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "て",
+     "x": 136,
+     "y": 416,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "い",
+     "x": 136,
+     "y": 401,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 136,
+     "y": 386,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "。",
+     "x": 143.7,
+     "y": 378.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "時",
+     "x": 110,
+     "y": 506,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "計",
+     "x": 110,
+     "y": 491,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "を",
+     "x": 110,
+     "y": 476,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "見",
+     "x": 110,
+     "y": 461,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "る",
+     "x": 110,
+     "y": 446,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "と",
+     "x": 110,
+     "y": 431,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "、",
+     "x": 117.7,
+     "y": 423.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "午",
+     "x": 110,
+     "y": 401,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "後",
+     "x": 110,
+     "y": 386,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "３",
+     "x": 110,
+     "y": 371,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "時",
+     "x": 110,
+     "y": 356,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "４",
+     "x": 110,
+     "y": 341,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "５",
+     "x": 110,
+     "y": 326,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "分",
+     "x": 110,
+     "y": 311,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "を",
+     "x": 110,
+     "y": 296,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "少",
+     "x": 110,
+     "y": 281,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "し",
+     "x": 110,
+     "y": 266,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "過",
+     "x": 110,
+     "y": 251,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ぎ",
+     "x": 110,
+     "y": 236,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "て",
+     "x": 110,
+     "y": 221,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "い",
+     "x": 110,
+     "y": 206,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 110,
+     "y": 191,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "。",
+     "x": 117.7,
+     "y": 183.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "気",
+     "x": 110,
+     "y": 161,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "温",
+     "x": 110,
+     "y": 146,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "は",
+     "x": 110,
+     "y": 131,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "1",
+     "x": 110,
+     "y": 116,
+     "w": 7.574,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "2",
+     "x": 110,
+     "y": 101,
+     "w": 7.574,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": ".",
+     "x": 110,
+     "y": 86,
+     "w": 3.808,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "5",
+     "x": 84,
+     "y": 521,
+     "w": 7.574,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "度",
+     "x": 84,
+     "y": 506,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "。",
+     "x": 91.7,
+     "y": 498.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "十",
+     "x": 84,
+     "y": 476,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "月",
+     "x": 84,
+     "y": 461,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "に",
+     "x": 84,
+     "y": 446,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "し",
+     "x": 84,
+     "y": 431,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "て",
+     "x": 84,
+     "y": 416,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "は",
+     "x": 84,
+     "y": 401,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "肌",
+     "x": 84,
+     "y": 386,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "寒",
+     "x": 84,
+     "y": 371,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "い",
+     "x": 84,
+     "y": 356,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "。",
+     "x": 91.7,
+     "y": 348.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "「",
+     "x": 58,
+     "y": 521,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "何",
+     "x": 58,
+     "y": 506,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "を",
+     "x": 58,
+     "y": 491,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "借",
+     "x": 58,
+     "y": 476,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "り",
+     "x": 58,
+     "y": 461,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "に",
+     "x": 58,
+     "y": 446,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "来",
+     "x": 58,
+     "y": 431,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 58,
+     "y": 416,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 58,
+     "y": 401,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "？",
+     "x": 58,
+     "y": 386,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "」",
+     "x": 58,
+     "y": 371,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "1",
+     "x": 30,
+     "y": 24,
+     "w": 4.869,
+     "h": 9,
+     "size": 9,
+     "vertical": false
+    }
+   ],
+   [
+    {
+     "str": "雨上がりの図書館",
+     "x": 270,
+     "y": 565,
+     "w": 64,
+     "h": 8,
+     "size": 8,
+     "vertical": false
+    },
+    {
+     "str": "「",
+     "x": 370,
+     "y": 521,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "星",
+     "x": 370,
+     "y": 506,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 370,
+     "y": 491,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "本",
+     "x": 370,
+     "y": 476,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "。",
+     "x": 377.7,
+     "y": 468.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "前",
+     "x": 370,
+     "y": 446,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "に",
+     "x": 370,
+     "y": 431,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "借",
+     "x": 370,
+     "y": 416,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "り",
+     "x": 370,
+     "y": 401,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 370,
+     "y": 386,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 370,
+     "y": 371,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "を",
+     "x": 370,
+     "y": 356,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "返",
+     "x": 370,
+     "y": 341,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "し",
+     "x": 370,
+     "y": 326,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "て",
+     "x": 370,
+     "y": 311,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "、",
+     "x": 377.7,
+     "y": 303.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "続",
+     "x": 370,
+     "y": 281,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "き",
+     "x": 370,
+     "y": 266,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "を",
+     "x": 370,
+     "y": 251,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "読",
+     "x": 370,
+     "y": 236,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "み",
+     "x": 370,
+     "y": 221,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 370,
+     "y": 206,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "か",
+     "x": 370,
+     "y": 191,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "っ",
+     "x": 370,
+     "y": 176,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 370,
+     "y": 161,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ん",
+     "x": 370,
+     "y": 146,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "だ",
+     "x": 370,
+     "y": 131,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "」",
+     "x": 370,
+     "y": 116,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "彼",
+     "x": 344,
+     "y": 506,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "女",
+     "x": 344,
+     "y": 491,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "は",
+     "x": 344,
+     "y": 476,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "鞄",
+     "x": 344,
+     "y": 461,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "か",
+     "x": 344,
+     "y": 446,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ら",
+     "x": 344,
+     "y": 431,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "薄",
+     "x": 344,
+     "y": 416,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "い",
+     "x": 344,
+     "y": 401,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "冊",
+     "x": 344,
+     "y": 386,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "子",
+     "x": 344,
+     "y": 371,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "を",
+     "x": 344,
+     "y": 356,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "取",
+     "x": 344,
+     "y": 341,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "り",
+     "x": 344,
+     "y": 326,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "出",
+     "x": 344,
+     "y": 311,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "し",
+     "x": 344,
+     "y": 296,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 344,
+     "y": 281,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "。",
+     "x": 351.7,
+     "y": 273.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "表",
+     "x": 344,
+     "y": 251,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "紙",
+     "x": 344,
+     "y": 236,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "に",
+     "x": 344,
+     "y": 221,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "は",
+     "x": 344,
+     "y": 206,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "手",
+     "x": 344,
+     "y": 191,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "書",
+     "x": 344,
+     "y": 176,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "き",
+     "x": 344,
+     "y": 161,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "で",
+     "x": 344,
+     "y": 146,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "、",
+     "x": 351.7,
+     "y": 138.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "夜",
+     "x": 344,
+     "y": 116,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "空",
+     "x": 344,
+     "y": 101,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 344,
+     "y": 86,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "地",
+     "x": 318,
+     "y": 521,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "図",
+     "x": 318,
+     "y": 506,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 318,
+     "y": 491,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "よ",
+     "x": 318,
+     "y": 476,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "う",
+     "x": 318,
+     "y": 461,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "な",
+     "x": 318,
+     "y": 446,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "も",
+     "x": 318,
+     "y": 431,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 318,
+     "y": 416,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "が",
+     "x": 318,
+     "y": 401,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "描",
+     "x": 318,
+     "y": 386,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "い",
+     "x": 318,
+     "y": 371,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "て",
+     "x": 318,
+     "y": 356,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "あ",
+     "x": 318,
+     "y": 341,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "る",
+     "x": 318,
+     "y": 326,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "。",
+     "x": 325.7,
+     "y": 318.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "自",
+     "x": 318,
+     "y": 296,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "分",
+     "x": 318,
+     "y": 281,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "で",
+     "x": 318,
+     "y": 266,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "作",
+     "x": 318,
+     "y": 251,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "っ",
+     "x": 318,
+     "y": 236,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 318,
+     "y": 221,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 318,
+     "y": 206,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "だ",
+     "x": 318,
+     "y": 191,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "と",
+     "x": 318,
+     "y": 176,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "い",
+     "x": 318,
+     "y": 161,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "う",
+     "x": 318,
+     "y": 146,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "。",
+     "x": 325.7,
+     "y": 138.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "や",
+     "x": 292,
+     "y": 506,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "が",
+     "x": 292,
+     "y": 491,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "て",
+     "x": 292,
+     "y": 476,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "雲",
+     "x": 292,
+     "y": 461,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 292,
+     "y": 446,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "切",
+     "x": 292,
+     "y": 431,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "れ",
+     "x": 292,
+     "y": 416,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "間",
+     "x": 292,
+     "y": 401,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "か",
+     "x": 292,
+     "y": 386,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ら",
+     "x": 292,
+     "y": 371,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "、",
+     "x": 299.7,
+     "y": 363.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "斜",
+     "x": 292,
+     "y": 341,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "め",
+     "x": 292,
+     "y": 326,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 292,
+     "y": 311,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "光",
+     "x": 292,
+     "y": 296,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "が",
+     "x": 292,
+     "y": 281,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "差",
+     "x": 292,
+     "y": 266,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "し",
+     "x": 292,
+     "y": 251,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "込",
+     "x": 292,
+     "y": 236,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ん",
+     "x": 292,
+     "y": 221,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "で",
+     "x": 292,
+     "y": 206,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "き",
+     "x": 292,
+     "y": 191,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 292,
+     "y": 176,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "。",
+     "x": 299.7,
+     "y": 168.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "濡",
+     "x": 292,
+     "y": 146,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "れ",
+     "x": 292,
+     "y": 131,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 292,
+     "y": 116,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "石",
+     "x": 292,
+     "y": 101,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "段",
+     "x": 292,
+     "y": 86,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "が",
+     "x": 266,
+     "y": 521,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "白",
+     "x": 266,
+     "y": 506,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "く",
+     "x": 266,
+     "y": 491,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "光",
+     "x": 266,
+     "y": 476,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "り",
+     "x": 266,
+     "y": 461,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "、",
+     "x": 273.7,
+     "y": 453.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "坂",
+     "x": 266,
+     "y": 431,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 266,
+     "y": 416,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "下",
+     "x": 266,
+     "y": 401,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 266,
+     "y": 386,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "町",
+     "x": 266,
+     "y": 371,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "並",
+     "x": 266,
+     "y": 356,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "み",
+     "x": 266,
+     "y": 341,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "が",
+     "x": 266,
+     "y": 326,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "く",
+     "x": 266,
+     "y": 311,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "っ",
+     "x": 266,
+     "y": 296,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "き",
+     "x": 266,
+     "y": 281,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "り",
+     "x": 266,
+     "y": 266,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "と",
+     "x": 266,
+     "y": 251,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "浮",
+     "x": 266,
+     "y": 236,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "か",
+     "x": 266,
+     "y": 221,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "び",
+     "x": 266,
+     "y": 206,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "上",
+     "x": 266,
+     "y": 191,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "が",
+     "x": 266,
+     "y": 176,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "る",
+     "x": 266,
+     "y": 161,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "。",
+     "x": 273.7,
+     "y": 153.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "「",
+     "x": 240,
+     "y": 521,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "止",
+     "x": 240,
+     "y": 506,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ん",
+     "x": 240,
+     "y": 491,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "だ",
+     "x": 240,
+     "y": 476,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ね",
+     "x": 240,
+     "y": 461,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "」",
+     "x": 240,
+     "y": 446,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "そ",
+     "x": 214,
+     "y": 506,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "れ",
+     "x": 214,
+     "y": 491,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "だ",
+     "x": 214,
+     "y": 476,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "け",
+     "x": 214,
+     "y": 461,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "言",
+     "x": 214,
+     "y": 446,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "う",
+     "x": 214,
+     "y": 431,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "と",
+     "x": 214,
+     "y": 416,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "、",
+     "x": 221.7,
+     "y": 408.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "彼",
+     "x": 214,
+     "y": 386,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "女",
+     "x": 214,
+     "y": 371,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "は",
+     "x": 214,
+     "y": 356,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "傘",
+     "x": 214,
+     "y": 341,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "を",
+     "x": 214,
+     "y": 326,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "手",
+     "x": 214,
+     "y": 311,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "に",
+     "x": 214,
+     "y": 296,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "持",
+     "x": 214,
+     "y": 281,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "っ",
+     "x": 214,
+     "y": 266,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 214,
+     "y": 251,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ま",
+     "x": 214,
+     "y": 236,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ま",
+     "x": 214,
+     "y": 221,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "、",
+     "x": 221.7,
+     "y": 213.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "軽",
+     "x": 214,
+     "y": 191,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "い",
+     "x": 214,
+     "y": 176,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "足",
+     "x": 214,
+     "y": 161,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "取",
+     "x": 214,
+     "y": 146,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "り",
+     "x": 214,
+     "y": 131,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "で",
+     "x": 214,
+     "y": 116,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "坂",
+     "x": 214,
+     "y": 101,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "を",
+     "x": 214,
+     "y": 86,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "下",
+     "x": 188,
+     "y": 521,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "り",
+     "x": 188,
+     "y": 506,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "て",
+     "x": 188,
+     "y": 491,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "い",
+     "x": 188,
+     "y": 476,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "っ",
+     "x": 188,
+     "y": 461,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 188,
+     "y": 446,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "。",
+     "x": 195.7,
+     "y": 438.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "僕",
+     "x": 188,
+     "y": 416,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "は",
+     "x": 188,
+     "y": 401,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "し",
+     "x": 188,
+     "y": 386,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ば",
+     "x": 188,
+     "y": 371,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ら",
+     "x": 188,
+     "y": 356,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "く",
+     "x": 188,
+     "y": 341,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "そ",
+     "x": 188,
+     "y": 326,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 188,
+     "y": 311,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "場",
+     "x": 188,
+     "y": 296,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "に",
+     "x": 188,
+     "y": 281,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "立",
+     "x": 188,
+     "y": 266,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "っ",
+     "x": 188,
+     "y": 251,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 188,
+     "y": 236,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ま",
+     "x": 188,
+     "y": 221,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ま",
+     "x": 188,
+     "y": 206,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "、",
+     "x": 195.7,
+     "y": 198.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "閉",
+     "x": 188,
+     "y": 176,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "じ",
+     "x": 188,
+     "y": 161,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 188,
+     "y": 146,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "扉",
+     "x": 188,
+     "y": 131,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 188,
+     "y": 116,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "向",
+     "x": 188,
+     "y": 101,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "こ",
+     "x": 188,
+     "y": 86,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "う",
+     "x": 162,
+     "y": 521,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "に",
+     "x": 162,
+     "y": 506,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "並",
+     "x": 162,
+     "y": 491,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ん",
+     "x": 162,
+     "y": 476,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "で",
+     "x": 162,
+     "y": 461,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "い",
+     "x": 162,
+     "y": 446,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "る",
+     "x": 162,
+     "y": 431,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "は",
+     "x": 162,
+     "y": 416,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ず",
+     "x": 162,
+     "y": 401,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 162,
+     "y": 386,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "、",
+     "x": 169.7,
+     "y": 378.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ま",
+     "x": 162,
+     "y": 356,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "だ",
+     "x": 162,
+     "y": 341,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "読",
+     "x": 162,
+     "y": 326,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "ん",
+     "x": 162,
+     "y": 311,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "で",
+     "x": 162,
+     "y": 296,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "い",
+     "x": 162,
+     "y": 281,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "な",
+     "x": 162,
+     "y": 266,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "い",
+     "x": 162,
+     "y": 251,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "本",
+     "x": 162,
+     "y": 236,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "の",
+     "x": 162,
+     "y": 221,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "こ",
+     "x": 162,
+     "y": 206,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "と",
+     "x": 162,
+     "y": 191,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "を",
+     "x": 162,
+     "y": 176,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "考",
+     "x": 162,
+     "y": 161,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "え",
+     "x": 162,
+     "y": 146,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "て",
+     "x": 162,
+     "y": 131,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "い",
+     "x": 162,
+     "y": 116,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "た",
+     "x": 162,
+     "y": 101,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "。",
+     "x": 169.7,
+     "y": 93.7,
+     "w": 14,
+     "h": 14,
+     "size": 14,
+     "vertical": false
+    },
+    {
+     "str": "2",
+     "x": 30,
+     "y": 24,
+     "w": 4.869,
+     "h": 9,
+     "size": 9,
+     "vertical": false
+    }
+   ]
+  ]
+ },
+ "expected": {
+  "pageTexts": [
+   {
+    "text": "坂の上の｜図書館《としょかん》は、月曜日だけ休みになる。それを知らずに来たのは、今月に入って二度目だった。\n「今日も閉まってるよ」\n振り返ると、傘を畳みかけた少女が立っていた。近所の中学校の制服を着ていて、肩のあたりが少し濡れている。\n「知ってた？」と僕が聞くと、彼女は首を横に振った。「知らなかった。でも、雨が止むまでここにいようと思って」\n軒下は二人で並ぶとちょうどいい幅だった。屋根を叩く音が、少しずつ間遠になっていく。向かいの家の雨どいから、細い水の糸が途切れずに落ちていた。\n時計を見ると、午後３時４５分を少し過ぎていた。気温は12.5度。十月にしては肌寒い。\n「何を借りに来たの？」",
+    "contFromPrev": false,
+    "vertical": true
+   },
+   {
+    "text": "「星の本。前に借りたのを返して、続きを読みたかったんだ」\n彼女は鞄から薄い冊子を取り出した。表紙には手書きで、夜空の地図のようなものが描いてある。自分で作ったのだという。\nやがて雲の切れ間から、斜めの光が差し込んできた。濡れた石段が白く光り、坂の下の町並みがくっきりと浮かび上がる。\n「止んだね」\nそれだけ言うと、彼女は傘を手に持ったまま、軽い足取りで坂を下りていった。僕はしばらくその場に立ったまま、閉じた扉の向こうに並んでいるはずの、まだ読んでいない本のことを考えていた。",
+    "contFromPrev": false,
+    "vertical": true
+   }
+  ],
+  "paragraphs": [
+   {
+    "text": "坂の上の図書館は、月曜日だけ休みになる。それを知らずに来たのは、今月に入って二度目だった。",
+    "ruby": [
+     {
+      "start": 4,
+      "end": 7,
+      "text": "としょかん"
+     }
+    ],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "「今日も閉まってるよ」",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "振り返ると、傘を畳みかけた少女が立っていた。近所の中学校の制服を着ていて、肩のあたりが少し濡れている。",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "「知ってた？」と僕が聞くと、彼女は首を横に振った。「知らなかった。でも、雨が止むまでここにいようと思って」",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "軒下は二人で並ぶとちょうどいい幅だった。屋根を叩く音が、少しずつ間遠になっていく。向かいの家の雨どいから、細い水の糸が途切れずに落ちていた。",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "時計を見ると、午後３時４５分を少し過ぎていた。気温は12.5度。十月にしては肌寒い。",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "「何を借りに来たの？」",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "「星の本。前に借りたのを返して、続きを読みたかったんだ」",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "text": "彼女は鞄から薄い冊子を取り出した。表紙には手書きで、夜空の地図のようなものが描いてある。自分で作ったのだという。",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "text": "やがて雲の切れ間から、斜めの光が差し込んできた。濡れた石段が白く光り、坂の下の町並みがくっきりと浮かび上がる。",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "text": "「止んだね」",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "text": "それだけ言うと、彼女は傘を手に持ったまま、軽い足取りで坂を下りていった。僕はしばらくその場に立ったまま、閉じた扉の向こうに並んでいるはずの、まだ読んでいない本のことを考えていた。",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      1
+     ]
+    ]
+   }
+  ],
+  "references": []
+ }
+}

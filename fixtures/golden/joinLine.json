@@ -1,0 +1,48 @@
+{
+ "fn": "joinLine",
+ "indexUnit": "utf16",
+ "input": [
+  [
+   "this is an exam-",
+   "ple"
+  ],
+  [
+   "there was a",
+   "cat"
+  ],
+  [
+   "in 2020",
+   "the team"
+  ],
+  [
+   "気温は12.",
+   "5度"
+  ],
+  [
+   "cost 1,",
+   "000 yen"
+  ],
+  [
+   "坂の上の",
+   "図書館"
+  ],
+  [
+   "PDFの",
+   "ファイル"
+  ],
+  [
+   "as noted (Smith)",
+   "and others"
+  ]
+ ],
+ "expected": [
+  "this is an example",
+  "there was a cat",
+  "in 2020 the team",
+  "気温は12.5度",
+  "cost 1,000 yen",
+  "坂の上の図書館",
+  "PDFのファイル",
+  "as noted (Smith) and others"
+ ]
+}
