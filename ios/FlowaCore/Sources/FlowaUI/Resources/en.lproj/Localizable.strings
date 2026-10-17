@@ -56,3 +56,9 @@
 "論文の参考文献を飛ばす" = "Skip references in papers";
 "初期設定に戻す" = "Reset to defaults";
 "完了" = "Done";
+"サンプルで試す" = "Try a sample";
+"目次" = "Contents";
+"閉じる" = "Close";
+"%lld ページ" = "Page %lld";
+"ここから読む" = "Read from here";
+"PDFで見る" = "View PDF";

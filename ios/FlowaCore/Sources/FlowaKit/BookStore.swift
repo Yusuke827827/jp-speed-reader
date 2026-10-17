@@ -18,6 +18,19 @@ public struct StoredPage: Codable, Equatable, Sendable {
     }
 }
 
+/// 目次の項目（page は 0 始まりのページ番号、depth は 0 始まりの深さ）
+public struct TocItem: Codable, Hashable, Sendable {
+    public var title: String
+    public var page: Int
+    public var depth: Int
+
+    public init(title: String, page: Int, depth: Int) {
+        self.title = title
+        self.page = page
+        self.depth = depth
+    }
+}
+
 public struct BookMeta: Codable, Identifiable, Hashable, Sendable {
     public enum Kind: String, Codable, Sendable { case pdf, text }
 
@@ -36,8 +49,10 @@ public struct BookMeta: Codable, Identifiable, Hashable, Sendable {
     public var position: [Int]?
     /// 読了率（0〜100）
     public var percent: Double
+    /// 目次（PDF のしおり、青空文庫の見出し）。古い保存データには無い
+    public var toc: [TocItem]?
 
-    public init(id: String, kind: Kind, title: String, author: String? = nil, fileName: String, pageCount: Int, emptyPages: Int = 0, vertical: Bool = false, createdAt: Date = Date()) {
+    public init(id: String, kind: Kind, title: String, author: String? = nil, fileName: String, pageCount: Int, emptyPages: Int = 0, vertical: Bool = false, createdAt: Date = Date(), toc: [TocItem]? = nil) {
         self.id = id
         self.kind = kind
         self.title = title
@@ -50,6 +65,7 @@ public struct BookMeta: Codable, Identifiable, Hashable, Sendable {
         lastReadAt = nil
         position = nil
         percent = 0
+        self.toc = toc
     }
 
     public var textPosition: TextPosition? {
