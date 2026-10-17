@@ -92,6 +92,14 @@ public enum Normalize {
         }
     }
 
+    /// /[一-鿿㐀-䶿々〆ヶ〇]/（layout.ts のルビ判定用。互換漢字を含まない）
+    static func isKanjiNoCompat(_ c: UInt16) -> Bool {
+        switch c {
+        case 0x4E00...0x9FFF, 0x3400...0x4DBF, 0x3005, 0x3006, 0x30F6, 0x3007: return true
+        default: return false
+        }
+    }
+
     /// ルビ記法を解析し、本文とルビの位置に分ける。
     ///   ｜春風《はるかぜ》 … ｜ から 《 までが親文字
     ///   春風《はるかぜ》   … 《 の直前に続く漢字が親文字
