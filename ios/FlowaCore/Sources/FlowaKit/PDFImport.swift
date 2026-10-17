@@ -1,7 +1,7 @@
 // PDFKit で読んだ PDF の文字を、レイアウト解析用の断片（RawItem）に変換し、ページ本文を作る。
 // Web 版の src/lib/pdfItems.ts（PDF.js の getTextContent から断片を作る処理）に当たる。
 //
-// PDFKit は PDF.js のような「描画命令ごとの断片」を返さないので、1 文字ずつの位置を取り、
+// PDFKit は PDF.js のような「描画命令ごとの断片」を返さないので、1 文字ずつの位置（PDFSelection）を取り、
 // 同じ行（縦書きなら同じ列）に隙間なく続く文字を 1 つの断片にまとめる。空白は区切りとして捨て、
 // 単語間の空白は Layout が位置の隙間から補う。
 
@@ -24,37 +24,41 @@ public enum PDFImport {
 
     private struct Glyph {
         var ch: String
+        /// 字形の箱（ベースラインの下の部分も含む）
         var rect: CGRect
+        /// ベースラインの y（PDF.js の断片の y に当たる）
+        var baseline: Double
         var size: Double
     }
 
     /// 1 ページ分の文字を断片にする
     public static func rawItems(_ page: PDFPage) -> [RawItem] {
-        guard let string = page.string, page.numberOfCharacters > 0 else { return [] }
+        guard let string = page.string, !string.isEmpty else { return [] }
         let ns = string as NSString
-        let count = min(ns.length, page.numberOfCharacters)
         let attributed = page.attributedString
 
         var glyphs: [Glyph?] = []
-        glyphs.reserveCapacity(count)
         var i = 0
-        while i < count {
-            // サロゲートペアは 2 単位で 1 文字
+        while i < ns.length {
+            // サロゲートペアなどは 1 文字として扱う
             let r = ns.rangeOfComposedCharacterSequence(at: i)
-            let ch = ns.substring(with: r)
-            let rect = page.characterBounds(at: i)
-            if ch.unicodeScalars.allSatisfy({ CharacterSet.whitespacesAndNewlines.contains($0) || CharacterSet.controlCharacters.contains($0) })
-                || rect.isNull || rect.isEmpty || rect.width <= 0 || rect.height <= 0 {
-                glyphs.append(nil)
-            } else {
-                var size = 0.0
-                if let attributed, i < attributed.length, let font = attributed.attribute(.font, at: i, effectiveRange: nil) as? PlatformFont {
-                    size = Double(font.pointSize)
-                }
-                if size <= 0 { size = Double(max(rect.width, rect.height)) }
-                glyphs.append(Glyph(ch: ch, rect: rect, size: size))
-            }
             i = r.location + r.length
+            let ch = ns.substring(with: r)
+            // 位置は PDFSelection から取る（characterBounds(at:) は、PDFKit が補った改行の分だけ位置がずれる）
+            let rect = page.selection(for: r)?.bounds(for: page) ?? .null
+            if ch.unicodeScalars.allSatisfy({ CharacterSet.whitespacesAndNewlines.contains($0) || CharacterSet.controlCharacters.contains($0) })
+                || rect.isNull || rect.width <= 0 || rect.height <= 0 {
+                glyphs.append(nil)
+                continue
+            }
+            var size = 0.0
+            var descender = 0.0
+            if let attributed, r.location < attributed.length, let font = attributed.attribute(.font, at: r.location, effectiveRange: nil) as? PlatformFont {
+                size = Double(font.pointSize)
+                descender = Double(font.descender)
+            }
+            if size <= 0 { size = Double(min(rect.width, rect.height)) }
+            glyphs.append(Glyph(ch: ch, rect: rect, baseline: Double(rect.minY) - descender, size: size))
         }
         return mergeRuns(glyphs)
     }
@@ -76,9 +80,7 @@ public enum PDFImport {
                 let maxX = run.map { Double($0.rect.maxX) }.max() ?? 0
                 items.append(RawItem(str: str, x: minX, y: Double(last.rect.minY), w: maxX - minX, h: Double(first.rect.maxY - last.rect.minY), size: size, vertical: true))
             } else {
-                let minY = run.map { Double($0.rect.minY) }.min() ?? 0
-                let maxY = run.map { Double($0.rect.maxY) }.max() ?? 0
-                items.append(RawItem(str: str, x: Double(first.rect.minX), y: minY, w: Double(last.rect.maxX - first.rect.minX), h: maxY - minY, size: size, vertical: false))
+                items.append(RawItem(str: str, x: Double(first.rect.minX), y: first.baseline, w: Double(last.rect.maxX - first.rect.minX), h: size, size: size, vertical: false))
             }
             run = []
             dir = .none
@@ -95,7 +97,7 @@ public enum PDFImport {
             }
             let s = max(prev.size, g.size)
             let sameSize = abs(prev.size - g.size) < s * 0.2
-            let horizontal = abs(g.rect.minY - prev.rect.minY) < s * 0.25
+            let horizontal = abs(g.baseline - prev.baseline) < s * 0.25
                 && g.rect.minX - prev.rect.maxX > -s * 0.3 && g.rect.minX - prev.rect.maxX < s * 0.3
             let vertical = abs(g.rect.midX - prev.rect.midX) < s * 0.25
                 && prev.rect.minY - g.rect.maxY > -s * 0.3 && prev.rect.minY - g.rect.maxY < s * 0.3
