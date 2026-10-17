@@ -130,7 +130,7 @@ struct ReaderView: View {
                 // 視線を置く位置の目印
                 Rectangle().fill(.tint.opacity(0.5)).frame(width: 2, height: 14)
                 Text(model.chunk.map { $0.text.trimmingCharacters(in: .whitespacesAndNewlines) } ?? "")
-                    .font(.system(size: settings.fontSize, weight: .regular, design: settings.serif ? .serif : .default))
+                    .font(chunkFont)
                     .lineLimit(3)
                     .minimumScaleFactor(0.3)
                     .multilineTextAlignment(.center)
@@ -146,6 +146,14 @@ struct ReaderView: View {
                 }
             }
         }
+    }
+
+    /// 表示の字体。明朝のとき、日本語・中国語はヒラギノ明朝を指定する
+    /// （.serif だけだと、端末の言語が英語のときに日本語がゴシックになる）
+    private var chunkFont: Font {
+        guard settings.serif else { return .system(size: settings.fontSize) }
+        if model.chunk?.words != nil { return .system(size: settings.fontSize, design: .serif) }
+        return .custom("HiraMinProN-W3", size: settings.fontSize)
     }
 
     /// 一時停止中は、今の段落を読んでいる位置に印をつけて見せる
