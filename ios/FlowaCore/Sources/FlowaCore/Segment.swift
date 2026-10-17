@@ -463,7 +463,7 @@ public enum Segmenter {
         var sentenceEnds = Set<Int>()
         let minChars = max(1, opts.minChars)
         for (pi, para) in paragraphs.enumerated() {
-            if para.illust {
+            if para.illust != nil {
                 chunks.append(Chunk(para: pi, len: 0, illust: true))
                 continue
             }

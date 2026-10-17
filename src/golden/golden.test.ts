@@ -11,7 +11,7 @@ import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs'
-import { buildBookText, referenceParagraphs, type BookText } from '../lib/book'
+import { buildBookText, globalOffset, pageAt, percentAt, positionForPage, referenceParagraphs, type BookText, type PageEntry } from '../lib/book'
 import { itemsToLines, joinLine, linesToPageTexts, type RawItem } from '../lib/layout'
 import { normalizeChars, parseRuby, stripNotes } from '../lib/normalize'
 import { cleanOcrText } from '../lib/ocrText'
@@ -122,6 +122,33 @@ describe('golden', () => {
     // Swift 版の表示時間の計算を単独で確かめられるよう、分割済みの単位（計算に使う項目だけ）も入力に入れる
     const units = chunks.map((c) => ({ len: c.len, pause: c.pause, words: c.words, name: !!c.name, illust: !!c.illust }))
     golden('buildSchedule', 'buildSchedule(chunks, { cpm: 600, wpm: 250, pauses, pauseScale: 1, nameBoost: true })', { paragraphs: paras, chunks: units, options: { cpm: 600, wpm: 250, pauseScale: 1, nameBoost: true } }, expected)
+  })
+
+  it('buildBookText と位置', () => {
+    // 挿絵・白紙のページ、並び順の違うページ、ページをまたぐ段落、ルビ記法、縦書き用の約物を含む
+    const pages: PageEntry[] = [
+      { pageIndex: 3, text: '続きの段落です。\n｜湊《みなと》は走った︒', contFromPrev: true },
+      { pageIndex: 0, text: '一つ目の段落です。\n二つ目の段落は次の', contFromPrev: false },
+      { pageIndex: 1, text: '', contFromPrev: false, image: 'illust', illustRect: [0.1, 0.2, 0.8, 0.5] },
+      { pageIndex: 2, text: '', contFromPrev: false, image: 'blank' },
+      { pageIndex: 5, text: '離れたページの文。\n', contFromPrev: true },
+      { pageIndex: 6, text: '', contFromPrev: false, image: 'illust' },
+      { pageIndex: 7, text: '最後の段落。', contFromPrev: false },
+    ]
+    const book = buildBookText(pages, 8)
+    const positions = [
+      { para: 0, offset: 0 }, { para: 1, offset: 3 }, { para: 1, offset: 9 }, { para: 2, offset: 0 },
+      { para: 4, offset: 2 }, { para: 99, offset: 0 }, { para: 1, offset: 100 },
+    ]
+    golden('buildBookText', 'buildBookText(pages, 8) と pageAt / globalOffset / percentAt / positionForPage', { pages, pageCount: 8, positions, pageQueries: [0, 1, 2, 3, 4, 5, 6, 7, 8] }, {
+      paragraphs: book.paragraphs,
+      totalChars: book.totalChars,
+      pageCount: book.pageCount,
+      pageAt: positions.map((p) => pageAt(book, p)),
+      globalOffset: positions.map((p) => globalOffset(book, p)),
+      percentAt: positions.map((p) => percentAt(book, p)),
+      positionForPage: [0, 1, 2, 3, 4, 5, 6, 7, 8].map((pg) => positionForPage(book, pg)),
+    })
   })
 
   it('cleanOcrText', () => {
