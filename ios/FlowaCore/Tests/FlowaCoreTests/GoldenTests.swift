@@ -75,6 +75,21 @@ final class GoldenTests: XCTestCase {
         }
     }
 
+    func testBudouXJapanese() throws {
+        let golden = try loadGolden("budoux-ja")
+        let input = try XCTUnwrap(golden["input"] as? [String])
+        let expected = try XCTUnwrap(golden["expected"] as? [[Int]])
+        XCTAssertEqual(input.count, expected.count)
+        for (sentence, want) in zip(input, expected) {
+            XCTAssertEqual(BudouXParser.japanese.parseBoundaries(sentence), want, sentence)
+        }
+    }
+
+    func testBudouXChineseModelsLoad() throws {
+        XCTAssertFalse(try BudouXParser.load("zh-hans").parseBoundaries("今天天气很好，我们去公园散步吧。").isEmpty)
+        XCTAssertFalse(try BudouXParser.load("zh-hant").parseBoundaries("今天天氣很好，我們去公園散步吧。").isEmpty)
+    }
+
     /// 間を入れても、区間ごとの実速度が設定速度と一致する（Web 版の segment.test.ts と同じ性質）
     func testBlocksKeepTargetSpeed() {
         var chunks: [Chunk] = []

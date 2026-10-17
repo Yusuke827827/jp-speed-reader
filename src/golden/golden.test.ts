@@ -16,6 +16,7 @@ import { itemsToLines, joinLine, linesToPageTexts, type RawItem } from '../lib/l
 import { normalizeChars, parseRuby, stripNotes } from '../lib/normalize'
 import { cleanOcrText } from '../lib/ocrText'
 import { toRawItems } from '../lib/pdfItems'
+import { loadDefaultJapaneseParser } from 'budoux'
 import { segmentBook, splitSentences, type ChunkMode } from '../lib/segment'
 import { decodeText, parseTextBook } from '../lib/textImport'
 import { buildSchedule } from '../lib/timing'
@@ -76,6 +77,13 @@ describe('golden', () => {
   it('splitSentences', () => {
     const inputs = [...CORPUS.ja, ...CORPUS.en, ...CORPUS.mixed, '「行こう。早く」と言った。', 'J. R. Tolkien agreed. 1999. 2000 was next.']
     golden('splitSentences', 'splitSentences', inputs, inputs.map((s) => splitSentences(s)))
+  })
+
+  it('budoux', () => {
+    // BudouX の日本語モデルの区切り位置（UTF-16 の位置）。Swift 版の推論の移植を確かめる
+    const parser = loadDefaultJapaneseParser()
+    const inputs = [...CORPUS.ja, ...CORPUS.mixed, 'あ', '', '今日は良い天気ですね。', '𠮟𠮟𠮟られた🌙🌙']
+    golden('budoux-ja', 'loadDefaultJapaneseParser().parseBoundaries(sentence)', inputs, inputs.map((s) => parser.parseBoundaries(s)))
   })
 
   it('joinLine', () => {

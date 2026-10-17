@@ -13,7 +13,8 @@ let package = Package(
         .library(name: "FlowaCore", targets: ["FlowaCore"]),
     ],
     targets: [
-        .target(name: "FlowaCore"),
+        // Resources: BudouX の学習済みモデルとライセンス
+        .target(name: "FlowaCore", resources: [.process("Resources")]),
         .testTarget(name: "FlowaCoreTests", dependencies: ["FlowaCore"]),
     ]
 )
