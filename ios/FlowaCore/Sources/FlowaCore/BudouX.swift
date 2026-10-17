@@ -34,7 +34,11 @@ public struct BudouXParser: Sendable {
 
     /// 区切る位置（UTF-16 の位置）の一覧
     public func parseBoundaries(_ sentence: String) -> [Int] {
-        let units = Array(sentence.utf16)
+        parseBoundaries(units: Array(sentence.utf16))
+    }
+
+    /// 区切る位置の一覧（UTF-16 の並びを直接受け取る。絵文字の途中を含む文字列でも位置がずれない）
+    public func parseBoundaries(units: [UInt16]) -> [Int] {
         let n = units.count
         guard n > 1 else { return [] }
 

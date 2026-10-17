@@ -11,8 +11,11 @@ FlowaCore は Web 版（`src/lib`）の TypeScript から移植し、`fixtures/g
 | `FlowaCore/Sources/FlowaCore/Chunk.swift` | 表示の単位 | `src/lib/segment.ts` の `Chunk` |
 | `FlowaCore/Sources/FlowaCore/Timing.swift` | 表示時間の計算（字/分・語/分、区間ごとの速度合わせ） | `src/lib/timing.ts` |
 | `FlowaCore/Sources/FlowaCore/JoinLine.swift` | 行の結合（行末のハイフン、欧文の空白） | `src/lib/layout.ts` の `joinLine` |
+| `FlowaCore/Sources/FlowaCore/Segment.swift` | 文の分割と単位の分割（5モード、欧文の単語単位、人物名・ルビを切らない、最小字数、間の種類） | `src/lib/segment.ts` |
+| `FlowaCore/Sources/FlowaCore/JSText.swift` | JavaScript の文字列の扱い（UTF-16 の添字、`\s`・`trim`、for...of）を再現する道具 | — |
+| `FlowaCore/Sources/FlowaCore/Book.swift` | 段落とルビ（位置は UTF-16） | `src/lib/book.ts` の一部 |
 | `FlowaCore/Sources/FlowaCore/BudouX.swift` | BudouX の推論（文節相当の単位に分ける）。モデルは `Resources/`（日本語・簡体字・繁体字、Apache-2.0） | npm の `budoux` 0.9.3 |
-| `FlowaCore/Tests/FlowaCoreTests/GoldenTests.swift` | 正解データとの比較 | `fixtures/golden/buildSchedule.json`・`joinLine.json`・`budoux-ja.json` |
+| `FlowaCore/Tests/FlowaCoreTests/*.swift` | 正解データとの比較 | `fixtures/golden/` の buildSchedule・joinLine・budoux-ja・splitSentences・segmentBook-ja/en/mixed |
 
 > `ios/` を変えると、GitHub Actions の Mac 環境で `swift test` が自動で実行されます（`.github/workflows/ios-core.yml`）。
 
@@ -38,7 +41,7 @@ FlowaCore は Web 版（`src/lib`）の TypeScript から移植し、`fixtures/g
 
 1. 表示時間・行の結合（済み）
 2. BudouX の推論（済み）
-3. 文の分割と単位の分割（`segment.ts`）
+3. 文の分割と単位の分割（済み）
 4. 正規化・ルビ・青空文庫の取り込み（`normalize.ts`・`textImport.ts`）
 5. 本文の位置とページの対応（`book.ts`）
 6. PDF の行と段落の組み立て（`layout.ts`。入力は PDFKit の文字位置から作る）
