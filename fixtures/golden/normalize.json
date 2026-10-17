@@ -1,0 +1,65 @@
+{
+ "fn": "normalizeChars / stripNotes / parseRuby",
+ "indexUnit": "utf16",
+ "input": [
+  "⽇本ｶﾀｶﾅ…",
+  "｜春風《はるかぜ》が吹く［＃「春風」に傍点］",
+  "先生《せんせい》に会った。",
+  "ﬁnal ﬂow",
+  "黑い犬"
+ ],
+ "expected": [
+  {
+   "normalizeChars": "日本カタカナ…",
+   "stripNotes": "⽇本ｶﾀｶﾅ…",
+   "parseRuby": {
+    "text": "⽇本ｶﾀｶﾅ…",
+    "ruby": []
+   }
+  },
+  {
+   "normalizeChars": "｜春風《はるかぜ》が吹く［＃「春風」に傍点］",
+   "stripNotes": "｜春風《はるかぜ》が吹く",
+   "parseRuby": {
+    "text": "春風が吹く［＃「春風」に傍点］",
+    "ruby": [
+     {
+      "start": 0,
+      "end": 2,
+      "text": "はるかぜ"
+     }
+    ]
+   }
+  },
+  {
+   "normalizeChars": "先生《せんせい》に会った。",
+   "stripNotes": "先生《せんせい》に会った。",
+   "parseRuby": {
+    "text": "先生に会った。",
+    "ruby": [
+     {
+      "start": 0,
+      "end": 2,
+      "text": "せんせい"
+     }
+    ]
+   }
+  },
+  {
+   "normalizeChars": "ﬁnal ﬂow",
+   "stripNotes": "ﬁnal ﬂow",
+   "parseRuby": {
+    "text": "ﬁnal ﬂow",
+    "ruby": []
+   }
+  },
+  {
+   "normalizeChars": "黑い犬",
+   "stripNotes": "黑い犬",
+   "parseRuby": {
+    "text": "黑い犬",
+    "ruby": []
+   }
+  }
+ ]
+}

@@ -1,0 +1,104 @@
+{
+ "fn": "splitSentences",
+ "indexUnit": "utf16",
+ "input": [
+  "朝の駅は、思ったより静かだった。「おはよう。今日は早いね」と｜千晴《ちはる》は言った。改札の時計は７時４５分を指していて、気温は12.5度しかない。",
+  "湊は自転車を押しながら、少し眠そうな顔で手を振った。……それから、二人は川沿いの道を歩いた――鉄橋の上を電車が渡っていく。",
+  "𠮟られた子どもは、窓の外の🌙を見上げた。ＰＤＦの２ページ目には、ver.2の説明がある。",
+  "Dr. Smith arrived at 3.5 p.m. on Monday. It was late. See Fig. 2 for details, e.g. the map and the timeline.",
+  "Reading long documents on a phone is hard, but it gets easier with practice. The internationalization team didn't stop; they revised the report twice.",
+  "この論文（Reading Long Documents on Small Screens）では、短い phrase を順に表示する方法を調べた。The results were clear.",
+  "「行こう。早く」と言った。",
+  "J. R. Tolkien agreed. 1999. 2000 was next."
+ ],
+ "expected": [
+  [
+   [
+    0,
+    16
+   ],
+   [
+    16,
+    43
+   ],
+   [
+    43,
+    74
+   ]
+  ],
+  [
+   [
+    0,
+    26
+   ],
+   [
+    26,
+    61
+   ]
+  ],
+  [
+   [
+    0,
+    22
+   ],
+   [
+    22,
+    46
+   ]
+  ],
+  [
+   [
+    0,
+    40
+   ],
+   [
+    40,
+    53
+   ],
+   [
+    53,
+    108
+   ]
+  ],
+  [
+   [
+    0,
+    76
+   ],
+   [
+    76,
+    150
+   ]
+  ],
+  [
+   [
+    0,
+    72
+   ],
+   [
+    72,
+    95
+   ]
+  ],
+  [
+   [
+    0,
+    13
+   ]
+  ],
+  [
+   [
+    0,
+    21
+   ],
+   [
+    21,
+    27
+   ],
+   [
+    27,
+    42
+   ]
+  ]
+ ]
+}

@@ -1,0 +1,995 @@
+{
+ "fn": "linesToPageTexts(pages.map(itemsToLines)) → buildBookText → referenceParagraphs",
+ "indexUnit": "utf16",
+ "input": {
+  "pages": [
+   [
+    {
+     "str": "Reading Long Documents on Small Screens",
+     "x": 148.972,
+     "y": 430,
+     "w": 297.344,
+     "h": 16,
+     "size": 16,
+     "vertical": false
+    },
+    {
+     "str": "A. Example and B. Sample",
+     "x": 237.616,
+     "y": 412,
+     "w": 119.768,
+     "h": 11,
+     "size": 11,
+     "vertical": false
+    },
+    {
+     "str": "1",
+     "x": 295,
+     "y": 40,
+     "w": 5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "1 Introduction",
+     "x": 56,
+     "y": 386,
+     "w": 61.95,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "Many people now read reports, papers and news artic-",
+     "x": 68,
+     "y": 373.5,
+     "w": 218.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "1",
+     "x": 287.5,
+     "y": 377.5,
+     "w": 2.5,
+     "h": 5,
+     "size": 5,
+     "vertical": false
+    },
+    {
+     "str": "les on a phone. A phone screen shows only a few lines of",
+     "x": 56,
+     "y": 361,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "a page that was designed for paper, so readers zoom, scr-",
+     "x": 56,
+     "y": 348.5,
+     "w": 230.7,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "oll sideways and often lose their place. This study asks",
+     "x": 56,
+     "y": 336,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "whether showing a document one short phrase at a time",
+     "x": 56,
+     "y": 323.5,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "helps readers keep their place without changing what",
+     "x": 56,
+     "y": 311,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "they understand.",
+     "x": 56,
+     "y": 298.5,
+     "w": 65.95,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "Earlier work suggests that eye movements take only a",
+     "x": 68,
+     "y": 286,
+     "w": 218.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "small part of reading time, and that understanding the",
+     "x": 56,
+     "y": 273.5,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "language is the main limit on speed. We therefore do not",
+     "x": 56,
+     "y": 261,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "claim that phrase display makes reading faster in general.",
+     "x": 56,
+     "y": 248.5,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "Instead, we look at how often readers stop, go back or",
+     "x": 56,
+     "y": 236,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "give up when the layout of the original page gets in the",
+     "x": 56,
+     "y": 223.5,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "way.",
+     "x": 56,
+     "y": 211,
+     "w": 19.16,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "2 Method",
+     "x": 56,
+     "y": 194.5,
+     "w": 40.83,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "Twenty-four volunteers read three short reports each.",
+     "x": 68,
+     "y": 182,
+     "w": 218.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "Every report was shown in two ways: as the original",
+     "x": 56,
+     "y": 169.5,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "two-column page, and as a sequence of short phrases in",
+     "x": 56,
+     "y": 157,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "the centre of the screen. The order of the reports and the",
+     "x": 56,
+     "y": 144.5,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "order of the two displays were balanced across readers.",
+     "x": 56,
+     "y": 132,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "After each report, readers answered five questions about",
+     "x": 56,
+     "y": 119.5,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "published elsewhere.",
+     "x": 56,
+     "y": 76,
+     "w": 67.096,
+     "h": 8,
+     "size": 8,
+     "vertical": false
+    },
+    {
+     "str": "The documents used in this study were written for the study and are not",
+     "x": 56,
+     "y": 86,
+     "w": 229.08,
+     "h": 8,
+     "size": 8,
+     "vertical": false
+    },
+    {
+     "str": "its content and rated how easy it was to follow.",
+     "x": 308.5,
+     "y": 390,
+     "w": 187.96,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "The",
+     "x": 320.5,
+     "y": 377.5,
+     "w": 15.55,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": " ",
+     "x": 336.05,
+     "y": 377.5,
+     "w": 6.335,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "phrase",
+     "x": 342.385,
+     "y": 377.5,
+     "w": 26.1,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": " ",
+     "x": 368.485,
+     "y": 377.5,
+     "w": 6.335,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "display",
+     "x": 374.82,
+     "y": 377.5,
+     "w": 28.89,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": " ",
+     "x": 403.71,
+     "y": 377.5,
+     "w": 6.335,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "removed",
+     "x": 410.045,
+     "y": 377.5,
+     "w": 34.99,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": " ",
+     "x": 445.035,
+     "y": 377.5,
+     "w": 6.035,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "running",
+     "x": 451.07,
+     "y": 377.5,
+     "w": 31.11,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": " ",
+     "x": 482.18,
+     "y": 377.5,
+     "w": 6.335,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "heads,",
+     "x": 488.515,
+     "y": 377.5,
+     "w": 25.27,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": " ",
+     "x": 513.785,
+     "y": 377.5,
+     "w": 6.335,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "page",
+     "x": 520.12,
+     "y": 377.5,
+     "w": 18.88,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "numbers and footnotes, joined words that had been split",
+     "x": 308.5,
+     "y": 365,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "across lines, and read the left column before the right",
+     "x": 308.5,
+     "y": 352.5,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "column. Readers could pause at any time, step back one",
+     "x": 308.5,
+     "y": 340,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "phrase, or open the original page to look at a figure.",
+     "x": 308.5,
+     "y": 327.5,
+     "w": 207.18,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "3 Results",
+     "x": 308.5,
+     "y": 311,
+     "w": 38.61,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "Readers answered about the same number of questi-",
+     "x": 320.5,
+     "y": 298.5,
+     "w": 218.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "ons correctly with both displays. They stopped less often",
+     "x": 308.5,
+     "y": 286,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "with the phrase display, and most said it was easier to",
+     "x": 308.5,
+     "y": 273.5,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "keep their place. Several readers preferred the original",
+     "x": 308.5,
+     "y": 261,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "page for sections with tables or equations, which sugge-",
+     "x": 308.5,
+     "y": 248.5,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "sts that a reader should make it easy to switch between",
+     "x": 308.5,
+     "y": 236,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "the two views.",
+     "x": 308.5,
+     "y": 223.5,
+     "w": 57.95,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "These results come from a small group and from short",
+     "x": 320.5,
+     "y": 211,
+     "w": 218.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "texts written for the study, so they should be treated as a",
+     "x": 308.5,
+     "y": 198.5,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "starting point. Larger studies with real papers and longer",
+     "x": 308.5,
+     "y": 186,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "reading sessions are needed before drawing firm conclus-",
+     "x": 308.5,
+     "y": 173.5,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "ions.",
+     "x": 308.5,
+     "y": 161,
+     "w": 19.17,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "References",
+     "x": 308.5,
+     "y": 144.5,
+     "w": 46.64,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "[1] A. Example. Reading on small screens: a short revi-",
+     "x": 308.5,
+     "y": 132,
+     "w": 230.75,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "ew. Journal of Everyday Reading, 12(3):45-60, 2021.",
+     "x": 320.5,
+     "y": 119.5,
+     "w": 212.8,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "[2] B. Sample and C. Writer. Where readers lose their",
+     "x": 308.5,
+     "y": 107,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "place.",
+     "x": 320.5,
+     "y": 94.5,
+     "w": 23.6,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": " ",
+     "x": 344.1,
+     "y": 94.5,
+     "w": 6.4633,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "Proceedings",
+     "x": 350.5633,
+     "y": 94.5,
+     "w": 48.88,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": " ",
+     "x": 399.4433,
+     "y": 94.5,
+     "w": 6.4633,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "of",
+     "x": 405.9067,
+     "y": 94.5,
+     "w": 8.33,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": " ",
+     "x": 414.2367,
+     "y": 94.5,
+     "w": 6.4633,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "the",
+     "x": 420.7,
+     "y": 94.5,
+     "w": 12.22,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": " ",
+     "x": 432.92,
+     "y": 94.5,
+     "w": 6.4633,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "Workshop on",
+     "x": 439.3833,
+     "y": 94.5,
+     "w": 57.3233,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": " ",
+     "x": 496.7067,
+     "y": 94.5,
+     "w": 6.4633,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "Reading,",
+     "x": 503.17,
+     "y": 94.5,
+     "w": 35.83,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "pages 10-18, 2023.",
+     "x": 320.5,
+     "y": 82,
+     "w": 76.1,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    }
+   ],
+   [
+    {
+     "str": "Reading Long Documents on Small Screens",
+     "x": 226.728,
+     "y": 460,
+     "w": 141.544,
+     "h": 8,
+     "size": 8,
+     "vertical": false
+    },
+    {
+     "str": "2",
+     "x": 295,
+     "y": 40,
+     "w": 5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "[3] D. Author. Phrase display and comprehension. Read-",
+     "x": 56,
+     "y": 436,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "ing Review, 7:1-9, 2024.",
+     "x": 68,
+     "y": 423.5,
+     "w": 98.29,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "Appendix A",
+     "x": 56,
+     "y": 407,
+     "w": 51.15,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "The five questions for each report asked about its",
+     "x": 68,
+     "y": 394.5,
+     "w": 218.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "main claim, two supporting facts, one number and the",
+     "x": 56,
+     "y": 382,
+     "w": 230.5,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    },
+    {
+     "str": "conclusion.",
+     "x": 56,
+     "y": 369.5,
+     "w": 45.83,
+     "h": 10,
+     "size": 10,
+     "vertical": false
+    }
+   ]
+  ]
+ },
+ "expected": {
+  "pageTexts": [
+   {
+    "text": "Reading Long Documents on Small Screens\nA. Example and B. Sample\n1 Introduction\nMany people now read reports, papers and news articles on a phone. A phone screen shows only a few lines of a page that was designed for paper, so readers zoom, scroll sideways and often lose their place. This study asks whether showing a document one short phrase at a time helps readers keep their place without changing what they understand.\nEarlier work suggests that eye movements take only a small part of reading time, and that understanding the language is the main limit on speed. We therefore do not claim that phrase display makes reading faster in general. Instead, we look at how often readers stop, go back or give up when the layout of the original page gets in the way.\n2 Method\nTwenty-four volunteers read three short reports each. Every report was shown in two ways: as the original two-column page, and as a sequence of short phrases in the centre of the screen. The order of the reports and the order of the two displays were balanced across readers. After each report, readers answered five questions about its content and rated how easy it was to follow.\nThe phrase display removed running heads, page numbers and footnotes, joined words that had been split across lines, and read the left column before the right column. Readers could pause at any time, step back one phrase, or open the original page to look at a figure.\n3 Results\nReaders answered about the same number of questions correctly with both displays. They stopped less often with the phrase display, and most said it was easier to keep their place. Several readers preferred the original page for sections with tables or equations, which suggests that a reader should make it easy to switch between the two views.\nThese results come from a small group and from short texts written for the study, so they should be treated as a starting point. Larger studies with real papers and longer reading sessions are needed before drawing firm conclusions.\nReferences\n[1] A. Example. Reading on small screens: a short revi-\new. Journal of Everyday Reading, 12(3):45-60, 2021.\n[2] B. Sample and C. Writer. Where readers lose their\nplace. Proceedings of the Workshop on Reading,\npages 10-18, 2023.",
+    "contFromPrev": true,
+    "vertical": false
+   },
+   {
+    "text": "[3] D. Author. Phrase display and comprehension. Read-\ning Review, 7:1-9, 2024.\nAppendix A\nThe five questions for each report asked about its main claim, two supporting facts, one number and the conclusion.",
+    "contFromPrev": false,
+    "vertical": false
+   }
+  ],
+  "paragraphs": [
+   {
+    "text": "Reading Long Documents on Small Screens",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "A. Example and B. Sample",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "1 Introduction",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "Many people now read reports, papers and news articles on a phone. A phone screen shows only a few lines of a page that was designed for paper, so readers zoom, scroll sideways and often lose their place. This study asks whether showing a document one short phrase at a time helps readers keep their place without changing what they understand.",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "Earlier work suggests that eye movements take only a small part of reading time, and that understanding the language is the main limit on speed. We therefore do not claim that phrase display makes reading faster in general. Instead, we look at how often readers stop, go back or give up when the layout of the original page gets in the way.",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "2 Method",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "Twenty-four volunteers read three short reports each. Every report was shown in two ways: as the original two-column page, and as a sequence of short phrases in the centre of the screen. The order of the reports and the order of the two displays were balanced across readers. After each report, readers answered five questions about its content and rated how easy it was to follow.",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "The phrase display removed running heads, page numbers and footnotes, joined words that had been split across lines, and read the left column before the right column. Readers could pause at any time, step back one phrase, or open the original page to look at a figure.",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "3 Results",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "Readers answered about the same number of questions correctly with both displays. They stopped less often with the phrase display, and most said it was easier to keep their place. Several readers preferred the original page for sections with tables or equations, which suggests that a reader should make it easy to switch between the two views.",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "These results come from a small group and from short texts written for the study, so they should be treated as a starting point. Larger studies with real papers and longer reading sessions are needed before drawing firm conclusions.",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "References",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "[1] A. Example. Reading on small screens: a short revi-",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "ew. Journal of Everyday Reading, 12(3):45-60, 2021.",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "[2] B. Sample and C. Writer. Where readers lose their",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "place. Proceedings of the Workshop on Reading,",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "pages 10-18, 2023.",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "text": "[3] D. Author. Phrase display and comprehension. Read-",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "text": "ing Review, 7:1-9, 2024.",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "text": "Appendix A",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "text": "The five questions for each report asked about its main claim, two supporting facts, one number and the conclusion.",
+    "ruby": [],
+    "pageMarks": [
+     [
+      0,
+      1
+     ]
+    ]
+   }
+  ],
+  "references": [
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18
+  ]
+ }
+}

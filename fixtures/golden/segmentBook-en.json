@@ -1,0 +1,2660 @@
+{
+ "fn": "segmentBook(buildBookText(paragraphs), { mode, phraseTarget: 7, minChars, names: [\"千晴\", \"湊\"] })",
+ "indexUnit": "utf16",
+ "input": {
+  "paragraphs": [
+   "Dr. Smith arrived at 3.5 p.m. on Monday. It was late. See Fig. 2 for details, e.g. the map and the timeline.",
+   "Reading long documents on a phone is hard, but it gets easier with practice. The internationalization team didn't stop; they revised the report twice."
+  ]
+ },
+ "expected": {
+  "char/min1": [
+   {
+    "text": "Dr.",
+    "para": 0,
+    "start": 0,
+    "end": 4,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "Smith",
+    "para": 0,
+    "start": 4,
+    "end": 10,
+    "pause": "none",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "arrived",
+    "para": 0,
+    "start": 10,
+    "end": 18,
+    "pause": "none",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "at",
+    "para": 0,
+    "start": 18,
+    "end": 21,
+    "pause": "none",
+    "len": 2,
+    "words": 1
+   },
+   {
+    "text": "3.5",
+    "para": 0,
+    "start": 21,
+    "end": 25,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "p.m.",
+    "para": 0,
+    "start": 25,
+    "end": 30,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "on",
+    "para": 0,
+    "start": 30,
+    "end": 33,
+    "pause": "none",
+    "len": 2,
+    "words": 1
+   },
+   {
+    "text": "Monday.",
+    "para": 0,
+    "start": 33,
+    "end": 40,
+    "pause": "sentence",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "It",
+    "para": 0,
+    "start": 41,
+    "end": 44,
+    "pause": "none",
+    "len": 2,
+    "words": 1
+   },
+   {
+    "text": "was",
+    "para": 0,
+    "start": 44,
+    "end": 48,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "late.",
+    "para": 0,
+    "start": 48,
+    "end": 53,
+    "pause": "sentence",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "See",
+    "para": 0,
+    "start": 54,
+    "end": 58,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "Fig.",
+    "para": 0,
+    "start": 58,
+    "end": 63,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "2",
+    "para": 0,
+    "start": 63,
+    "end": 65,
+    "pause": "none",
+    "len": 1,
+    "words": 1
+   },
+   {
+    "text": "for",
+    "para": 0,
+    "start": 65,
+    "end": 69,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "details,",
+    "para": 0,
+    "start": 69,
+    "end": 78,
+    "pause": "comma",
+    "len": 8,
+    "words": 1
+   },
+   {
+    "text": "e.g.",
+    "para": 0,
+    "start": 78,
+    "end": 83,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "the",
+    "para": 0,
+    "start": 83,
+    "end": 87,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "map",
+    "para": 0,
+    "start": 87,
+    "end": 91,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "and",
+    "para": 0,
+    "start": 91,
+    "end": 95,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "the",
+    "para": 0,
+    "start": 95,
+    "end": 99,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "timeline.",
+    "para": 0,
+    "start": 99,
+    "end": 108,
+    "pause": "paragraph",
+    "len": 9,
+    "words": 1
+   },
+   {
+    "text": "Reading",
+    "para": 1,
+    "start": 0,
+    "end": 8,
+    "pause": "none",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "long",
+    "para": 1,
+    "start": 8,
+    "end": 13,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "documents",
+    "para": 1,
+    "start": 13,
+    "end": 23,
+    "pause": "none",
+    "len": 9,
+    "words": 1
+   },
+   {
+    "text": "on",
+    "para": 1,
+    "start": 23,
+    "end": 26,
+    "pause": "none",
+    "len": 2,
+    "words": 1
+   },
+   {
+    "text": "a",
+    "para": 1,
+    "start": 26,
+    "end": 28,
+    "pause": "none",
+    "len": 1,
+    "words": 1
+   },
+   {
+    "text": "phone",
+    "para": 1,
+    "start": 28,
+    "end": 34,
+    "pause": "none",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "is",
+    "para": 1,
+    "start": 34,
+    "end": 37,
+    "pause": "none",
+    "len": 2,
+    "words": 1
+   },
+   {
+    "text": "hard,",
+    "para": 1,
+    "start": 37,
+    "end": 43,
+    "pause": "comma",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "but",
+    "para": 1,
+    "start": 43,
+    "end": 47,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "it",
+    "para": 1,
+    "start": 47,
+    "end": 50,
+    "pause": "none",
+    "len": 2,
+    "words": 1
+   },
+   {
+    "text": "gets",
+    "para": 1,
+    "start": 50,
+    "end": 55,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "easier",
+    "para": 1,
+    "start": 55,
+    "end": 62,
+    "pause": "none",
+    "len": 6,
+    "words": 1
+   },
+   {
+    "text": "with",
+    "para": 1,
+    "start": 62,
+    "end": 67,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "practice.",
+    "para": 1,
+    "start": 67,
+    "end": 76,
+    "pause": "sentence",
+    "len": 9,
+    "words": 1
+   },
+   {
+    "text": "The",
+    "para": 1,
+    "start": 77,
+    "end": 81,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "internationalization",
+    "para": 1,
+    "start": 81,
+    "end": 102,
+    "pause": "none",
+    "len": 20,
+    "words": 1
+   },
+   {
+    "text": "team",
+    "para": 1,
+    "start": 102,
+    "end": 107,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "didn't",
+    "para": 1,
+    "start": 107,
+    "end": 114,
+    "pause": "none",
+    "len": 6,
+    "words": 1
+   },
+   {
+    "text": "stop;",
+    "para": 1,
+    "start": 114,
+    "end": 120,
+    "pause": "none",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "they",
+    "para": 1,
+    "start": 120,
+    "end": 125,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "revised",
+    "para": 1,
+    "start": 125,
+    "end": 133,
+    "pause": "none",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "the",
+    "para": 1,
+    "start": 133,
+    "end": 137,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "report",
+    "para": 1,
+    "start": 137,
+    "end": 144,
+    "pause": "none",
+    "len": 6,
+    "words": 1
+   },
+   {
+    "text": "twice.",
+    "para": 1,
+    "start": 144,
+    "end": 150,
+    "pause": "paragraph",
+    "len": 6,
+    "words": 1
+   }
+  ],
+  "char/min3": [
+   {
+    "text": "Dr.",
+    "para": 0,
+    "start": 0,
+    "end": 4,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "Smith",
+    "para": 0,
+    "start": 4,
+    "end": 10,
+    "pause": "none",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "arrived",
+    "para": 0,
+    "start": 10,
+    "end": 18,
+    "pause": "none",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "at3.5",
+    "para": 0,
+    "start": 18,
+    "end": 25,
+    "pause": "none",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "p.m.",
+    "para": 0,
+    "start": 25,
+    "end": 30,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "onMonday.",
+    "para": 0,
+    "start": 30,
+    "end": 40,
+    "pause": "sentence",
+    "len": 9,
+    "words": 1
+   },
+   {
+    "text": "Itwas",
+    "para": 0,
+    "start": 41,
+    "end": 48,
+    "pause": "none",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "late.",
+    "para": 0,
+    "start": 48,
+    "end": 53,
+    "pause": "sentence",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "See",
+    "para": 0,
+    "start": 54,
+    "end": 58,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "Fig.",
+    "para": 0,
+    "start": 58,
+    "end": 63,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "2for",
+    "para": 0,
+    "start": 63,
+    "end": 69,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "details,",
+    "para": 0,
+    "start": 69,
+    "end": 78,
+    "pause": "comma",
+    "len": 8,
+    "words": 1
+   },
+   {
+    "text": "e.g.",
+    "para": 0,
+    "start": 78,
+    "end": 83,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "the",
+    "para": 0,
+    "start": 83,
+    "end": 87,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "map",
+    "para": 0,
+    "start": 87,
+    "end": 91,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "and",
+    "para": 0,
+    "start": 91,
+    "end": 95,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "the",
+    "para": 0,
+    "start": 95,
+    "end": 99,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "timeline.",
+    "para": 0,
+    "start": 99,
+    "end": 108,
+    "pause": "paragraph",
+    "len": 9,
+    "words": 1
+   },
+   {
+    "text": "Reading",
+    "para": 1,
+    "start": 0,
+    "end": 8,
+    "pause": "none",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "long",
+    "para": 1,
+    "start": 8,
+    "end": 13,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "documents",
+    "para": 1,
+    "start": 13,
+    "end": 23,
+    "pause": "none",
+    "len": 9,
+    "words": 1
+   },
+   {
+    "text": "ona",
+    "para": 1,
+    "start": 23,
+    "end": 28,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "phone",
+    "para": 1,
+    "start": 28,
+    "end": 34,
+    "pause": "none",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "ishard,",
+    "para": 1,
+    "start": 34,
+    "end": 43,
+    "pause": "comma",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "but",
+    "para": 1,
+    "start": 43,
+    "end": 47,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "itgets",
+    "para": 1,
+    "start": 47,
+    "end": 55,
+    "pause": "none",
+    "len": 6,
+    "words": 1
+   },
+   {
+    "text": "easier",
+    "para": 1,
+    "start": 55,
+    "end": 62,
+    "pause": "none",
+    "len": 6,
+    "words": 1
+   },
+   {
+    "text": "with",
+    "para": 1,
+    "start": 62,
+    "end": 67,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "practice.",
+    "para": 1,
+    "start": 67,
+    "end": 76,
+    "pause": "sentence",
+    "len": 9,
+    "words": 1
+   },
+   {
+    "text": "The",
+    "para": 1,
+    "start": 77,
+    "end": 81,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "internationalization",
+    "para": 1,
+    "start": 81,
+    "end": 102,
+    "pause": "none",
+    "len": 20,
+    "words": 1
+   },
+   {
+    "text": "team",
+    "para": 1,
+    "start": 102,
+    "end": 107,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "didn't",
+    "para": 1,
+    "start": 107,
+    "end": 114,
+    "pause": "none",
+    "len": 6,
+    "words": 1
+   },
+   {
+    "text": "stop;",
+    "para": 1,
+    "start": 114,
+    "end": 120,
+    "pause": "none",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "they",
+    "para": 1,
+    "start": 120,
+    "end": 125,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "revised",
+    "para": 1,
+    "start": 125,
+    "end": 133,
+    "pause": "none",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "the",
+    "para": 1,
+    "start": 133,
+    "end": 137,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "report",
+    "para": 1,
+    "start": 137,
+    "end": 144,
+    "pause": "none",
+    "len": 6,
+    "words": 1
+   },
+   {
+    "text": "twice.",
+    "para": 1,
+    "start": 144,
+    "end": 150,
+    "pause": "paragraph",
+    "len": 6,
+    "words": 1
+   }
+  ],
+  "short/min1": [
+   {
+    "text": "Dr.",
+    "para": 0,
+    "start": 0,
+    "end": 4,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "Smith",
+    "para": 0,
+    "start": 4,
+    "end": 10,
+    "pause": "none",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "arrived",
+    "para": 0,
+    "start": 10,
+    "end": 18,
+    "pause": "none",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "at",
+    "para": 0,
+    "start": 18,
+    "end": 21,
+    "pause": "none",
+    "len": 2,
+    "words": 1
+   },
+   {
+    "text": "3.5",
+    "para": 0,
+    "start": 21,
+    "end": 25,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "p.m.",
+    "para": 0,
+    "start": 25,
+    "end": 30,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "on",
+    "para": 0,
+    "start": 30,
+    "end": 33,
+    "pause": "none",
+    "len": 2,
+    "words": 1
+   },
+   {
+    "text": "Monday.",
+    "para": 0,
+    "start": 33,
+    "end": 40,
+    "pause": "sentence",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "It",
+    "para": 0,
+    "start": 41,
+    "end": 44,
+    "pause": "none",
+    "len": 2,
+    "words": 1
+   },
+   {
+    "text": "was",
+    "para": 0,
+    "start": 44,
+    "end": 48,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "late.",
+    "para": 0,
+    "start": 48,
+    "end": 53,
+    "pause": "sentence",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "See",
+    "para": 0,
+    "start": 54,
+    "end": 58,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "Fig.",
+    "para": 0,
+    "start": 58,
+    "end": 63,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "2",
+    "para": 0,
+    "start": 63,
+    "end": 65,
+    "pause": "none",
+    "len": 1,
+    "words": 1
+   },
+   {
+    "text": "for",
+    "para": 0,
+    "start": 65,
+    "end": 69,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "details,",
+    "para": 0,
+    "start": 69,
+    "end": 78,
+    "pause": "comma",
+    "len": 8,
+    "words": 1
+   },
+   {
+    "text": "e.g.",
+    "para": 0,
+    "start": 78,
+    "end": 83,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "the",
+    "para": 0,
+    "start": 83,
+    "end": 87,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "map",
+    "para": 0,
+    "start": 87,
+    "end": 91,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "and",
+    "para": 0,
+    "start": 91,
+    "end": 95,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "the",
+    "para": 0,
+    "start": 95,
+    "end": 99,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "timeline.",
+    "para": 0,
+    "start": 99,
+    "end": 108,
+    "pause": "paragraph",
+    "len": 9,
+    "words": 1
+   },
+   {
+    "text": "Reading",
+    "para": 1,
+    "start": 0,
+    "end": 8,
+    "pause": "none",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "long",
+    "para": 1,
+    "start": 8,
+    "end": 13,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "documents",
+    "para": 1,
+    "start": 13,
+    "end": 23,
+    "pause": "none",
+    "len": 9,
+    "words": 1
+   },
+   {
+    "text": "on",
+    "para": 1,
+    "start": 23,
+    "end": 26,
+    "pause": "none",
+    "len": 2,
+    "words": 1
+   },
+   {
+    "text": "a",
+    "para": 1,
+    "start": 26,
+    "end": 28,
+    "pause": "none",
+    "len": 1,
+    "words": 1
+   },
+   {
+    "text": "phone",
+    "para": 1,
+    "start": 28,
+    "end": 34,
+    "pause": "none",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "is",
+    "para": 1,
+    "start": 34,
+    "end": 37,
+    "pause": "none",
+    "len": 2,
+    "words": 1
+   },
+   {
+    "text": "hard,",
+    "para": 1,
+    "start": 37,
+    "end": 43,
+    "pause": "comma",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "but",
+    "para": 1,
+    "start": 43,
+    "end": 47,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "it",
+    "para": 1,
+    "start": 47,
+    "end": 50,
+    "pause": "none",
+    "len": 2,
+    "words": 1
+   },
+   {
+    "text": "gets",
+    "para": 1,
+    "start": 50,
+    "end": 55,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "easier",
+    "para": 1,
+    "start": 55,
+    "end": 62,
+    "pause": "none",
+    "len": 6,
+    "words": 1
+   },
+   {
+    "text": "with",
+    "para": 1,
+    "start": 62,
+    "end": 67,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "practice.",
+    "para": 1,
+    "start": 67,
+    "end": 76,
+    "pause": "sentence",
+    "len": 9,
+    "words": 1
+   },
+   {
+    "text": "The",
+    "para": 1,
+    "start": 77,
+    "end": 81,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "internationalization",
+    "para": 1,
+    "start": 81,
+    "end": 102,
+    "pause": "none",
+    "len": 20,
+    "words": 1
+   },
+   {
+    "text": "team",
+    "para": 1,
+    "start": 102,
+    "end": 107,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "didn't",
+    "para": 1,
+    "start": 107,
+    "end": 114,
+    "pause": "none",
+    "len": 6,
+    "words": 1
+   },
+   {
+    "text": "stop;",
+    "para": 1,
+    "start": 114,
+    "end": 120,
+    "pause": "none",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "they",
+    "para": 1,
+    "start": 120,
+    "end": 125,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "revised",
+    "para": 1,
+    "start": 125,
+    "end": 133,
+    "pause": "none",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "the",
+    "para": 1,
+    "start": 133,
+    "end": 137,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "report",
+    "para": 1,
+    "start": 137,
+    "end": 144,
+    "pause": "none",
+    "len": 6,
+    "words": 1
+   },
+   {
+    "text": "twice.",
+    "para": 1,
+    "start": 144,
+    "end": 150,
+    "pause": "paragraph",
+    "len": 6,
+    "words": 1
+   }
+  ],
+  "short/min3": [
+   {
+    "text": "Dr.",
+    "para": 0,
+    "start": 0,
+    "end": 4,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "Smith",
+    "para": 0,
+    "start": 4,
+    "end": 10,
+    "pause": "none",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "arrived",
+    "para": 0,
+    "start": 10,
+    "end": 18,
+    "pause": "none",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "at3.5",
+    "para": 0,
+    "start": 18,
+    "end": 25,
+    "pause": "none",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "p.m.",
+    "para": 0,
+    "start": 25,
+    "end": 30,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "onMonday.",
+    "para": 0,
+    "start": 30,
+    "end": 40,
+    "pause": "sentence",
+    "len": 9,
+    "words": 1
+   },
+   {
+    "text": "Itwas",
+    "para": 0,
+    "start": 41,
+    "end": 48,
+    "pause": "none",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "late.",
+    "para": 0,
+    "start": 48,
+    "end": 53,
+    "pause": "sentence",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "See",
+    "para": 0,
+    "start": 54,
+    "end": 58,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "Fig.",
+    "para": 0,
+    "start": 58,
+    "end": 63,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "2for",
+    "para": 0,
+    "start": 63,
+    "end": 69,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "details,",
+    "para": 0,
+    "start": 69,
+    "end": 78,
+    "pause": "comma",
+    "len": 8,
+    "words": 1
+   },
+   {
+    "text": "e.g.",
+    "para": 0,
+    "start": 78,
+    "end": 83,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "the",
+    "para": 0,
+    "start": 83,
+    "end": 87,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "map",
+    "para": 0,
+    "start": 87,
+    "end": 91,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "and",
+    "para": 0,
+    "start": 91,
+    "end": 95,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "the",
+    "para": 0,
+    "start": 95,
+    "end": 99,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "timeline.",
+    "para": 0,
+    "start": 99,
+    "end": 108,
+    "pause": "paragraph",
+    "len": 9,
+    "words": 1
+   },
+   {
+    "text": "Reading",
+    "para": 1,
+    "start": 0,
+    "end": 8,
+    "pause": "none",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "long",
+    "para": 1,
+    "start": 8,
+    "end": 13,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "documents",
+    "para": 1,
+    "start": 13,
+    "end": 23,
+    "pause": "none",
+    "len": 9,
+    "words": 1
+   },
+   {
+    "text": "ona",
+    "para": 1,
+    "start": 23,
+    "end": 28,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "phone",
+    "para": 1,
+    "start": 28,
+    "end": 34,
+    "pause": "none",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "ishard,",
+    "para": 1,
+    "start": 34,
+    "end": 43,
+    "pause": "comma",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "but",
+    "para": 1,
+    "start": 43,
+    "end": 47,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "itgets",
+    "para": 1,
+    "start": 47,
+    "end": 55,
+    "pause": "none",
+    "len": 6,
+    "words": 1
+   },
+   {
+    "text": "easier",
+    "para": 1,
+    "start": 55,
+    "end": 62,
+    "pause": "none",
+    "len": 6,
+    "words": 1
+   },
+   {
+    "text": "with",
+    "para": 1,
+    "start": 62,
+    "end": 67,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "practice.",
+    "para": 1,
+    "start": 67,
+    "end": 76,
+    "pause": "sentence",
+    "len": 9,
+    "words": 1
+   },
+   {
+    "text": "The",
+    "para": 1,
+    "start": 77,
+    "end": 81,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "internationalization",
+    "para": 1,
+    "start": 81,
+    "end": 102,
+    "pause": "none",
+    "len": 20,
+    "words": 1
+   },
+   {
+    "text": "team",
+    "para": 1,
+    "start": 102,
+    "end": 107,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "didn't",
+    "para": 1,
+    "start": 107,
+    "end": 114,
+    "pause": "none",
+    "len": 6,
+    "words": 1
+   },
+   {
+    "text": "stop;",
+    "para": 1,
+    "start": 114,
+    "end": 120,
+    "pause": "none",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "they",
+    "para": 1,
+    "start": 120,
+    "end": 125,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "revised",
+    "para": 1,
+    "start": 125,
+    "end": 133,
+    "pause": "none",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "the",
+    "para": 1,
+    "start": 133,
+    "end": 137,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "report",
+    "para": 1,
+    "start": 137,
+    "end": 144,
+    "pause": "none",
+    "len": 6,
+    "words": 1
+   },
+   {
+    "text": "twice.",
+    "para": 1,
+    "start": 144,
+    "end": 150,
+    "pause": "paragraph",
+    "len": 6,
+    "words": 1
+   }
+  ],
+  "bunsetsu/min1": [
+   {
+    "text": "Dr.",
+    "para": 0,
+    "start": 0,
+    "end": 4,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "Smith",
+    "para": 0,
+    "start": 4,
+    "end": 10,
+    "pause": "none",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "arrived",
+    "para": 0,
+    "start": 10,
+    "end": 18,
+    "pause": "none",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "at",
+    "para": 0,
+    "start": 18,
+    "end": 21,
+    "pause": "none",
+    "len": 2,
+    "words": 1
+   },
+   {
+    "text": "3.5",
+    "para": 0,
+    "start": 21,
+    "end": 25,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "p.m.",
+    "para": 0,
+    "start": 25,
+    "end": 30,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "on",
+    "para": 0,
+    "start": 30,
+    "end": 33,
+    "pause": "none",
+    "len": 2,
+    "words": 1
+   },
+   {
+    "text": "Monday.",
+    "para": 0,
+    "start": 33,
+    "end": 40,
+    "pause": "sentence",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "It",
+    "para": 0,
+    "start": 41,
+    "end": 44,
+    "pause": "none",
+    "len": 2,
+    "words": 1
+   },
+   {
+    "text": "was",
+    "para": 0,
+    "start": 44,
+    "end": 48,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "late.",
+    "para": 0,
+    "start": 48,
+    "end": 53,
+    "pause": "sentence",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "See",
+    "para": 0,
+    "start": 54,
+    "end": 58,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "Fig.",
+    "para": 0,
+    "start": 58,
+    "end": 63,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "2 for",
+    "para": 0,
+    "start": 63,
+    "end": 69,
+    "pause": "none",
+    "len": 4,
+    "words": 2
+   },
+   {
+    "text": "details,",
+    "para": 0,
+    "start": 69,
+    "end": 78,
+    "pause": "comma",
+    "len": 8,
+    "words": 1
+   },
+   {
+    "text": "e.g.",
+    "para": 0,
+    "start": 78,
+    "end": 83,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "the",
+    "para": 0,
+    "start": 83,
+    "end": 87,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "map",
+    "para": 0,
+    "start": 87,
+    "end": 91,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "and",
+    "para": 0,
+    "start": 91,
+    "end": 95,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "the",
+    "para": 0,
+    "start": 95,
+    "end": 99,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "timeline.",
+    "para": 0,
+    "start": 99,
+    "end": 108,
+    "pause": "paragraph",
+    "len": 9,
+    "words": 1
+   },
+   {
+    "text": "Reading",
+    "para": 1,
+    "start": 0,
+    "end": 8,
+    "pause": "none",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "long",
+    "para": 1,
+    "start": 8,
+    "end": 13,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "documents",
+    "para": 1,
+    "start": 13,
+    "end": 23,
+    "pause": "none",
+    "len": 9,
+    "words": 1
+   },
+   {
+    "text": "on",
+    "para": 1,
+    "start": 23,
+    "end": 26,
+    "pause": "none",
+    "len": 2,
+    "words": 1
+   },
+   {
+    "text": "a phone",
+    "para": 1,
+    "start": 26,
+    "end": 34,
+    "pause": "none",
+    "len": 6,
+    "words": 2
+   },
+   {
+    "text": "is",
+    "para": 1,
+    "start": 34,
+    "end": 37,
+    "pause": "none",
+    "len": 2,
+    "words": 1
+   },
+   {
+    "text": "hard,",
+    "para": 1,
+    "start": 37,
+    "end": 43,
+    "pause": "comma",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "but",
+    "para": 1,
+    "start": 43,
+    "end": 47,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "it",
+    "para": 1,
+    "start": 47,
+    "end": 50,
+    "pause": "none",
+    "len": 2,
+    "words": 1
+   },
+   {
+    "text": "gets",
+    "para": 1,
+    "start": 50,
+    "end": 55,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "easier",
+    "para": 1,
+    "start": 55,
+    "end": 62,
+    "pause": "none",
+    "len": 6,
+    "words": 1
+   },
+   {
+    "text": "with",
+    "para": 1,
+    "start": 62,
+    "end": 67,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "practice.",
+    "para": 1,
+    "start": 67,
+    "end": 76,
+    "pause": "sentence",
+    "len": 9,
+    "words": 1
+   },
+   {
+    "text": "The",
+    "para": 1,
+    "start": 77,
+    "end": 81,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "internationalization",
+    "para": 1,
+    "start": 81,
+    "end": 102,
+    "pause": "none",
+    "len": 20,
+    "words": 1
+   },
+   {
+    "text": "team",
+    "para": 1,
+    "start": 102,
+    "end": 107,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "didn't",
+    "para": 1,
+    "start": 107,
+    "end": 114,
+    "pause": "none",
+    "len": 6,
+    "words": 1
+   },
+   {
+    "text": "stop;",
+    "para": 1,
+    "start": 114,
+    "end": 120,
+    "pause": "none",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "they",
+    "para": 1,
+    "start": 120,
+    "end": 125,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "revised",
+    "para": 1,
+    "start": 125,
+    "end": 133,
+    "pause": "none",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "the",
+    "para": 1,
+    "start": 133,
+    "end": 137,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "report",
+    "para": 1,
+    "start": 137,
+    "end": 144,
+    "pause": "none",
+    "len": 6,
+    "words": 1
+   },
+   {
+    "text": "twice.",
+    "para": 1,
+    "start": 144,
+    "end": 150,
+    "pause": "paragraph",
+    "len": 6,
+    "words": 1
+   }
+  ],
+  "bunsetsu/min3": [
+   {
+    "text": "Dr.",
+    "para": 0,
+    "start": 0,
+    "end": 4,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "Smith",
+    "para": 0,
+    "start": 4,
+    "end": 10,
+    "pause": "none",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "arrived",
+    "para": 0,
+    "start": 10,
+    "end": 18,
+    "pause": "none",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "at3.5",
+    "para": 0,
+    "start": 18,
+    "end": 25,
+    "pause": "none",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "p.m.",
+    "para": 0,
+    "start": 25,
+    "end": 30,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "onMonday.",
+    "para": 0,
+    "start": 30,
+    "end": 40,
+    "pause": "sentence",
+    "len": 9,
+    "words": 1
+   },
+   {
+    "text": "Itwas",
+    "para": 0,
+    "start": 41,
+    "end": 48,
+    "pause": "none",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "late.",
+    "para": 0,
+    "start": 48,
+    "end": 53,
+    "pause": "sentence",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "See",
+    "para": 0,
+    "start": 54,
+    "end": 58,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "Fig.",
+    "para": 0,
+    "start": 58,
+    "end": 63,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "2 for",
+    "para": 0,
+    "start": 63,
+    "end": 69,
+    "pause": "none",
+    "len": 4,
+    "words": 2
+   },
+   {
+    "text": "details,",
+    "para": 0,
+    "start": 69,
+    "end": 78,
+    "pause": "comma",
+    "len": 8,
+    "words": 1
+   },
+   {
+    "text": "e.g.",
+    "para": 0,
+    "start": 78,
+    "end": 83,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "the",
+    "para": 0,
+    "start": 83,
+    "end": 87,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "map",
+    "para": 0,
+    "start": 87,
+    "end": 91,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "and",
+    "para": 0,
+    "start": 91,
+    "end": 95,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "the",
+    "para": 0,
+    "start": 95,
+    "end": 99,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "timeline.",
+    "para": 0,
+    "start": 99,
+    "end": 108,
+    "pause": "paragraph",
+    "len": 9,
+    "words": 1
+   },
+   {
+    "text": "Reading",
+    "para": 1,
+    "start": 0,
+    "end": 8,
+    "pause": "none",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "long",
+    "para": 1,
+    "start": 8,
+    "end": 13,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "documents",
+    "para": 1,
+    "start": 13,
+    "end": 23,
+    "pause": "none",
+    "len": 9,
+    "words": 1
+   },
+   {
+    "text": "ona phone",
+    "para": 1,
+    "start": 23,
+    "end": 34,
+    "pause": "none",
+    "len": 8,
+    "words": 2
+   },
+   {
+    "text": "ishard,",
+    "para": 1,
+    "start": 34,
+    "end": 43,
+    "pause": "comma",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "but",
+    "para": 1,
+    "start": 43,
+    "end": 47,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "itgets",
+    "para": 1,
+    "start": 47,
+    "end": 55,
+    "pause": "none",
+    "len": 6,
+    "words": 1
+   },
+   {
+    "text": "easier",
+    "para": 1,
+    "start": 55,
+    "end": 62,
+    "pause": "none",
+    "len": 6,
+    "words": 1
+   },
+   {
+    "text": "with",
+    "para": 1,
+    "start": 62,
+    "end": 67,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "practice.",
+    "para": 1,
+    "start": 67,
+    "end": 76,
+    "pause": "sentence",
+    "len": 9,
+    "words": 1
+   },
+   {
+    "text": "The",
+    "para": 1,
+    "start": 77,
+    "end": 81,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "internationalization",
+    "para": 1,
+    "start": 81,
+    "end": 102,
+    "pause": "none",
+    "len": 20,
+    "words": 1
+   },
+   {
+    "text": "team",
+    "para": 1,
+    "start": 102,
+    "end": 107,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "didn't",
+    "para": 1,
+    "start": 107,
+    "end": 114,
+    "pause": "none",
+    "len": 6,
+    "words": 1
+   },
+   {
+    "text": "stop;",
+    "para": 1,
+    "start": 114,
+    "end": 120,
+    "pause": "none",
+    "len": 5,
+    "words": 1
+   },
+   {
+    "text": "they",
+    "para": 1,
+    "start": 120,
+    "end": 125,
+    "pause": "none",
+    "len": 4,
+    "words": 1
+   },
+   {
+    "text": "revised",
+    "para": 1,
+    "start": 125,
+    "end": 133,
+    "pause": "none",
+    "len": 7,
+    "words": 1
+   },
+   {
+    "text": "the",
+    "para": 1,
+    "start": 133,
+    "end": 137,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "report",
+    "para": 1,
+    "start": 137,
+    "end": 144,
+    "pause": "none",
+    "len": 6,
+    "words": 1
+   },
+   {
+    "text": "twice.",
+    "para": 1,
+    "start": 144,
+    "end": 150,
+    "pause": "paragraph",
+    "len": 6,
+    "words": 1
+   }
+  ],
+  "phrase/min1": [
+   {
+    "text": "Dr. Smith arrived",
+    "para": 0,
+    "start": 0,
+    "end": 18,
+    "pause": "none",
+    "len": 15,
+    "words": 3
+   },
+   {
+    "text": "at 3.5 p.m. on Monday.",
+    "para": 0,
+    "start": 18,
+    "end": 40,
+    "pause": "sentence",
+    "len": 18,
+    "words": 5
+   },
+   {
+    "text": "It was late.",
+    "para": 0,
+    "start": 41,
+    "end": 53,
+    "pause": "sentence",
+    "len": 10,
+    "words": 3
+   },
+   {
+    "text": "See Fig. 2 for details,",
+    "para": 0,
+    "start": 54,
+    "end": 78,
+    "pause": "comma",
+    "len": 19,
+    "words": 5
+   },
+   {
+    "text": "e.g. the map and the",
+    "para": 0,
+    "start": 78,
+    "end": 99,
+    "pause": "none",
+    "len": 16,
+    "words": 5
+   },
+   {
+    "text": "timeline.",
+    "para": 0,
+    "start": 99,
+    "end": 108,
+    "pause": "paragraph",
+    "len": 9,
+    "words": 1
+   },
+   {
+    "text": "Reading long documents",
+    "para": 1,
+    "start": 0,
+    "end": 23,
+    "pause": "none",
+    "len": 20,
+    "words": 3
+   },
+   {
+    "text": "on a phone is hard,",
+    "para": 1,
+    "start": 23,
+    "end": 43,
+    "pause": "comma",
+    "len": 15,
+    "words": 5
+   },
+   {
+    "text": "but it gets easier",
+    "para": 1,
+    "start": 43,
+    "end": 62,
+    "pause": "none",
+    "len": 15,
+    "words": 4
+   },
+   {
+    "text": "with practice.",
+    "para": 1,
+    "start": 62,
+    "end": 76,
+    "pause": "sentence",
+    "len": 13,
+    "words": 2
+   },
+   {
+    "text": "The",
+    "para": 1,
+    "start": 77,
+    "end": 81,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "internationalization",
+    "para": 1,
+    "start": 81,
+    "end": 102,
+    "pause": "none",
+    "len": 20,
+    "words": 1
+   },
+   {
+    "text": "team didn't stop;",
+    "para": 1,
+    "start": 102,
+    "end": 120,
+    "pause": "none",
+    "len": 15,
+    "words": 3
+   },
+   {
+    "text": "they revised the",
+    "para": 1,
+    "start": 120,
+    "end": 137,
+    "pause": "none",
+    "len": 14,
+    "words": 3
+   },
+   {
+    "text": "report twice.",
+    "para": 1,
+    "start": 137,
+    "end": 150,
+    "pause": "paragraph",
+    "len": 12,
+    "words": 2
+   }
+  ],
+  "phrase/min3": [
+   {
+    "text": "Dr. Smith arrived",
+    "para": 0,
+    "start": 0,
+    "end": 18,
+    "pause": "none",
+    "len": 15,
+    "words": 3
+   },
+   {
+    "text": "at 3.5 p.m. on Monday.",
+    "para": 0,
+    "start": 18,
+    "end": 40,
+    "pause": "sentence",
+    "len": 18,
+    "words": 5
+   },
+   {
+    "text": "It was late.",
+    "para": 0,
+    "start": 41,
+    "end": 53,
+    "pause": "sentence",
+    "len": 10,
+    "words": 3
+   },
+   {
+    "text": "See Fig. 2 for details,",
+    "para": 0,
+    "start": 54,
+    "end": 78,
+    "pause": "comma",
+    "len": 19,
+    "words": 5
+   },
+   {
+    "text": "e.g. the map and the",
+    "para": 0,
+    "start": 78,
+    "end": 99,
+    "pause": "none",
+    "len": 16,
+    "words": 5
+   },
+   {
+    "text": "timeline.",
+    "para": 0,
+    "start": 99,
+    "end": 108,
+    "pause": "paragraph",
+    "len": 9,
+    "words": 1
+   },
+   {
+    "text": "Reading long documents",
+    "para": 1,
+    "start": 0,
+    "end": 23,
+    "pause": "none",
+    "len": 20,
+    "words": 3
+   },
+   {
+    "text": "on a phone is hard,",
+    "para": 1,
+    "start": 23,
+    "end": 43,
+    "pause": "comma",
+    "len": 15,
+    "words": 5
+   },
+   {
+    "text": "but it gets easier",
+    "para": 1,
+    "start": 43,
+    "end": 62,
+    "pause": "none",
+    "len": 15,
+    "words": 4
+   },
+   {
+    "text": "with practice.",
+    "para": 1,
+    "start": 62,
+    "end": 76,
+    "pause": "sentence",
+    "len": 13,
+    "words": 2
+   },
+   {
+    "text": "The",
+    "para": 1,
+    "start": 77,
+    "end": 81,
+    "pause": "none",
+    "len": 3,
+    "words": 1
+   },
+   {
+    "text": "internationalization",
+    "para": 1,
+    "start": 81,
+    "end": 102,
+    "pause": "none",
+    "len": 20,
+    "words": 1
+   },
+   {
+    "text": "team didn't stop;",
+    "para": 1,
+    "start": 102,
+    "end": 120,
+    "pause": "none",
+    "len": 15,
+    "words": 3
+   },
+   {
+    "text": "they revised the",
+    "para": 1,
+    "start": 120,
+    "end": 137,
+    "pause": "none",
+    "len": 14,
+    "words": 3
+   },
+   {
+    "text": "report twice.",
+    "para": 1,
+    "start": 137,
+    "end": 150,
+    "pause": "paragraph",
+    "len": 12,
+    "words": 2
+   }
+  ],
+  "sentence/min1": [
+   {
+    "text": "Dr. Smith arrived at 3.5 p.m. on Monday.",
+    "para": 0,
+    "start": 0,
+    "end": 40,
+    "pause": "sentence",
+    "len": 33,
+    "words": 8
+   },
+   {
+    "text": "It was late.",
+    "para": 0,
+    "start": 41,
+    "end": 53,
+    "pause": "sentence",
+    "len": 10,
+    "words": 3
+   },
+   {
+    "text": "See Fig. 2 for details, e.g. the map and the timeline.",
+    "para": 0,
+    "start": 54,
+    "end": 108,
+    "pause": "paragraph",
+    "len": 44,
+    "words": 11
+   },
+   {
+    "text": "Reading long documents on a phone is hard, but it gets easier with practice.",
+    "para": 1,
+    "start": 0,
+    "end": 76,
+    "pause": "sentence",
+    "len": 63,
+    "words": 14
+   },
+   {
+    "text": "The internationalization team didn't stop; they revised the report twice.",
+    "para": 1,
+    "start": 77,
+    "end": 150,
+    "pause": "paragraph",
+    "len": 64,
+    "words": 10
+   }
+  ],
+  "sentence/min3": [
+   {
+    "text": "Dr. Smith arrived at 3.5 p.m. on Monday.",
+    "para": 0,
+    "start": 0,
+    "end": 40,
+    "pause": "sentence",
+    "len": 33,
+    "words": 8
+   },
+   {
+    "text": "It was late.",
+    "para": 0,
+    "start": 41,
+    "end": 53,
+    "pause": "sentence",
+    "len": 10,
+    "words": 3
+   },
+   {
+    "text": "See Fig. 2 for details, e.g. the map and the timeline.",
+    "para": 0,
+    "start": 54,
+    "end": 108,
+    "pause": "paragraph",
+    "len": 44,
+    "words": 11
+   },
+   {
+    "text": "Reading long documents on a phone is hard, but it gets easier with practice.",
+    "para": 1,
+    "start": 0,
+    "end": 76,
+    "pause": "sentence",
+    "len": 63,
+    "words": 14
+   },
+   {
+    "text": "The internationalization team didn't stop; they revised the report twice.",
+    "para": 1,
+    "start": 77,
+    "end": 150,
+    "pause": "paragraph",
+    "len": 64,
+    "words": 10
+   }
+  ]
+ }
+}
