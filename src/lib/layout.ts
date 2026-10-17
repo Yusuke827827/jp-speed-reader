@@ -37,8 +37,12 @@ export interface PageText {
 }
 
 const PARA_OPENERS = /^[　「『（(【〈《〔［[―]/
-// 欧文のピリオドは、数字の後（12.｜5 のように行をまたぐ小数）では文末とみなさない
 const SENTENCE_END = /(?:[。！？!?」』）)…―]|[A-Za-z]\.)$/
+// 論文の節の見出し。この行だけで 1 段落にする。
+// 番号付き（2 Method、3.1 Data、A Details）は大文字小文字を区別し、短い行に限る。名前の決まった見出しは区別しない
+const NUMBERED_HEADING = /^(?:[0-9]+(?:\.[0-9]+)*|[A-Z])\.?\s+[A-Z][A-Za-z ,:&'-]{0,60}$/
+const NAMED_HEADING =
+  /^(?:abstract|references|bibliography|acknowledge?ments?|appendix(?:\s+[A-Z0-9]+)?|appendices|参考文献|引用文献|付録)$/i
 // 欧文の語の終わりと始まり（後ろに閉じ記号、前に開き記号が付いてもよい）
 const LATIN_END = /[A-Za-z0-9][.,;:!?%)\]"'’”]*$/
 const LATIN_START = /^[(["'‘“]*[A-Za-z0-9]/
@@ -271,14 +275,19 @@ export function buildPageText(lines: Line[], vertical: boolean): PageText {
   let cur = ''
   let contFromPrev = true
   let prevShort = false
+  let prevSize = 0
+  let afterHeading = false
 
   for (const l of lines) {
     const t = cleanLine(l.text)
     if (!t) continue
     const { start: lineStart, end: lineEnd } = metrics.get(l.column)!
     const indented = l.start - lineStart > size * 0.6
-    const startsPara = PARA_OPENERS.test(l.text.replace(/^[ ｜]+/, '')) || indented
+    // 字の大きさが前の行と変わる所（題名・著者・見出し）でも段落を分ける
+    const resized = prevSize > 0 && Math.abs(l.size - prevSize) > Math.max(l.size, prevSize) * 0.08
     const short = lineEnd - l.end > size * 1.5
+    const heading = NAMED_HEADING.test(t) || (short && NUMBERED_HEADING.test(t))
+    const startsPara = PARA_OPENERS.test(l.text.replace(/^[ ｜]+/, '')) || indented || resized || heading || afterHeading
 
     if (cur === '' && paras.length === 0) {
       contFromPrev = !startsPara
@@ -290,6 +299,8 @@ export function buildPageText(lines: Line[], vertical: boolean): PageText {
       cur = joinLine(cur, t)
     }
     prevShort = short
+    prevSize = l.size
+    afterHeading = heading
   }
   if (cur) paras.push(cur)
   if (paras.length === 0) contFromPrev = false
@@ -420,12 +431,16 @@ export function linesToPageTexts(pages: PageLines[]): PageText[] {
         return headers.has(headerKey(t)) || (body > 0 && l.size < body * 0.85)
       }),
     )
-    // 横書きのページ下部で、本文より小さい字の行が続く部分は脚注とみなして除く（ノンブルは上で除いた）
+    // 横書きのページ（段組みなら各段）の下部で、本文より小さい字の行が続く部分は脚注とみなして除く（ノンブルは上で除いた）
     if (!p.vertical && body > 0) {
-      for (let i = p.lines.length - 1; i >= 0; i--) {
-        if (drop.has(i)) continue
-        if (p.lines[i].size >= body * 0.88) break
-        drop.add(i)
+      for (const col of new Set(p.lines.map((l) => l.column))) {
+        const idx = p.lines.flatMap((l, i) => (l.column === col ? [i] : []))
+        for (let k = idx.length - 1; k >= 0; k--) {
+          const i = idx[k]
+          if (drop.has(i)) continue
+          if (p.lines[i].size >= body * 0.88) break
+          drop.add(i)
+        }
       }
     }
     return buildPageText(p.lines.filter((_, i) => !drop.has(i)), p.vertical)

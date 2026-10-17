@@ -155,3 +155,24 @@ describe('英語の速度（WPM）', () => {
     }
   })
 })
+
+describe('論文の見出し', () => {
+  it('小文字の 1 文字の語で始まる本文の行を、見出しとみなさない', () => {
+    const lines = [
+      'The readers preferred the original page for tables, which suggests that',
+      'a reader should make it easy to switch views',
+      'and that both views should keep the same reading position at all times.',
+    ]
+    const items: RawItem[] = []
+    lines.forEach((l, i) => items.push(...wordItems(l, 50, 800 - i * 14)))
+    const [p] = linesToPageTexts([itemsToLines(items)])
+    expect(p.text.split('\n').length).toBe(1)
+  })
+  it('番号付きの見出しと、付録の見出しを段落に分ける', () => {
+    const lines = ['the previous section ends here.', '2 Method', 'Readers took part in the study', 'and answered questions.', 'Appendix A']
+    const items: RawItem[] = []
+    lines.forEach((l, i) => items.push(...wordItems(l, 50, 800 - i * 14)))
+    const [p] = linesToPageTexts([itemsToLines(items)])
+    expect(p.text.split('\n')).toEqual(['the previous section ends here.', '2 Method', 'Readers took part in the study and answered questions.', 'Appendix A'])
+  })
+})
