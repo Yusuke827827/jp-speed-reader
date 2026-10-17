@@ -1,4 +1,4 @@
-// 取り込み・保存・再生の状態のテスト。PDF はサンプル PDF を PDFKit で読み、Web 版（PDF.js）の結果と比べる。
+// 取り込み・保存・再生の状態のテスト。PDF はサンプル PDF を PDFKit で読み、Web 版（PDF.js）の結果（fixtures/golden）と比べる。
 
 import Foundation
 import XCTest
@@ -15,24 +15,6 @@ private let repoRoot = URL(fileURLWithPath: #filePath)
 private func loadFixture(_ name: String) throws -> [String: Any] {
     let data = try Data(contentsOf: repoRoot.appendingPathComponent("fixtures/golden/\(name).json"))
     return try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
-}
-
-/// 空白を除いた 2 つの文字列の近さ（1 - 編集距離 / 長い方の長さ）
-private func similarity(_ a: String, _ b: String) -> Double {
-    let x = Array(a.unicodeScalars.filter { !CharacterSet.whitespacesAndNewlines.contains($0) })
-    let y = Array(b.unicodeScalars.filter { !CharacterSet.whitespacesAndNewlines.contains($0) })
-    if x.isEmpty && y.isEmpty { return 1 }
-    var prev = Array(0...y.count)
-    var cur = [Int](repeating: 0, count: y.count + 1)
-    for i in 1...max(1, x.count) where !x.isEmpty {
-        cur[0] = i
-        for j in stride(from: 1, through: y.count, by: 1) {
-            cur[j] = min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (x[i - 1] == y[j - 1] ? 0 : 1))
-        }
-        swap(&prev, &cur)
-    }
-    let d = x.isEmpty ? y.count : prev[y.count]
-    return 1 - Double(d) / Double(max(x.count, y.count))
 }
 
 /// 条件を満たすまで待つ（最大 10 秒）
@@ -53,33 +35,19 @@ private func tempRoot() throws -> URL {
 
 final class FlowaKitTests: XCTestCase {
     #if canImport(PDFKit)
-    /// PDFKit から作った断片でも、Web 版とほぼ同じ本文になる（文字の位置の取り方が違うので完全一致は求めない）
+    /// PDFKit から作った断片で、Web 版（PDF.js）と同じ本文になる
     func testPdfImportMatchesWeb() throws {
         for name in ["sample-horizontal", "sample-vertical", "sample-english-paper"] {
-            let url = repoRoot.appendingPathComponent("public/samples/\(name).pdf")
-            let doc = try XCTUnwrap(PDFDocument(url: url), name)
+            let doc = try XCTUnwrap(PDFDocument(url: repoRoot.appendingPathComponent("public/samples/\(name).pdf")), name)
             let pages = PDFImport.pages(doc)
-            let want = try XCTUnwrap(try loadFixture("layout-\(name)")["expected"] as? [String: Any])["pageTexts"] as? [[String: Any]]
-            let wantPages = try XCTUnwrap(want)
-            XCTAssertEqual(pages.count, wantPages.count, name)
-            var exact = 0
-            for (i, (g, w)) in zip(pages, wantPages).enumerated() {
-                let wt = w["text"] as? String ?? ""
-                let sim = similarity(g.text, wt)
-                if g.text == wt { exact += 1 }
-                if g.text != wt {
-                    let items = PDFImport.rawItems(doc.page(at: i)!)
-                    let gutter = Layout.findColumnGutter(items.filter { $0.size >= 9 })
-                    print("[\(name) p\(i)] items=\(items.count) gutter=\(gutter.map { String($0) } ?? "nil")")
-                    for it in items.prefix(40) { print("    \(it.str.prefix(30)) x=\(Int(it.x)) y=\(Int(it.y)) w=\(Int(it.w)) size=\(it.size)") }
-                    print("[\(name) p\(i)] similarity=\(String(format: "%.3f", sim)) vertical=\(g.vertical)/\(w["vertical"] as? Bool ?? false) cont=\(g.contFromPrev)/\(w["contFromPrev"] as? Bool ?? false)")
-                    print("  got:  \(g.text.prefix(160).replacingOccurrences(of: "\n", with: "⏎"))")
-                    print("  want: \(wt.prefix(160).replacingOccurrences(of: "\n", with: "⏎"))")
-                }
-                XCTAssertGreaterThan(sim, 0.9, "\(name) p\(i)")
+            let expected = try XCTUnwrap(try loadFixture("layout-\(name)")["expected"] as? [String: Any])
+            let want = try XCTUnwrap(expected["pageTexts"] as? [[String: Any]])
+            XCTAssertEqual(pages.count, want.count, name)
+            for (i, (g, w)) in zip(pages, want).enumerated() {
+                XCTAssertEqual(g.text, w["text"] as? String, "\(name) p\(i)")
+                XCTAssertEqual(g.contFromPrev, w["contFromPrev"] as? Bool, "\(name) p\(i)")
                 XCTAssertEqual(g.vertical, w["vertical"] as? Bool, "\(name) p\(i)")
             }
-            print("[\(name)] \(exact)/\(wantPages.count) ページが Web 版と完全に一致")
         }
     }
 

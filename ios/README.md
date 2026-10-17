@@ -1,8 +1,13 @@
 # Flowa iOS 版
 
-iOS 版は SwiftUI で作り、画面に依存しない処理は Swift パッケージ **FlowaCore** にまとめます。
-FlowaCore は Web 版（`src/lib`）の TypeScript から移植し、`fixtures/golden` の正解データと
-一致するかをテストで確かめます（文字位置は UTF-16 の単位で比べます）。
+iOS 版は SwiftUI で作ります。中身は Swift パッケージ `ios/FlowaCore` の 3 つのモジュールに分け、
+アプリ本体 `ios/FlowaApp` はそれを読み込むだけにしています。
+
+| モジュール | 役割 |
+|---|---|
+| **FlowaCore** | 画面に依存しない処理。Web 版（`src/lib`）の TypeScript から移植し、`fixtures/golden` の正解データと一致するかをテストで確かめる（文字位置は UTF-16 の単位で比べる） |
+| **FlowaKit** | PDF（PDFKit）・テキストの取り込み、本棚の保存、読み方の設定、再生の状態 |
+| **FlowaUI** | SwiftUI の画面（本棚・読書・設定）。文言は日本語をキーにし、英語訳は `Resources/en.lproj` |
 
 ## 今あるもの
 
@@ -18,9 +23,17 @@ FlowaCore は Web 版（`src/lib`）の TypeScript から移植し、`fixtures/g
 | `FlowaCore/Sources/FlowaCore/Normalize.swift` | 文字の正規化、青空文庫の注記、ルビ記法 | `src/lib/normalize.ts` |
 | `FlowaCore/Sources/FlowaCore/TextImport.swift` | テキストの取り込み（UTF-8／Shift_JIS、青空文庫の題名・目次、仮のページ） | `src/lib/textImport.ts` |
 | `FlowaCore/Sources/FlowaCore/BudouX.swift` | BudouX の推論（文節相当の単位に分ける）。モデルは `Resources/`（日本語・簡体字・繁体字、Apache-2.0） | npm の `budoux` 0.9.3 |
+| `FlowaCore/Sources/FlowaKit/PDFImport.swift` | PDFKit の文字と位置（PDFSelection）から断片を作り、Layout でページ本文にする | `src/lib/pdfItems.ts` |
+| `FlowaCore/Sources/FlowaKit/BookImporter.swift` | PDF・テキストの取り込み | `src/lib/importer.ts`（OCR・挿絵・文字化けの修復を除く） |
+| `FlowaCore/Sources/FlowaKit/BookStore.swift` | 本棚の保存（1 冊ごとのフォルダに情報・ページ本文・元のファイル）、読んでいた位置 | `src/lib/db.ts` |
+| `FlowaCore/Sources/FlowaKit/ReaderSettings.swift` | 読み方の設定（端末に保存） | `src/lib/settings.ts` |
+| `FlowaCore/Sources/FlowaKit/ReaderModel.swift` | 再生（予定時刻から逆算して待つ）、前後の移動、速度、位置の保存 | `src/ui/Reader.tsx` の画面以外の部分 |
+| `FlowaCore/Sources/FlowaUI/*.swift` | 本棚・読書・設定の画面 | `src/ui/Library.tsx`・`Reader.tsx`・`SettingsScreen.tsx` |
+| `FlowaApp/project.yml`・`FlowaApp/Sources/FlowaApp.swift` | アプリ本体（XcodeGen でプロジェクトを作る） | — |
+| `FlowaCore/Tests/FlowaKitTests/*.swift` | サンプル PDF を PDFKit で読み、Web 版と同じページ本文になるか。取り込み・保存・再生の確認 | `public/samples/`・`fixtures/golden/` |
 | `FlowaCore/Tests/FlowaCoreTests/*.swift` | 正解データとの比較 | `fixtures/golden/` の buildSchedule・joinLine・budoux-ja・splitSentences・segmentBook-*・normalize・parseTextBook-aozora・buildBookText・layout-*（行・ページ本文と段落の組み立て） |
 
-> `ios/` を変えると、GitHub Actions の Mac 環境で `swift test` が自動で実行されます（`.github/workflows/ios-core.yml`）。
+> `ios/` を変えると、GitHub Actions の Mac 環境で `swift test` と、アプリの iOS シミュレーター向けビルドが自動で実行されます（`.github/workflows/ios-core.yml`）。
 
 ## Mac での確認（初回）
 
@@ -34,11 +47,31 @@ FlowaCore は Web 版（`src/lib`）の TypeScript から移植し、`fixtures/g
 
    `Executed N tests, with 0 failures` と出れば成功です。
 
-## アプリの作り方（次の段階）
+## アプリを動かす
 
-1. Xcode で「File → New → Project → iOS → App」を選び、Product Name を `Flowa`、Interface を SwiftUI にして、`ios/Flowa` に保存する。
-2. 「File → Add Package Dependencies… → Add Local…」で `ios/FlowaCore` を追加する。
-3. 実機で試すには、Xcode の Signing で自分の Apple ID を選ぶ（無料の Apple ID でも、自分の iPhone で 7 日間動かせます）。TestFlight で人に配るときに Apple Developer Program（年 99 ドル）に加入する。
+1. ターミナルで XcodeGen を入れ、プロジェクトを作って開く（Homebrew が必要です）。
+
+   ```bash
+   brew install xcodegen
+   cd ios/FlowaApp
+   xcodegen generate
+   open Flowa.xcodeproj
+   ```
+
+2. 上の欄で「Flowa」と、シミュレーター（例: iPhone 16）を選んで ▶ を押す。
+3. 自分の iPhone で動かすときは、「Flowa」ターゲットの「Signing & Capabilities」で Team に自分の Apple ID を選ぶ（無料の Apple ID でも、自分の iPhone で 7 日間動かせます）。
+   ID が使えないと言われたら、`project.yml` の `PRODUCT_BUNDLE_IDENTIFIER`（仮の `app.flowa.reader`）を自分用に変えて、もう一度 `xcodegen generate` する。
+4. TestFlight で人に配るときに Apple Developer Program（年 99 ドル）に加入する。
+
+`project.yml` を変えたら `xcodegen generate` をやり直してください（`Flowa.xcodeproj` はリポジトリに入れていません）。
+
+## iOS 版でまだできないこと
+
+- 画像だけのページの文字認識（OCR）。Web 版は Tesseract.js、iOS 版は Vision で作る予定
+- 挿絵の表示（今は高速読書で飛ばす）、PDF のページ表示、全文の表示、目次
+- 縦書きでの高速読書の表示、テーマ、人物メモ、読書の履歴
+- パスワード付き PDF、文字化けする PDF の修復（ActualText）
+- 「ファイル」アプリや共有メニューから直接開く
 
 ## 移植の順番（予定）
 
@@ -48,4 +81,5 @@ FlowaCore は Web 版（`src/lib`）の TypeScript から移植し、`fixtures/g
 4. 正規化・ルビ・青空文庫の取り込み（済み）
 5. 段落の組み立てと位置の対応（済み）
 6. PDF の行と段落の組み立て（済み。アプリでは PDFKit の文字位置から `RawItem` を作って渡す）
-7. 画面（本棚・取り込み・読書・PDF 表示・設定・履歴）、保存（SwiftData）、OCR（Vision）
+7. 画面の第一段階: 本棚・取り込み・高速読書・設定（済み）
+8. PDF 表示・全文・目次・挿絵、OCR（Vision）、履歴、共有メニューから開く
