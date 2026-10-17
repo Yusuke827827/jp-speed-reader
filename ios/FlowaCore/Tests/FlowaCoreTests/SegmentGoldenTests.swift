@@ -8,14 +8,14 @@ private let repoRoot = URL(fileURLWithPath: #filePath)
     .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
     .deletingLastPathComponent().deletingLastPathComponent()
 
-private func load(_ name: String) throws -> [String: Any] {
+private func loadFixture(_ name: String) throws -> [String: Any] {
     let data = try Data(contentsOf: repoRoot.appendingPathComponent("fixtures/golden/\(name).json"))
     return try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
 }
 
 final class SegmentGoldenTests: XCTestCase {
     func testSplitSentences() throws {
-        let golden = try load("splitSentences")
+        let golden = try loadFixture("splitSentences")
         let input = try XCTUnwrap(golden["input"] as? [String])
         let expected = try XCTUnwrap(golden["expected"] as? [[[Int]]])
         for (text, want) in zip(input, expected) {
@@ -28,7 +28,7 @@ final class SegmentGoldenTests: XCTestCase {
     func testSegmentBookMixed() throws { try checkSegmentBook("segmentBook-mixed") }
 
     private func checkSegmentBook(_ name: String) throws {
-        let golden = try load(name)
+        let golden = try loadFixture(name)
         let input = try XCTUnwrap(golden["input"] as? [String: Any])
         let rawBook = try XCTUnwrap(input["book"] as? [[String: Any]])
         let paragraphs: [Paragraph] = try rawBook.map { p in
