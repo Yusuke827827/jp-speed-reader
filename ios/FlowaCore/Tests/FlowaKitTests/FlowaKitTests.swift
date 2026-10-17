@@ -127,6 +127,7 @@ final class FlowaKitTests: XCTestCase {
         XCTAssertEqual(cells.map(\.text), ["﹁", "12", "時", "︑", "ゲ", "ー", "ム", "﹂", "1", "2", "3"])
         XCTAssertEqual(cells.map(\.rotated), [false, false, false, false, false, true, false, false, true, true, true])
         XCTAssertEqual(VerticalForms.cells("OK").map(\.narrow), [true, true])
+        XCTAssertEqual(VerticalForms.cells("なっていく").map(\.small), [false, true, false, false, false])
     }
 
     func testShowsVertical() {

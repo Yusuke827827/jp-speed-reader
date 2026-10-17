@@ -209,7 +209,7 @@ struct ReaderView: View {
         var out = AttributedString(ns.substring(to: s))
         out.foregroundColor = .secondary
         var mid = AttributedString(ns.substring(with: NSRange(location: s, length: e - s)))
-        mid.foregroundColor = .accentColor
+        mid.foregroundColor = theme.accent
         mid.font = .callout.bold()
         var rest = AttributedString(ns.substring(from: e))
         rest.foregroundColor = .secondary

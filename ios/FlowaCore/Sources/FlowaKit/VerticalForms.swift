@@ -10,11 +10,14 @@ public enum VerticalForms {
         public var rotated: Bool
         /// 欧文・数字など、幅の狭い字（回すと高さが詰まる）
         public var narrow: Bool
+        /// 小書きの仮名（縦書きでは右上に寄せる）
+        public var small: Bool
 
-        public init(_ text: String, rotated: Bool = false, narrow: Bool = false) {
+        public init(_ text: String, rotated: Bool = false, narrow: Bool = false, small: Bool = false) {
             self.text = text
             self.rotated = rotated
             self.narrow = narrow
+            self.small = small
         }
     }
 
@@ -32,6 +35,8 @@ public enum VerticalForms {
 
     /// 回して表示する字
     static let rotate: Set<Character> = ["ー", "～", "〜", "—", "―", "–", "‐", "-", "＝", "=", "→", "←"]
+
+    static let smallKana: Set<Character> = Set("ぁぃぅぇぉっゃゅょゎゕゖァィゥェォッャュョヮヵヶㇰㇱㇲㇳㇴㇵㇶㇷㇸㇹㇺㇻㇼㇽㇾㇿ")
 
     public static func cells(_ s: String) -> [Cell] {
         let chars = Array(s)
@@ -61,7 +66,7 @@ public enum VerticalForms {
             } else if c.isWhitespace {
                 out.append(Cell("　"))
             } else {
-                out.append(Cell(String(c)))
+                out.append(Cell(String(c), small: smallKana.contains(c)))
             }
             i += 1
         }

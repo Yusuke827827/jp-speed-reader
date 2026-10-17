@@ -22,6 +22,7 @@ struct VerticalChunk: View {
                             Text(cell.text)
                                 .font(font(layout.size))
                                 .rotationEffect(cell.rotated ? .degrees(90) : .zero)
+                                .offset(x: cell.small ? layout.size * 0.1 : 0, y: cell.small ? -layout.size * 0.1 : 0)
                                 .frame(width: layout.size * 1.1, height: layout.size * (cell.narrow ? 0.62 : 1.04))
                         }
                     }

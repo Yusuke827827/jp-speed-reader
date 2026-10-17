@@ -61,7 +61,9 @@ struct SettingsView: View {
                         .tag(t.id)
                     }
                 }
+                #if os(iOS)
                 .pickerStyle(.navigationLink)
+                #endif
             }
 
             Section(L("再生")) {
