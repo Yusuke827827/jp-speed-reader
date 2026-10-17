@@ -59,6 +59,9 @@ struct ReaderView: View {
     let pdfURL: URL?
     @State private var scrubbing: Double?
     @State private var sheet: Sheet?
+    @Environment(\.colorScheme) private var scheme
+
+    private var theme: ReaderTheme { ReaderTheme.resolve(settings.theme, scheme: scheme) }
 
     enum Sheet: String, Identifiable {
         case settings, toc, pdf
@@ -76,6 +79,10 @@ struct ReaderView: View {
                 .padding(.bottom, 12)
                 .opacity(model.playing ? 0.35 : 1)
         }
+        .foregroundStyle(theme.fg)
+        .tint(theme.accent)
+        .background(theme.bg.ignoresSafeArea())
+        .environment(\.colorScheme, theme.dark ? .dark : .light)
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
                 if let toc = model.book.toc, !toc.isEmpty {
@@ -126,34 +133,57 @@ struct ReaderView: View {
             ContentUnavailableView(L("読める本文がありません"), systemImage: "doc.text.magnifyingglass")
         } else {
             VStack(spacing: 24) {
-                Spacer(minLength: 0)
-                // 視線を置く位置の目印
-                Rectangle().fill(.tint.opacity(0.5)).frame(width: 2, height: 14)
-                Text(model.chunk.map { $0.text.trimmingCharacters(in: .whitespacesAndNewlines) } ?? "")
-                    .font(chunkFont)
-                    .lineLimit(3)
-                    .minimumScaleFactor(0.3)
-                    .multilineTextAlignment(.center)
+                if vertical {
+                    // 縦書き: 列の左右に目印
+                    HStack(spacing: 12) {
+                        Rectangle().fill(.tint.opacity(0.5)).frame(width: 14, height: 2)
+                        VerticalChunk(text: chunkText, size: settings.fontSize, font: chunkFont)
+                            .frame(maxWidth: .infinity)
+                        Rectangle().fill(.tint.opacity(0.5)).frame(width: 14, height: 2)
+                    }
                     .padding(.horizontal, 16)
-                    .frame(minHeight: settings.fontSize * 1.6)
-                    .accessibilityAddTraits(.updatesFrequently)
-                Rectangle().fill(.tint.opacity(0.5)).frame(width: 2, height: 14)
-                Spacer(minLength: 0)
-                if !model.playing {
-                    context
-                } else if model.finished {
+                    .padding(.top, 16)
+                    .accessibilityElement()
+                    .accessibilityLabel(chunkText)
+                } else {
+                    Spacer(minLength: 0)
+                    // 視線を置く位置の目印
+                    Rectangle().fill(.tint.opacity(0.5)).frame(width: 2, height: 14)
+                    Text(chunkText)
+                        .font(chunkFont(settings.fontSize))
+                        .lineLimit(3)
+                        .minimumScaleFactor(0.3)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 16)
+                        .frame(minHeight: settings.fontSize * 1.6)
+                        .accessibilityAddTraits(.updatesFrequently)
+                    Rectangle().fill(.tint.opacity(0.5)).frame(width: 2, height: 14)
+                    Spacer(minLength: 0)
+                }
+                if model.finished {
                     Text(L("最後まで読みました")).foregroundStyle(.secondary)
+                } else if !model.playing {
+                    context
                 }
             }
         }
     }
 
+    private var chunkText: String {
+        model.chunk.map { $0.text.trimmingCharacters(in: .whitespacesAndNewlines) } ?? ""
+    }
+
+    /// 縦書きで表示するか。欧文の単位は縦書きの本でも横に表示する
+    private var vertical: Bool {
+        settings.showsVertical(bookIsVertical: model.book.vertical) && model.chunk?.words == nil
+    }
+
     /// 表示の字体。明朝のとき、日本語・中国語はヒラギノ明朝を指定する
     /// （.serif だけだと、端末の言語が英語のときに日本語がゴシックになる）
-    private var chunkFont: Font {
-        guard settings.serif else { return .system(size: settings.fontSize) }
-        if model.chunk?.words != nil { return .system(size: settings.fontSize, design: .serif) }
-        return .custom("HiraMinProN-W3", size: settings.fontSize)
+    private func chunkFont(_ size: Double) -> Font {
+        guard settings.serif else { return .system(size: size) }
+        if model.chunk?.words != nil { return .system(size: size, design: .serif) }
+        return .custom("HiraMinProN-W3", size: size)
     }
 
     /// 一時停止中は、今の段落を読んでいる位置に印をつけて見せる
@@ -179,7 +209,7 @@ struct ReaderView: View {
         var out = AttributedString(ns.substring(to: s))
         out.foregroundColor = .secondary
         var mid = AttributedString(ns.substring(with: NSRange(location: s, length: e - s)))
-        mid.foregroundColor = .accentColor
+        mid.foregroundColor = theme.accent
         mid.font = .callout.bold()
         var rest = AttributedString(ns.substring(from: e))
         rest.foregroundColor = .secondary

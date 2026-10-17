@@ -73,6 +73,7 @@ jobs:
           xcrun simctl install "$UDID" build/Build/Products/Debug-iphonesimulator/Flowa.app
           shoot library-en en
           shoot reader-en en -FlowaDemoOpen -FlowaDemoStep 12
+          shoot reader-night-en en -FlowaDemoOpen -FlowaDemoStep 30 -FlowaDemoTheme night
           # ログからも見られるよう、小さくした写真を base64 で出す
           for f in shots/*.png; do
             sips -Z 640 -s format jpeg -s formatOptions 45 "$f" --out "${f%.png}.jpg" >/dev/null

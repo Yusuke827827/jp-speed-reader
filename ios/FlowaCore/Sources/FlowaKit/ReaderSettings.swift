@@ -23,6 +23,10 @@ public struct ReaderSettings: Codable, Equatable, Sendable {
     public var fontSize: Double = 44
     /// 明朝（serif）で表示する
     public var serif: Bool = true
+    /// 文字の向き: auto（縦書きの本は縦）・horizontal・vertical
+    public var direction: String = "auto"
+    /// 色の組み合わせ（auto は端末のライト・ダークに合わせる）
+    public var theme: String = "auto"
 
     public init() {}
 
@@ -46,6 +50,8 @@ public struct ReaderSettings: Codable, Equatable, Sendable {
         skipReferences = try c.decodeIfPresent(Bool.self, forKey: .skipReferences) ?? d.skipReferences
         fontSize = try c.decodeIfPresent(Double.self, forKey: .fontSize) ?? d.fontSize
         serif = try c.decodeIfPresent(Bool.self, forKey: .serif) ?? d.serif
+        direction = try c.decodeIfPresent(String.self, forKey: .direction) ?? d.direction
+        theme = try c.decodeIfPresent(String.self, forKey: .theme) ?? d.theme
     }
 
     private static let key = "flowa.readerSettings"
@@ -57,6 +63,15 @@ public struct ReaderSettings: Codable, Equatable, Sendable {
 
     public func save(_ defaults: UserDefaults = .standard) {
         if let data = try? JSONEncoder().encode(self) { defaults.set(data, forKey: Self.key) }
+    }
+
+    /// 縦書きで表示するか（本が縦書きかどうかと、設定から決める）
+    public func showsVertical(bookIsVertical: Bool) -> Bool {
+        switch direction {
+        case "vertical": return true
+        case "horizontal": return false
+        default: return bookIsVertical
+        }
     }
 
     /// 分割の結果に関わる項目（変わったら単位を作り直す）

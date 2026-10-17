@@ -20,7 +20,10 @@ public struct FlowaRootView: View {
         .onOpenURL { url in
             job.run(url, store: store, removeAfter: url.path.contains("/Inbox/")) { meta in path = [meta] }
         }
-        .task { await Demo.prepare(store: store, job: job) { path = [$0] } }
+        .task {
+            if let theme = Demo.value("-FlowaDemoTheme") { settings.theme = theme }
+            await Demo.prepare(store: store, job: job) { path = [$0] }
+        }
     }
 }
 
@@ -28,10 +31,13 @@ public struct FlowaRootView: View {
 enum Demo {
     static var enabled: Bool { ProcessInfo.processInfo.arguments.contains("-FlowaDemo") }
     /// 読書画面で、何単位進めた所を見せるか（-FlowaDemoStep 8）
-    static var step: Int {
+    static var step: Int { value("-FlowaDemoStep").flatMap { Int($0) } ?? 0 }
+
+    /// 起動時の引数「名前 値」の値
+    static func value(_ name: String) -> String? {
         let args = ProcessInfo.processInfo.arguments
-        guard let i = args.firstIndex(of: "-FlowaDemoStep"), i + 1 < args.count else { return 0 }
-        return Int(args[i + 1]) ?? 0
+        guard enabled, let i = args.firstIndex(of: name), i + 1 < args.count else { return nil }
+        return args[i + 1]
     }
     static var openFirst: Bool { ProcessInfo.processInfo.arguments.contains("-FlowaDemoOpen") }
 
