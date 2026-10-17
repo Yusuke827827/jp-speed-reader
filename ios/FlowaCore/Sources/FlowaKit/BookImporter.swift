@@ -31,7 +31,10 @@ public enum BookImporter {
             let parsed = TextImport.parseTextBook(raw)
             if parsed.pages.joined().unicodeScalars.allSatisfy({ CharacterSet.whitespacesAndNewlines.contains($0) }) { throw ImportError(.noText) }
             pages = parsed.pages.map { StoredPage(text: $0, contFromPrev: false) }
-            meta = BookMeta(id: id, kind: .text, title: parsed.title ?? url.deletingPathExtension().lastPathComponent, author: parsed.author, fileName: name, pageCount: pages.count)
+            meta = BookMeta(
+                id: id, kind: .text, title: parsed.title ?? url.deletingPathExtension().lastPathComponent, author: parsed.author,
+                fileName: name, pageCount: pages.count, toc: parsed.toc.map { TocItem(title: $0.title, page: $0.page, depth: $0.depth) }
+            )
         } else if ext == "pdf" {
             #if canImport(PDFKit)
             guard let doc = PDFDocument(url: url) else { throw ImportError(.unreadable) }
@@ -47,7 +50,8 @@ public enum BookImporter {
                 id: id, kind: .pdf, title: title ?? url.deletingPathExtension().lastPathComponent,
                 author: doc.documentAttributes?[PDFDocumentAttribute.authorAttribute] as? String,
                 fileName: name, pageCount: doc.pageCount, emptyPages: pages.count - textPages.count,
-                vertical: textPages.filter(\.vertical).count * 2 > textPages.count
+                vertical: textPages.filter(\.vertical).count * 2 > textPages.count,
+                toc: outline(doc)
             )
             #else
             throw ImportError(.unsupported)
@@ -58,4 +62,23 @@ public enum BookImporter {
         try BookStore.write(root: root, meta: meta, pages: pages, original: url)
         return meta
     }
+
+    #if canImport(PDFKit)
+    /// PDF のしおりを目次にする（ページの分からない項目は除く）
+    static func outline(_ doc: PDFDocument) -> [TocItem] {
+        var out: [TocItem] = []
+        func walk(_ node: PDFOutline, _ depth: Int) {
+            for i in 0..<node.numberOfChildren {
+                guard let child = node.child(at: i) else { continue }
+                let title = (child.label ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                if let page = child.destination?.page, !title.isEmpty {
+                    out.append(TocItem(title: title, page: doc.index(for: page), depth: depth))
+                }
+                walk(child, depth + 1)
+            }
+        }
+        if let root = doc.outlineRoot { walk(root, 0) }
+        return out
+    }
+    #endif
 }

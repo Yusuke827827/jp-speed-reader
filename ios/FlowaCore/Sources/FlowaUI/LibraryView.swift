@@ -13,30 +13,39 @@ final class ImportJob {
     var total = 0
     var error: String?
 
-    func run(_ url: URL, store: BookStore) {
+    /// 取り込みを始める。終わったら done を呼ぶ。removeAfter は、他のアプリから渡された一時ファイルを消すとき
+    func run(_ url: URL, store: BookStore, removeAfter: Bool = false, done: ((BookMeta) -> Void)? = nil) {
         guard !running else { return }
+        Task {
+            if let meta = await importNow(url, store: store) { done?(meta) }
+            if removeAfter { try? FileManager.default.removeItem(at: url) }
+        }
+    }
+
+    @discardableResult
+    func importNow(_ url: URL, store: BookStore) async -> BookMeta? {
         running = true
         done = 0
         total = 0
+        defer { running = false }
         let root = store.root
-        Task {
-            do {
-                let meta = try await Task.detached(priority: .userInitiated) {
-                    try BookImporter.importFile(url, root: root) { d, t in
-                        Task { @MainActor in
-                            self.done = d
-                            self.total = t
-                        }
+        do {
+            let meta = try await Task.detached(priority: .userInitiated) {
+                try BookImporter.importFile(url, root: root) { d, t in
+                    Task { @MainActor in
+                        self.done = d
+                        self.total = t
                     }
-                }.value
-                store.added(meta)
-            } catch let e as ImportError {
-                self.error = Self.message(e)
-            } catch {
-                self.error = L("ファイルを読み込めませんでした。")
-            }
-            running = false
+                }
+            }.value
+            store.added(meta)
+            return meta
+        } catch let e as ImportError {
+            self.error = Self.message(e)
+        } catch {
+            self.error = L("ファイルを読み込めませんでした。")
         }
+        return nil
     }
 
     static func message(_ e: ImportError) -> String {
@@ -52,9 +61,9 @@ final class ImportJob {
 struct LibraryView: View {
     let store: BookStore
     @Binding var settings: ReaderSettings
+    let job: ImportJob
     @State private var importing = false
     @State private var showSettings = false
-    @State private var job = ImportJob()
 
     var body: some View {
         Group {
@@ -66,6 +75,9 @@ struct LibraryView: View {
                 } actions: {
                     Button(L("ファイルを取り込む")) { importing = true }
                         .buttonStyle(.borderedProminent)
+                    if !Samples.urls.isEmpty {
+                        Button(L("サンプルで試す")) { importSamples() }
+                    }
                 }
             } else {
                 List {
@@ -119,6 +131,15 @@ struct LibraryView: View {
         }
         .sheet(isPresented: $showSettings) {
             NavigationStack { SettingsView(settings: $settings) }
+        }
+    }
+}
+
+extension LibraryView {
+    /// 同梱のサンプル（縦書きの小説・英語の論文・青空文庫形式のテキスト）を取り込む
+    func importSamples() {
+        Task {
+            for url in Samples.urls.reversed() { await job.importNow(url, store: store) }
         }
     }
 }

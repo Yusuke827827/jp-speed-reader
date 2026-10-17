@@ -1,36 +1,6 @@
 # iOS 版（ios/）を Mac でビルドする。
 #   test: 共通処理（ios/FlowaCore）のテスト。正解データ（fixtures/golden）・サンプル PDF と比べる
-#   app:  アプリ本体（ios/FlowaApp）を iOS シミュレーター向けにビルドする（署名なし）
-name: iOS core tests
-
-on:
-  push:
-    paths:
-      - 'ios/**'
-      - 'fixtures/golden/**'
-      - 'public/samples/**'
-      - '.github/workflows/ios-core.yml'
-  pull_request:
-    paths:
-      - 'ios/**'
-      - 'fixtures/golden/**'
-      - 'public/samples/**'
-      - '.github/workflows/ios-core.yml'
-  workflow_dispatch:
-
-permissions:
-  contents: read
-
-jobs:
-  test:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: swift --version
-      - run: swift test
-        working-directory: ios/FlowaCore
-
-  app:
+#   app:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -38,9 +8,49 @@ jobs:
       - run: brew install xcodegen
       - run: xcodegen generate
         working-directory: ios/FlowaApp
-      - run: >
+      # 使える iPhone のシミュレーターを 1 つ選ぶ（Xcode の版で名前が変わるため）
+      - name: Pick simulator
+        run: |
+          UDID=$(xcrun simctl list devices available -j | python3 -c "import json,sys; d=json.load(sys.stdin)['devices']; print(next(x['udid'] for k in sorted(d, reverse=True) if 'iOS' in k for x in d[k] if x['name'].startswith('iPhone')))")
+          echo "UDID=$UDID" >> "$GITHUB_ENV"
+      - name: Build
+        run: >
           xcodebuild build
           -project Flowa.xcodeproj -scheme Flowa
-          -destination 'generic/platform=iOS Simulator'
+          -destination "id=$UDID"
+          -derivedDataPath build
           CODE_SIGNING_ALLOWED=NO
         working-directory: ios/FlowaApp
+      # サンプルを取り込んだ状態で起動し、本棚と読書画面の写真を撮る（日本語・英語）
+      - name: Screenshots
+        working-directory: ios/FlowaApp
+        run: |
+          set -x
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl install "$UDID" build/Build/Products/Debug-iphonesimulator/Flowa.app
+          mkdir -p shots
+          shoot() { # 名前 言語 起動時の引数...
+            name=$1; lang=$2; shift 2
+            xcrun simctl terminate "$UDID" app.flowa.reader || true
+            xcrun simctl launch "$UDID" app.flowa.reader -AppleLanguages "($lang)" -AppleLocale "$lang" -FlowaDemo "$@"
+            sleep 8
+            xcrun simctl io "$UDID" screenshot "shots/$name.png"
+          }
+          shoot library-ja ja
+          shoot reader-ja ja -FlowaDemoOpen -FlowaDemoStep 12
+          xcrun simctl uninstall "$UDID" app.flowa.reader
+          xcrun simctl install "$UDID" build/Build/Products/Debug-iphonesimulator/Flowa.app
+          shoot library-en en
+          shoot reader-en en -FlowaDemoOpen -FlowaDemoStep 12
+          # ログからも見られるよう、小さくした写真を base64 で出す
+          for f in shots/*.png; do
+            sips -Z 640 -s format jpeg -s formatOptions 45 "$f" --out "${f%.png}.jpg" >/dev/null
+            echo "=== SHOT $(basename "${f%.png}") ==="
+            base64 -i "${f%.png}.jpg" | fold -w 4000
+            echo "=== END ==="
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: ios/FlowaApp/shots/*.png

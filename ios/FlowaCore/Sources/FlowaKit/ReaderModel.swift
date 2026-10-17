@@ -185,6 +185,17 @@ public final class ReaderModel {
         report()
     }
 
+    /// 今いるページ（0 始まり）
+    public var currentPage: Int { text.pageAt(position) }
+
+    /// 指定したページ以降で最初に始まる本文へ
+    public func jump(toPage page: Int) {
+        guard !chunks.isEmpty else { return }
+        index = Segmenter.chunkIndexAt(chunks, text.positionForPage(page))
+        finished = false
+        report()
+    }
+
     /// 今の速度を一段変える（字/分は 50、語/分は 10 ずつ）
     public func changeSpeed(_ dir: Int) {
         if latin {

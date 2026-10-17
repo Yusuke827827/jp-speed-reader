@@ -18,7 +18,7 @@ struct ReaderScreen: View {
     var body: some View {
         Group {
             if let model {
-                ReaderView(model: model, settings: $settings)
+                ReaderView(model: model, settings: $settings, pdfURL: book.kind == .pdf ? store.originalFile(of: book) : nil)
             } else if failed {
                 ContentUnavailableView(L("本を開けませんでした"), systemImage: "exclamationmark.triangle", description: Text(L("本棚から削除して、もう一度取り込んでください。")))
             } else {
@@ -39,6 +39,11 @@ struct ReaderScreen: View {
             let id = book.id
             m.onPosition = { pos, pct in store.savePosition(id, position: pos, percent: pct) }
             model = m
+            // 画面写真用: 少し読み進めた所を見せる
+            if Demo.enabled, Demo.step > 0 {
+                while m.preparing { try? await Task.sleep(for: .milliseconds(50)) }
+                m.step(Demo.step)
+            }
         }
         .onChange(of: settings) { _, new in
             if model?.settings != new { model?.settings = new }
@@ -50,8 +55,15 @@ struct ReaderScreen: View {
 struct ReaderView: View {
     let model: ReaderModel
     @Binding var settings: ReaderSettings
+    /// PDF の本なら元のファイル（ページ表示に使う）
+    let pdfURL: URL?
     @State private var scrubbing: Double?
-    @State private var showSettings = false
+    @State private var sheet: Sheet?
+
+    enum Sheet: String, Identifiable {
+        case settings, toc, pdf
+        var id: String { rawValue }
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -65,12 +77,35 @@ struct ReaderView: View {
                 .opacity(model.playing ? 0.35 : 1)
         }
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button { showSettings = true } label: { Label(L("設定"), systemImage: "textformat.size") }
+            ToolbarItemGroup(placement: .primaryAction) {
+                if let toc = model.book.toc, !toc.isEmpty {
+                    Button { open(.toc) } label: { Label(L("目次"), systemImage: "list.bullet") }
+                }
+                #if canImport(UIKit)
+                if let pdfURL, FileManager.default.fileExists(atPath: pdfURL.path) {
+                    Button { open(.pdf) } label: { Label(L("PDFで見る"), systemImage: "doc.richtext") }
+                }
+                #endif
+                Button { open(.settings) } label: { Label(L("設定"), systemImage: "textformat.size") }
             }
         }
-        .sheet(isPresented: $showSettings) {
-            NavigationStack { SettingsView(settings: $settings) }
+        .sheet(item: $sheet) { which in
+            NavigationStack {
+                switch which {
+                case .settings:
+                    SettingsView(settings: $settings)
+                case .toc:
+                    TocView(toc: model.book.toc ?? [], currentPage: model.currentPage) { model.jump(toPage: $0) }
+                case .pdf:
+                    #if canImport(UIKit)
+                    if let pdfURL {
+                        PDFPageScreen(url: pdfURL, page: model.currentPage) { model.jump(toPage: $0) }
+                    }
+                    #else
+                    EmptyView()
+                    #endif
+                }
+            }
         }
         #if os(iOS)
         // 再生中は画面を消さない
@@ -200,6 +235,12 @@ struct ReaderView: View {
             .frame(maxWidth: .infinity)
             .accessibilityLabel(label)
             .disabled(model.preparing)
+    }
+
+    /// 再生を止めてから別の画面を出す
+    private func open(_ which: Sheet) {
+        model.pause()
+        sheet = which
     }
 
     private func changeSpeed(_ dir: Int) {

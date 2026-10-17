@@ -15,6 +15,13 @@ targets:
     platform: iOS
     sources:
       - Sources
+      # 初めて使う人向けのサンプル（Web 版と同じファイル）
+      - path: ../../public/samples/sample-vertical.pdf
+        buildPhase: resources
+      - path: ../../public/samples/sample-english-paper.pdf
+        buildPhase: resources
+      - path: ../../public/samples/sample-aozora.txt
+        buildPhase: resources
     dependencies:
       - package: FlowaCore
         product: FlowaUI
@@ -32,6 +39,17 @@ targets:
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         ITSAppUsesNonExemptEncryption: false
+        # 「ファイル」アプリや共有メニューの「Flowa で開く」。渡されたファイルは写しを取り込む
+        CFBundleDocumentTypes:
+          - CFBundleTypeName: PDF
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            LSItemContentTypes: [com.adobe.pdf]
+          - CFBundleTypeName: Text
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            LSItemContentTypes: [public.plain-text]
+        LSSupportsOpeningDocumentsInPlace: false
     settings:
       base:
         # 仮の ID。App Store に出す前に、Apple Developer Program で登録する ID に変える
