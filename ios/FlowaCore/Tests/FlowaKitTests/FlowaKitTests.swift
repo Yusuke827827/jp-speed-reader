@@ -68,6 +68,10 @@ final class FlowaKitTests: XCTestCase {
                 let sim = similarity(g.text, wt)
                 if g.text == wt { exact += 1 }
                 if g.text != wt {
+                    let items = PDFImport.rawItems(doc.page(at: i)!)
+                    let gutter = Layout.findColumnGutter(items.filter { $0.size >= 9 })
+                    print("[\(name) p\(i)] items=\(items.count) gutter=\(gutter.map { String($0) } ?? "nil")")
+                    for it in items.prefix(40) { print("    \(it.str.prefix(30)) x=\(Int(it.x)) y=\(Int(it.y)) w=\(Int(it.w)) size=\(it.size)") }
                     print("[\(name) p\(i)] similarity=\(String(format: "%.3f", sim)) vertical=\(g.vertical)/\(w["vertical"] as? Bool ?? false) cont=\(g.contFromPrev)/\(w["contFromPrev"] as? Bool ?? false)")
                     print("  got:  \(g.text.prefix(160).replacingOccurrences(of: "\n", with: "⏎"))")
                     print("  want: \(wt.prefix(160).replacingOccurrences(of: "\n", with: "⏎"))")

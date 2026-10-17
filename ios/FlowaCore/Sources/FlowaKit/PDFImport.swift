@@ -29,6 +29,8 @@ public enum PDFImport {
         /// ベースラインの y（PDF.js の断片の y に当たる）
         var baseline: Double
         var size: Double
+        /// 半角の空白（横書きの断片の途中にだけ含める。PDF.js の断片も単語間の空白を含む）
+        var space = false
     }
 
     /// 1 ページ分の文字を断片にする
@@ -46,8 +48,8 @@ public enum PDFImport {
             let ch = ns.substring(with: r)
             // 位置は PDFSelection から取る（characterBounds(at:) は、PDFKit が補った改行の分だけ位置がずれる）
             let rect = page.selection(for: r)?.bounds(for: page) ?? .null
-            if ch.unicodeScalars.allSatisfy({ CharacterSet.whitespacesAndNewlines.contains($0) || CharacterSet.controlCharacters.contains($0) })
-                || rect.isNull || rect.width <= 0 || rect.height <= 0 {
+            let blank = ch.unicodeScalars.allSatisfy { CharacterSet.whitespacesAndNewlines.contains($0) || CharacterSet.controlCharacters.contains($0) }
+            if rect.isNull || rect.width <= 0 || rect.height <= 0 || (blank && ch != " ") {
                 glyphs.append(nil)
                 continue
             }
@@ -58,7 +60,7 @@ public enum PDFImport {
                 descender = Double(font.descender)
             }
             if size <= 0 { size = Double(min(rect.width, rect.height)) }
-            glyphs.append(Glyph(ch: ch, rect: rect, baseline: Double(rect.minY) - descender, size: size))
+            glyphs.append(Glyph(ch: ch, rect: rect, baseline: Double(rect.minY) - descender, size: size, space: blank))
         }
         return mergeRuns(glyphs)
     }
@@ -72,7 +74,12 @@ public enum PDFImport {
         var dir = Dir.none
 
         func flush() {
-            guard let first = run.first, let last = run.last else { return }
+            while run.last?.space == true { run.removeLast() }
+            guard let first = run.first, let last = run.last else {
+                run = []
+                dir = .none
+                return
+            }
             let str = Normalize.normalizeChars(run.map(\.ch).joined())
             let size = run.map(\.size).max() ?? first.size
             if dir == .vertical {
@@ -92,7 +99,7 @@ public enum PDFImport {
                 continue
             }
             guard let prev = run.last else {
-                run = [g]
+                if !g.space { run = [g] }
                 continue
             }
             let s = max(prev.size, g.size)
@@ -104,6 +111,8 @@ public enum PDFImport {
             if sameSize, horizontal, dir != .vertical {
                 dir = .horizontal
                 run.append(g)
+            } else if g.space {
+                flush()
             } else if sameSize, vertical, dir != .horizontal {
                 dir = .vertical
                 run.append(g)
