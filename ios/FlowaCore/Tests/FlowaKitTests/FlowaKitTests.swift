@@ -113,13 +113,46 @@ final class FlowaKitTests: XCTestCase {
         XCTAssertGreaterThan(model.chunks.count, 2)
         var reported = 0
         model.onPosition = { _, _ in reported += 1 }
+        var sessions: [ReadingSession] = []
+        model.onSession = { sessions.append($0) }
         model.play()
         XCTAssertTrue(model.playing)
         try await waitUntil { model.finished }
         XCTAssertEqual(model.index, model.chunks.count - 1)
         XCTAssertFalse(model.playing)
         XCTAssertEqual(reported, 1)
+        // 最後まで再生した 1 回分の記録が残る
+        XCTAssertEqual(sessions.count, 1)
+        XCTAssertEqual(sessions.first?.chars, model.chunks.reduce(0) { $0 + $1.len })
+        XCTAssertEqual(sessions.first?.toPercent, model.percent)
+        XCTAssertGreaterThan(sessions.first?.ms ?? 0, 0)
         XCTAssertEqual(model.percent, model.text.percentAt(model.position))
+    }
+
+    func testHistoryStats() {
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone(identifier: "Asia/Tokyo")!
+        let now = cal.date(from: DateComponents(year: 2026, month: 10, day: 19, hour: 12))!
+        func session(_ daysAgo: Int, ms: Double, chars: Int) -> ReadingSession {
+            let d = cal.date(byAdding: .day, value: -daysAgo, to: now)!
+            return ReadingSession(bookId: "b", title: "t", start: d, end: d, ms: ms, chars: chars, fromPercent: 0, toPercent: 1)
+        }
+        let stats = HistoryStats([session(0, ms: 60000, chars: 600), session(0, ms: 60000, chars: 400), session(3, ms: 120000, chars: 1000), session(20, ms: 60000, chars: 0)], now: now, calendar: cal)
+        XCTAssertEqual(stats.ms, 300000)
+        XCTAssertEqual(stats.chars, 2000)
+        XCTAssertEqual(stats.cpm, 400)
+        XCTAssertEqual(stats.days.count, 14)
+        XCTAssertEqual(stats.days.last?.ms, 120000)
+        XCTAssertEqual(stats.days[10].ms, 120000)
+        XCTAssertEqual(stats.days.map(\.ms).reduce(0, +), 240000)
+    }
+
+    @MainActor
+    func testHistoryIsSaved() throws {
+        let root = try tempRoot().appendingPathComponent("Books")
+        let store = BookStore(root: root)
+        store.addSession(ReadingSession(bookId: "b", title: "t", start: Date(), end: Date(), ms: 1000, chars: 10, fromPercent: 0, toPercent: 5))
+        XCTAssertEqual(BookStore(root: root).sessions.map(\.chars), [10])
     }
 
     func testVerticalForms() {
