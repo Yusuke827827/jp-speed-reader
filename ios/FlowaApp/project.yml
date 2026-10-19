@@ -60,4 +60,6 @@ targets:
         SWIFT_VERSION: "5.0"
         # 自分の Apple ID のチームを Xcode の「Signing & Capabilities」で選ぶ
         CODE_SIGN_STYLE: Automatic
-    scheme: {}
+    scheme:
+      # Xcode から実行したとき、App Store の代わりにこのファイルの商品（Flowa Pro）で購入を試せる
+      storeKitConfiguration: Flowa.storekit
