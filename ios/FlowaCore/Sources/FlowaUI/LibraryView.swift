@@ -64,6 +64,7 @@ struct LibraryView: View {
     let job: ImportJob
     @State private var importing = false
     @State private var showSettings = false
+    @State private var showHistory = false
 
     var body: some View {
         Group {
@@ -103,6 +104,9 @@ struct LibraryView: View {
             ToolbarItem(placement: .automatic) {
                 Button { showSettings = true } label: { Label(L("設定"), systemImage: "gearshape") }
             }
+            ToolbarItem(placement: .automatic) {
+                Button { showHistory = true } label: { Label(L("読書履歴"), systemImage: "chart.bar") }
+            }
         }
         .fileImporter(isPresented: $importing, allowedContentTypes: [.pdf, .plainText]) { result in
             if case let .success(url) = result { job.run(url, store: store) }
@@ -131,6 +135,9 @@ struct LibraryView: View {
         }
         .sheet(isPresented: $showSettings) {
             NavigationStack { SettingsView(settings: $settings) }
+        }
+        .sheet(isPresented: $showHistory) {
+            NavigationStack { HistoryView(store: store) }
         }
     }
 }

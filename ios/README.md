@@ -27,6 +27,7 @@ iOS 版は SwiftUI で作ります。中身は Swift パッケージ `ios/FlowaC
 | `FlowaCore/Sources/FlowaKit/BookImporter.swift` | PDF・テキストの取り込み | `src/lib/importer.ts`（OCR・挿絵・文字化けの修復を除く） |
 | `FlowaCore/Sources/FlowaKit/BookStore.swift` | 本棚の保存（1 冊ごとのフォルダに情報・ページ本文・元のファイル）、読んでいた位置 | `src/lib/db.ts` |
 | `FlowaCore/Sources/FlowaKit/ReaderSettings.swift` | 読み方の設定（端末に保存） | `src/lib/settings.ts` |
+| `FlowaCore/Sources/FlowaKit/ReadingHistory.swift` | 読書の記録と集計（合計・直近 14 日） | `src/lib/db.ts` の Session、`src/ui/History.tsx` |
 | `FlowaCore/Sources/FlowaKit/ReaderModel.swift` | 再生（予定時刻から逆算して待つ）、前後の移動、速度、位置の保存 | `src/ui/Reader.tsx` の画面以外の部分 |
 | `FlowaCore/Sources/FlowaUI/*.swift` | 本棚・読書・設定の画面 | `src/ui/Library.tsx`・`Reader.tsx`・`SettingsScreen.tsx` |
 | `FlowaApp/project.yml`・`FlowaApp/Sources/FlowaApp.swift` | アプリ本体（XcodeGen でプロジェクトを作る） | — |
@@ -68,8 +69,8 @@ iOS 版は SwiftUI で作ります。中身は Swift パッケージ `ios/FlowaC
 ## iOS 版でまだできないこと
 
 - 画像だけのページの文字認識（OCR）。Web 版は Tesseract.js、iOS 版は Vision で作る予定
-- 挿絵の表示（今は高速読書で飛ばす）、全文の表示
-- 人物メモ、読書の履歴、模様のある背景（和紙・夜空などは単色）
+- 挿絵の表示（今は高速読書で飛ばす）
+- 人物メモ、模様のある背景（和紙・夜空などは単色）
 - パスワード付き PDF、文字化けする PDF の修復（ActualText）
 
 ## 移植の順番（予定）
@@ -82,4 +83,5 @@ iOS 版は SwiftUI で作ります。中身は Swift パッケージ `ios/FlowaC
 6. PDF の行と段落の組み立て（済み。アプリでは PDFKit の文字位置から `RawItem` を作って渡す）
 7. 画面の第一段階: 本棚・取り込み・高速読書・設定（済み）
 8. サンプル・他のアプリから開く・目次・PDF 表示・縦書き表示・テーマ（済み）
-9. 挿絵・全文、OCR（Vision）、履歴、人物メモ
+9. 読書履歴・全文の表示（済み）
+10. 挿絵、OCR（Vision）、人物メモ

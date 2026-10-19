@@ -26,6 +26,11 @@ public final class ReaderModel {
 
     /// 位置が変わったときに呼ぶ（保存用）
     public var onPosition: ((TextPosition, Double) -> Void)?
+    /// 再生を止めたときに、その回の記録を渡す
+    public var onSession: ((ReadingSession) -> Void)?
+
+    /// 再生中の回（始めた時刻・そのときの読了率・表示した文字数）
+    private var session: (start: Date, clock: ContinuousClock.Instant, fromPercent: Double, chars: Int)?
 
     /// 再生開始直後の倍率（だんだん速くする）
     static let ramp: [Double] = [1.7, 1.4, 1.2, 1.08]
@@ -117,6 +122,7 @@ public final class ReaderModel {
         if index >= chunks.count - 1 { index = 0 }
         finished = false
         playing = true
+        session = (Date(), ContinuousClock.now, percent, 0)
         playTask = Task { [weak self] in
             let clock = ContinuousClock()
             var due = clock.now
@@ -128,9 +134,11 @@ public final class ReaderModel {
                 due = due.advanced(by: .milliseconds(Int(ms.rounded())))
                 try? await clock.sleep(until: due, tolerance: .milliseconds(4))
                 guard !Task.isCancelled, self.playing else { return }
+                self.session?.chars += self.chunks[self.index].len
                 if self.index >= self.chunks.count - 1 {
                     self.playing = false
                     self.finished = true
+                    self.endSession()
                     self.report()
                     return
                 }
@@ -144,7 +152,21 @@ public final class ReaderModel {
         playing = false
         playTask?.cancel()
         playTask = nil
+        endSession()
         report()
+    }
+
+    /// 再生の回を締めて記録を渡す（何も表示しなかった回は残さない）
+    private func endSession() {
+        guard let s = session else { return }
+        session = nil
+        let elapsed = ContinuousClock.now - s.clock
+        let ms = Double(elapsed.components.seconds) * 1000 + Double(elapsed.components.attoseconds) / 1e15
+        guard s.chars > 0 else { return }
+        onSession?(ReadingSession(
+            bookId: book.id, title: book.title, start: s.start, end: Date(), ms: ms, chars: s.chars,
+            fromPercent: s.fromPercent, toPercent: percent
+        ))
     }
 
     public func toggle() { playing ? pause() : play() }
@@ -182,6 +204,15 @@ public final class ReaderModel {
         var para = 0
         for (i, p) in text.paragraphs.enumerated() where p.globalStart <= target { para = i }
         index = Segmenter.chunkIndexAt(chunks, TextPosition(para: para, offset: target - text.paragraphs[para].globalStart))
+        report()
+    }
+
+    /// 本文の位置へ（全文の表示から選んだとき）
+    public func jump(to pos: TextPosition) {
+        guard !chunks.isEmpty else { return }
+        pause()
+        index = Segmenter.chunkIndexAt(chunks, pos)
+        finished = false
         report()
     }
 

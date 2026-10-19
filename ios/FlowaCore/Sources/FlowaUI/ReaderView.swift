@@ -38,6 +38,7 @@ struct ReaderScreen: View {
             let m = ReaderModel(book: book, pages: pages, settings: settings)
             let id = book.id
             m.onPosition = { pos, pct in store.savePosition(id, position: pos, percent: pct) }
+            m.onSession = { store.addSession($0) }
             model = m
             // 画面写真用: 少し読み進めた所を見せる
             if Demo.enabled, Demo.step > 0 {
@@ -64,7 +65,7 @@ struct ReaderView: View {
     private var theme: ReaderTheme { ReaderTheme.resolve(settings.theme, scheme: scheme) }
 
     enum Sheet: String, Identifiable {
-        case settings, toc, pdf
+        case settings, toc, pdf, fullText
         var id: String { rawValue }
     }
 
@@ -85,6 +86,8 @@ struct ReaderView: View {
         .environment(\.colorScheme, theme.dark ? .dark : .light)
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
+                Button { open(.fullText) } label: { Label(L("全文"), systemImage: "text.alignleft") }
+                    .disabled(model.preparing)
                 if let toc = model.book.toc, !toc.isEmpty {
                     Button { open(.toc) } label: { Label(L("目次"), systemImage: "list.bullet") }
                 }
@@ -101,6 +104,8 @@ struct ReaderView: View {
                 switch which {
                 case .settings:
                     SettingsView(settings: $settings)
+                case .fullText:
+                    FullTextView(model: model)
                 case .toc:
                     TocView(toc: model.book.toc ?? [], currentPage: model.currentPage) { model.jump(toPage: $0) }
                 case .pdf:

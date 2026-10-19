@@ -79,7 +79,15 @@ public struct BookMeta: Codable, Identifiable, Hashable, Sendable {
 public final class BookStore {
     /// 最近読んだ順（読んでいなければ追加した順）
     public private(set) var books: [BookMeta] = []
+    /// 読書の記録（新しい順）
+    public private(set) var sessions: [ReadingSession] = []
     public let root: URL
+
+    /// 記録を残す件数の上限
+    static let maxSessions = 3000
+
+    /// 記録のファイル（本のフォルダと同じ階層）
+    var historyURL: URL { root.deletingLastPathComponent().appendingPathComponent("history.json") }
 
     public init(root: URL? = nil) {
         self.root = root ?? Self.defaultRoot
@@ -103,6 +111,15 @@ public final class BookStore {
             }
         }
         books = out.sorted { ($0.lastReadAt ?? $0.createdAt) > ($1.lastReadAt ?? $1.createdAt) }
+        sessions = (try? Data(contentsOf: historyURL)).flatMap { try? Self.decoder.decode([ReadingSession].self, from: $0) } ?? []
+    }
+
+    /// 読書の記録を足す
+    public func addSession(_ s: ReadingSession) {
+        sessions.insert(s, at: 0)
+        if sessions.count > Self.maxSessions { sessions.removeLast(sessions.count - Self.maxSessions) }
+        try? FileManager.default.createDirectory(at: historyURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try? Self.encoder.encode(sessions).write(to: historyURL, options: .atomic)
     }
 
     public func pages(of id: String) throws -> [StoredPage] {
