@@ -881,6 +881,11 @@ textarea {
   flex: 0 0 38%;
 }
 
+/* 縦表示は単位が縦に長いので、一時停止中も表示領域を広めにとる */
+.stage.with-panel.vertical .word-area {
+  flex-basis: 55%;
+}
+
 .word ruby {
   ruby-position: over;
 }

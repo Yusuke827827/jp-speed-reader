@@ -503,7 +503,7 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
         </button>
       </div>
 
-      <div className={`stage${showPanel ? ' with-panel' : ''}`}>
+      <div className={`stage${showPanel ? ' with-panel' : ''}${settings.direction === 'vertical' ? ' vertical' : ''}`}>
         <div className="word-area" onPointerDown={onPointerDown} onPointerUp={onPointerUp} role="button" aria-label={playing ? t('一時停止') : t('再生')}>
           {chunk?.illust ? (
             <IllustView bookId={meta.id} illust={chunk.illust} note={settings.illustMode === 'pause' && !playing ? t('タップで続きを読む') : ''} />
