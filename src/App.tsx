@@ -8,11 +8,31 @@ import { SettingsScreen } from './ui/SettingsScreen'
 import { ToastHost, useRoute } from './ui/common'
 import { useEffect } from 'react'
 import { themeOf, useSettings } from './lib/settings'
+import { useWallpaper } from './lib/wallpaper'
 
 export default function App() {
   const { parts, query } = useRoute()
   const [settings] = useSettings()
   // 質感のある背景を選んだときは、本棚などの画面にも同じ背景を使う
+  const wallpaper = useWallpaper()
+  // 自分の写真の壁紙と強調色を、本棚・読書画面の両方に使う
+  useEffect(() => {
+    const t = themeOf(settings.theme)
+    const root = document.documentElement
+    const on = settings.wallpaperOn && !!wallpaper
+    if (on) {
+      root.dataset.wallpaper = t.dark ? 'dark' : 'light'
+      root.style.setProperty('--wallpaper', `url("${wallpaper}")`)
+      root.style.setProperty('--wp-dim', String(settings.wallpaperDim))
+      root.style.setProperty('--wp-blur', `${settings.wallpaperBlur}px`)
+      root.style.setProperty('--wp-tint', t.bg)
+    } else {
+      delete root.dataset.wallpaper
+      root.style.removeProperty('--wallpaper')
+    }
+    if (settings.accent) root.style.setProperty('--accent', settings.accent)
+    else root.style.removeProperty('--accent')
+  }, [settings.theme, settings.wallpaperOn, settings.wallpaperDim, settings.wallpaperBlur, settings.accent, wallpaper])
   useEffect(() => {
     const t = themeOf(settings.theme)
     const root = document.documentElement

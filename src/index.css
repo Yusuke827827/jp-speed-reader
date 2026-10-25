@@ -1244,3 +1244,151 @@ textarea {
   line-height: 1.8;
   color: var(--muted);
 }
+
+/* ---------- 追加の配色（桜・森・海）: 画像を使わず、グラデーションと点の模様で描く ---------- */
+
+:root {
+  /* 桜の花びらのような淡い点（自作の模様） */
+  --petals: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280'%3E%3Cg fill='%23e8a3b5'%3E%3Cellipse cx='40' cy='60' rx='5' ry='3' transform='rotate(30 40 60)' opacity='.45'/%3E%3Cellipse cx='190' cy='30' rx='4' ry='2.5' transform='rotate(-20 190 30)' opacity='.35'/%3E%3Cellipse cx='120' cy='150' rx='6' ry='3.5' transform='rotate(60 120 150)' opacity='.4'/%3E%3Cellipse cx='240' cy='200' rx='4' ry='2.5' transform='rotate(10 240 200)' opacity='.3'/%3E%3Cellipse cx='70' cy='240' rx='5' ry='3' transform='rotate(-40 70 240)' opacity='.35'/%3E%3C/g%3E%3C/svg%3E");
+  --art-sakura: var(--petals), radial-gradient(ellipse at 30% 0%, #fdf3f5 0%, #f7e3e8 55%, #efd2da 100%);
+  --art-forest: var(--noise), radial-gradient(ellipse at 50% -10%, #2c5a3f 0%, #163527 45%, #0b1a13 100%);
+  --art-ocean: var(--noise), linear-gradient(180deg, #0d4a6b 0%, #0a3350 45%, #061b2d 100%);
+}
+
+.bg-sakura,
+:root[data-theme='sakura'] body {
+  background: var(--art-sakura);
+  background-color: #f7e9ec;
+}
+
+.bg-forest,
+:root[data-theme='forest'] body {
+  background: var(--art-forest);
+  background-color: #10201a;
+}
+
+.bg-ocean,
+:root[data-theme='ocean'] body {
+  background: var(--art-ocean);
+  background-color: #08243a;
+}
+
+:root[data-theme='sakura'] {
+  color-scheme: light;
+  --text: #2a1d21;
+  --muted: #7a5b64;
+  --line: rgba(120, 50, 70, 0.16);
+  --surface: rgba(255, 248, 250, 0.62);
+  --surface-2: rgba(150, 60, 90, 0.07);
+  --accent: #c2456b;
+}
+
+:root[data-theme='forest'],
+:root[data-theme='ocean'] {
+  color-scheme: dark;
+  --text: #e9f0ec;
+  --muted: #9fb3aa;
+  --line: rgba(255, 255, 255, 0.12);
+  --surface: rgba(12, 28, 22, 0.55);
+  --surface-2: rgba(255, 255, 255, 0.08);
+  --shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
+  --accent: #8fc96f;
+  --accent-text: #0d1a10;
+}
+
+:root[data-theme='ocean'] {
+  --surface: rgba(6, 26, 44, 0.55);
+  --muted: #9cb8c8;
+  --accent: #5fd0e0;
+  --accent-text: #052030;
+}
+
+:root[data-theme='sakura'] .sheet,
+:root[data-theme='sakura'] .dialog {
+  --bg-solid: #fbf1f3;
+}
+
+:root[data-theme='forest'] .sheet,
+:root[data-theme='forest'] .dialog {
+  --bg-solid: #13261d;
+}
+
+:root[data-theme='ocean'] .sheet,
+:root[data-theme='ocean'] .dialog {
+  --bg-solid: #0a2638;
+}
+
+/* ---------- 自分の写真の壁紙 ---------- */
+
+/* 写真を画面全体に敷き、その上に配色の地の色を、設定した濃さで重ねる（文字を読みやすくする） */
+:root[data-wallpaper] body::before,
+:root[data-wallpaper] body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+:root[data-wallpaper] body::before {
+  background: var(--wallpaper) center / cover no-repeat;
+  filter: blur(var(--wp-blur, 0px));
+  transform: scale(1.06); /* ぼかしで縁が白く抜けないよう少し広げる */
+}
+
+:root[data-wallpaper] body::after {
+  background: var(--wp-tint, #000);
+  opacity: var(--wp-dim, 0.5);
+}
+
+:root[data-wallpaper] body {
+  background: transparent;
+}
+
+:root[data-wallpaper='light'] {
+  --surface: rgba(255, 255, 255, 0.6);
+}
+
+:root[data-wallpaper='dark'] {
+  --surface: rgba(16, 18, 26, 0.55);
+}
+
+:root[data-wallpaper] .card,
+:root[data-wallpaper] .dropzone {
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+/* 読書画面は自前の背景を持つので、壁紙のときは透明にして下の写真を見せる */
+.reader.has-wallpaper {
+  background: transparent;
+}
+
+.reader.has-wallpaper .word {
+  text-shadow: 0 0 14px var(--r-bg), 0 0 4px var(--r-bg);
+}
+
+.wallpaper-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: center / cover no-repeat;
+  border: 1px solid var(--line);
+}
+
+/* 壁紙のときも、設定のシートとダイアログはほぼ不透明にして、後ろの本文が透けないようにする */
+:root[data-wallpaper='light'] .sheet,
+:root[data-wallpaper='light'] .dialog,
+:root[data-wallpaper='light'] .reader .sheet {
+  background: rgba(251, 250, 247, 0.96);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+:root[data-wallpaper='dark'] .sheet,
+:root[data-wallpaper='dark'] .dialog,
+:root[data-wallpaper='dark'] .reader .sheet {
+  background: rgba(22, 24, 31, 0.96);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}

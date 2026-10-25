@@ -467,12 +467,12 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
 
   return (
     <div
-      className={`reader bg-${theme.id}${theme.art ? ' art' : ''}${theme.dark ? ' dark' : ''}${playing ? ' playing' : ''}`}
+      className={`reader bg-${theme.id}${theme.art || settings.wallpaperOn ? ' art' : ''}${theme.dark ? ' dark' : ''}${settings.wallpaperOn ? ' has-wallpaper' : ''}${playing ? ' playing' : ''}`}
       style={
         {
           '--r-bg': theme.bg,
           '--r-fg': theme.fg,
-          '--r-accent': theme.accent,
+          '--r-accent': settings.accent || theme.accent,
         } as React.CSSProperties
       }
     >
@@ -907,6 +907,23 @@ function QuickSettings({ onClose, chunks, latin }: { onClose: () => void; chunks
             <span>{s.fontSize}px</span>
           </div>
           <input type="range" min={20} max={120} step={2} value={s.fontSize} onChange={(e) => update({ fontSize: Number(e.target.value) })} aria-label={t('文字サイズ')} />
+        </div>
+
+        <div className="field">
+          <div className="label">{t('画面の言語')}</div>
+          <div className="segmented" role="group">
+            {(
+              [
+                ['auto', t('自動（端末の言語）')],
+                ['ja', t('日本語')],
+                ['en', 'English'],
+              ] as const
+            ).map(([v, l]) => (
+              <button key={v} aria-pressed={s.uiLang === v} onClick={() => update({ uiLang: v })}>
+                {l}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="field">

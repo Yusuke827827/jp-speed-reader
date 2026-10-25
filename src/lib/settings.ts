@@ -3,7 +3,7 @@ import { getKV, setKV } from './db'
 import { detectLang, setUiLang } from './i18n'
 import type { ChunkMode } from './segment'
 
-export type Theme = 'paper' | 'light' | 'sepia' | 'gray' | 'dark' | 'black' | 'night' | 'washi' | 'aurora' | 'parchment'
+export type Theme = 'paper' | 'light' | 'sepia' | 'gray' | 'dark' | 'black' | 'night' | 'washi' | 'aurora' | 'parchment' | 'sakura' | 'forest' | 'ocean'
 export type PersonLabel = 'off' | 'chapter3' | 'first3' | 'always'
 export type IllustMode = 'pause' | 'show' | 'skip'
 export type FontFamily = 'mincho' | 'gothic'
@@ -45,6 +45,14 @@ export interface Settings {
   skipReferences: boolean
   /** 画面の言語。auto は端末の言語に合わせる */
   uiLang: 'auto' | 'ja' | 'en'
+  /** 自分の写真の壁紙を使う（写真そのものは wallpaper.ts で別に保存する） */
+  wallpaperOn: boolean
+  /** 壁紙の上に重ねる地の色の濃さ（0〜0.9）。大きいほど文字が読みやすい */
+  wallpaperDim: number
+  /** 壁紙のぼかし（px） */
+  wallpaperBlur: number
+  /** 強調色（空なら配色ごとの色） */
+  accent: string
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -70,6 +78,10 @@ export const DEFAULT_SETTINGS: Settings = {
   illustSeconds: 4,
   skipReferences: true,
   uiLang: 'auto',
+  wallpaperOn: false,
+  wallpaperDim: 0.55,
+  wallpaperBlur: 4,
+  accent: '',
 }
 
 export interface ThemeDef {
@@ -90,6 +102,9 @@ export const THEMES: ThemeDef[] = [
   { id: 'parchment', label: '羊皮紙', bg: '#e8d6a8', fg: '#3a2a16', accent: '#8a3b1c', dark: false, art: true },
   { id: 'night', label: '夜空', bg: '#0b1430', fg: '#f1ece2', accent: '#f0b95a', dark: true, art: true },
   { id: 'aurora', label: 'オーロラ', bg: '#07080d', fg: '#eceaf6', accent: '#a7b8ff', dark: true, art: true },
+  { id: 'sakura', label: '桜', bg: '#f7e9ec', fg: '#2a1d21', accent: '#c2456b', dark: false, art: true },
+  { id: 'forest', label: '森', bg: '#10201a', fg: '#e8efe6', accent: '#9bd17a', dark: true, art: true },
+  { id: 'ocean', label: '海', bg: '#08243a', fg: '#e6f1f7', accent: '#5fd0e0', dark: true, art: true },
   { id: 'light', label: '白', bg: '#fbfaf7', fg: '#1b1b1b', accent: '#b5482f', dark: false },
   { id: 'sepia', label: 'セピア', bg: '#f1e7d0', fg: '#3b2f1e', accent: '#b5482f', dark: false },
   { id: 'gray', label: 'グレー', bg: '#3a3d42', fg: '#e8e6e1', accent: '#e07a5f', dark: true },
@@ -143,3 +158,6 @@ export function useSettings() {
   }, [])
   return [settings, update] as const
 }
+
+/** 選べる強調色（空は配色ごとの色） */
+export const ACCENTS = ['', '#b5482f', '#c2456b', '#d98a1c', '#2f8f5b', '#2f6f8f', '#5b5bd6', '#8a4fbf']
