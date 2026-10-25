@@ -11,7 +11,8 @@ import history from './history'
 import lib from './lib'
 import help from './help'
 import customize from './customize'
+import notes from './notes'
 
-const en: Record<string, string> = { ...common, ...library, ...importer, ...ocr, ...reader, ...pdfviewer, ...settings, ...history, ...lib, ...help, ...customize }
+const en: Record<string, string> = { ...common, ...library, ...importer, ...ocr, ...reader, ...pdfviewer, ...settings, ...history, ...lib, ...help, ...customize, ...notes }
 
 export default en

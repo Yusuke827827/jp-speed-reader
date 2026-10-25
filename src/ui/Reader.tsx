@@ -10,6 +10,8 @@ import { buildSchedule, durationOf, remainingMs, SPEED_PRESETS, CPM_MAX, CPM_MIN
 import { useBook, type LoadedBook } from '../lib/useBook'
 import { ConfirmDialog, ErrorBox, formatDuration, go, Icon, toast } from './common'
 import { RichText } from './rich'
+import { NotesSheet } from './NotesSheet'
+import { marksInParagraph, useNotes, type Note } from '../lib/notes'
 import { IllustView, loadIllust, releaseIllusts } from './IllustView'
 import { t } from '../lib/i18n'
 
@@ -346,7 +348,8 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
       : update({ cpm: Math.max(CPM_MIN, Math.min(CPM_MAX, Math.round(settings.cpm + dir * 50))) })
 
   // ---------- 操作 ----------
-  const [sheet, setSheet] = useState<null | 'settings' | 'toc' | 'people'>(null)
+  const [sheet, setSheet] = useState<null | 'settings' | 'toc' | 'people' | 'notes'>(null)
+  const [notes, saveNotes] = useNotes(meta.id, text)
   const openPdfView = () => {
     if (playing) pause()
     persist().then(() => go(`/pdf/${meta.id}?page=${pageAt(text, posRef.current) + 1}&from=read`))
@@ -406,6 +409,10 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
           if (sheet) setSheet(null)
           else if (playing) pause()
           else go('/')
+          break
+        case 'm':
+          if (playing) pause()
+          setSheet('notes')
           break
         case 'p':
           if (isPdf) openPdfView()
@@ -490,6 +497,17 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
         <button className="icon-btn" aria-label={t('目次・ページ移動')} title={t('目次・ページ移動')} onClick={() => setSheet('toc')}>
           <Icon name="list" />
         </button>
+        <button
+          className="icon-btn"
+          aria-label={t('栞・マーカー・メモ')}
+          title={t('栞・マーカー・メモ (M)')}
+          onClick={() => {
+            if (playing) pause()
+            setSheet('notes')
+          }}
+        >
+          <Icon name="bookmark" />
+        </button>
         <button className="icon-btn" aria-label={t('人物')} title={t('人物の登録と色分け')} onClick={() => setSheet('people')}>
           <Icon name="people" />
         </button>
@@ -511,7 +529,7 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
             chunk && <Word chunk={chunk} para={text.paragraphs[chunk.para]} names={rangesOf(chunk.para)} labels={labels.get(index)} settings={settings} />
           )}
         </div>
-        {showPanel && chunk && <TextPanel book={text} chunks={chunks} index={index} rangesOf={rangesOf} settings={settings} onPick={setIndex} />}
+        {showPanel && chunk && <TextPanel book={text} chunks={chunks} index={index} rangesOf={rangesOf} settings={settings} notes={notes} onPick={setIndex} />}
       </div>
 
       <div className="r-bottom">
@@ -588,6 +606,16 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
       </div>
 
       {sheet === 'settings' && <QuickSettings onClose={() => setSheet(null)} chunks={chunks} latin={latin} />}
+      {sheet === 'notes' && (
+        <NotesSheet
+          book={text}
+          pos={posRef.current}
+          notes={notes}
+          onChange={saveNotes}
+          onJump={(p) => moveTo(chunkIndexAt(chunks, p))}
+          onClose={() => setSheet(null)}
+        />
+      )}
       {sheet === 'people' && <PeopleSheet book={book} people={people} onChange={savePeople} onClose={() => setSheet(null)} />}
       {sheet === 'toc' && (
         <TocSheet
@@ -723,6 +751,7 @@ function TextPanel(props: {
   index: number
   rangesOf: (pi: number) => PersonRange[]
   settings: Settings
+  notes: Note[]
   onPick: (i: number) => void
 }) {
   const { book, chunks, index } = props
@@ -750,6 +779,7 @@ function TextPanel(props: {
   for (let pi = from; pi < to; pi++) {
     const para = book.paragraphs[pi]
     const names = props.rangesOf(pi)
+    const marks = marksInParagraph(props.notes, pi)
     const spans: ReactNode[] = []
     let prevEnd = -1
     while (i < chunks.length && chunks[i].para === pi) {
@@ -768,8 +798,12 @@ function TextPanel(props: {
         i++
         continue
       }
+      // マーカーを引いた文は色を付け、印の始まりに番号を出す
+      const mark = marks.find((m) => m.start < c.end && c.start < m.end)
+      if (mark && mark.start >= c.start && mark.start < c.end) spans.push(<sup key={`n${mark.id}`} className={`note-badge mark-${mark.color}`}>{mark.n}</sup>)
+      const cls = [k === index ? 'cur' : '', mark ? `mark-${mark.color}` : ''].filter(Boolean).join(' ') || undefined
       spans.push(
-        <span key={k} ref={k === index ? currentRef : undefined} className={k === index ? 'cur' : undefined} onClick={() => props.onPick(k)}>
+        <span key={k} ref={k === index ? currentRef : undefined} className={cls} onClick={() => props.onPick(k)}>
           <RichText para={para} start={c.start} end={c.end} names={names} opts={{ ruby: true, colors: props.settings.personColors }} />
         </span>,
       )
