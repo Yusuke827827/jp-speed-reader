@@ -9,7 +9,8 @@ import pdfviewer from './pdfviewer'
 import settings from './settings'
 import history from './history'
 import lib from './lib'
+import help from './help'
 
-const en: Record<string, string> = { ...common, ...library, ...importer, ...ocr, ...reader, ...pdfviewer, ...settings, ...history, ...lib }
+const en: Record<string, string> = { ...common, ...library, ...importer, ...ocr, ...reader, ...pdfviewer, ...settings, ...history, ...lib, ...help }
 
 export default en

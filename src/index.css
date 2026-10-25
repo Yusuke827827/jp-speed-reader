@@ -1219,3 +1219,28 @@ textarea {
 .word .trim-end {
   margin-inline-end: -0.5em;
 }
+
+/* ---------- 使い方 ---------- */
+
+.help {
+  padding: 4px 16px;
+}
+
+.help-topic + .help-topic {
+  border-top: 1px solid var(--line);
+}
+
+.help-topic summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 12px 0;
+  list-style-position: inside;
+}
+
+.help-topic ul {
+  margin: 0 0 12px;
+  padding-left: 20px;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--muted);
+}

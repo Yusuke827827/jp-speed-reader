@@ -1,3 +1,4 @@
+import { HelpSection } from './HelpSection'
 import { useEffect, useState } from 'react'
 import { requestPersist, storageInfo } from '../lib/db'
 import { CHUNK_MODES } from '../lib/segment'
@@ -46,6 +47,9 @@ export function SettingsScreen() {
           </div>
         </div>
       </div>
+
+      <div className="section-title">{t('使い方')}</div>
+      <HelpSection />
 
       <div className="section-title">{t('速度')}</div>
       <div className="card stack">
