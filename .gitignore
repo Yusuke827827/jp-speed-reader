@@ -25,6 +25,9 @@ dist-ssr
 public/pdfjs
 public/tesseract
 
+# 帳簿・領収書・契約書など、公開してはいけない事務書類の置き場（このリポジトリは公開）
+/private/
+
 # XcodeGen で作る Xcode のプロジェクトと、その Info.plist
 ios/FlowaApp/Flowa.xcodeproj/
 ios/FlowaApp/Info.plist

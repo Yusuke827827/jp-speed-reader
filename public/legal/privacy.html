@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="index,follow" />
+    <title>Flowa プライバシーポリシー</title>
+    <style>
+      :root { --bg: #f7f5ef; --fg: #1d1f24; --muted: #5b6070; --line: #d9d5c8; --todo: #fff1a8; }
+      @media (prefers-color-scheme: dark) {
+        :root { --bg: #1d1f24; --fg: #e8e6df; --muted: #a3a8b5; --line: #3a3e48; --todo: #6b5a00; }
+      }
+      body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.85 system-ui, -apple-system, 'Hiragino Sans', 'Yu Gothic', sans-serif; }
+      main { max-width: 42rem; margin: 0 auto; padding: 2rem 16px 4rem; }
+      h1 { font-size: 1.5rem; line-height: 1.4; margin: 0 0 .5rem; }
+      h2 { font-size: 1.1rem; margin: 2.2rem 0 .4rem; padding-bottom: .25rem; border-bottom: 1px solid var(--line); }
+      p, ul { margin: .6rem 0; }
+      li { margin: .25rem 0; }
+      .meta { color: var(--muted); font-size: .9rem; }
+      .todo { background: var(--todo); color: inherit; padding: 0 .2em; border-radius: 3px; }
+      nav { margin-top: 3rem; font-size: .9rem; }
+      a { color: inherit; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Flowa プライバシーポリシー</h1>
+      <p class="meta">制定日：<mark class="todo">【施行日】</mark>　最終改定日：<mark class="todo">【施行日】</mark></p>
+
+      <p>
+        <mark class="todo">【運営者名】</mark>（以下「運営者」）は、読書アプリ「Flowa」（Web 版および iOS 版。以下「本アプリ」）における、利用者の情報の取り扱いを、次のとおり定めます。
+      </p>
+
+      <h2>1. 要点</h2>
+      <ul>
+        <li>本アプリにはアカウント登録がなく、運営者は、利用者の氏名・メールアドレスなどの個人情報を本アプリを通じて収集しません。</li>
+        <li>取り込んだ PDF・テキスト、読書位置、しおり、設定などは、すべて利用者の端末の中に保存されます。運営者のサーバーには送られません。</li>
+        <li>アクセス解析、広告の配信、利用状況の収集は行いません。</li>
+      </ul>
+
+      <h2>2. 端末内に保存される情報</h2>
+      <p>本アプリは、次の情報を利用者の端末内にのみ保存します。</p>
+      <ul>
+        <li>本の情報（題名、著者、表紙の画像）</li>
+        <li>取り込んだ PDF・テキストのファイルと、そこから取り出した本文</li>
+        <li>文字認識（OCR）の結果と、利用者が手で直した本文</li>
+        <li>読書位置、しおり、読書の記録（時間、文字数、速度）</li>
+        <li>利用者が登録した人物名と説明</li>
+        <li>表示や速度などの設定</li>
+      </ul>
+      <p>
+        保存先は、Web 版ではブラウザの保存領域（IndexedDB など）、iOS 版ではアプリ専用の領域です。運営者はこれらの情報を見ることができず、利用者が消した情報やブラウザが自動で消した情報を復元することもできません。
+      </p>
+      <p>
+        保存した情報は、本棚から本を削除する、設定画面の保存データの操作を使う、ブラウザのサイトデータを消去する、iOS 版のアプリを削除する、のいずれかで消せます。
+      </p>
+
+      <h2>3. 外部との通信</h2>
+      <p>本アプリが外部と通信するのは、次の場合だけです。いずれの場合も、取り込んだ本文や画像は送信しません。</p>
+      <ul>
+        <li>
+          <strong>Web 版の配信：</strong>Web 版は GitHub Pages から配信されます。利用者がアクセスすると、配信元の GitHub 側で、IP アドレスなどのアクセス情報が記録・処理されることがあります。運営者は、これらを利用者を特定する目的では利用しません。
+        </li>
+        <li>
+          <strong>OCR の学習データの取得（Web 版）：</strong>OCR の機能を初めて使うとき、日本語・英語の学習データを CDN（jsDelivr）から取得します。このとき、ファイルの要求に伴って、IP アドレスやブラウザの種類などが CDN の事業者に届くことがあります。取得したデータは端末内に保存され、OCR を使わなければ通信しません。
+        </li>
+        <li>
+          <strong>サンプル文書：</strong>「サンプルで試す」を選ぶと、本アプリと同じ配信元からサンプルのファイルを取得します。
+        </li>
+      </ul>
+      <p>現在の iOS 版は、外部のサーバーとの通信を行いません。</p>
+
+      <h2>4. 収集・利用しないもの</h2>
+      <ul>
+        <li>アカウント情報、電話番号、住所、位置情報、連絡先、写真ライブラリ</li>
+        <li>広告 ID、広告配信の仕組み、アクセス解析ツール</li>
+        <li>利用状況やクラッシュ情報の外部への送信</li>
+        <li>利用者を追跡する目的の Cookie</li>
+      </ul>
+
+      <h2>5. 第三者への提供</h2>
+      <p>運営者は、利用者の情報を取得していないため、第三者に提供することもありません。</p>
+
+      <h2>6. 取り込む文書について</h2>
+      <p>
+        取り込む文書に他人の個人情報や著作物が含まれる場合でも、その文書は利用者の端末の中だけで処理されます。文書の取り扱いは、利用規約の定めに従ってください。
+      </p>
+
+      <h2>7. 安全管理</h2>
+      <p>
+        端末内の情報の安全は、利用者の端末の管理（画面ロック、OS の更新など）に左右されます。端末を他の人と共有する場合は、読み終えた本を削除するか、ブラウザのデータを消去してください。
+      </p>
+
+      <h2>8. 開示・訂正・削除の請求</h2>
+      <p>
+        運営者は、利用者の個人情報を保有していないため、通常は開示・訂正・削除の対象となる情報がありません。ご不明な点は、下記の連絡先にお問い合わせください。
+      </p>
+
+      <h2>9. 改定</h2>
+      <p>
+        本ポリシーは、法令の変更や本アプリの変更に合わせて改定することがあります。広告・アクセス解析・課金の仕組みなど、情報の取り扱いが変わる機能を加える場合は、その機能を提供する前に、本ポリシーを改定して、このページで知らせます。
+      </p>
+
+      <h2>10. 連絡先</h2>
+      <p>
+        運営者：<mark class="todo">【運営者名】</mark><br />
+        メール：<mark class="todo">【連絡先メールアドレス】</mark>
+      </p>
+
+      <nav><a href="terms.html">利用規約</a></nav>
+    </main>
+  </body>
+</html>

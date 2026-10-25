@@ -31,6 +31,8 @@ export default defineConfig({
         globPatterns: ['**/*.{js,mjs,css,html,svg,png,woff2}', 'pdfjs/**/*.{bcmap,pfb,ttf,wasm}'],
         globIgnores: ['tesseract/**'],
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
+        // 規約とプライバシーポリシー（public/legal/）は、SPA の index.html に置き換えない
+        navigateFallbackDenylist: [/\/legal\//],
         runtimeCaching: [
           {
             // OCR エンジン（数 MB）は、初めて OCR を使ったときにキャッシュする
