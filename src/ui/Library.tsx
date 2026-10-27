@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
-import { deleteBook, listBooks, listProgress, type BookMeta, type Progress } from '../lib/db'
+import { deleteBook, listBooks, listProgress, listSessions, type BookMeta, type Progress, type Session } from '../lib/db'
+import { GoalChip } from './GoalCard'
 import { ConfirmDialog, ErrorBox, formatDate, formatDuration, go, Icon, toast } from './common'
 import { t } from '../lib/i18n'
 
 export function Library() {
   const [books, setBooks] = useState<BookMeta[] | null>(null)
+  const [sessions, setSessions] = useState<Session[]>([])
   const [progress, setProgress] = useState<Map<string, Progress>>(new Map())
   const [error, setError] = useState<string | null>(null)
   const [toDelete, setToDelete] = useState<BookMeta | null>(null)
@@ -12,7 +14,8 @@ export function Library() {
 
   const load = async () => {
     try {
-      const [bs, ps] = await Promise.all([listBooks(), listProgress()])
+      const [bs, ps, ss] = await Promise.all([listBooks(), listProgress(), listSessions()])
+      setSessions(ss)
       const pm = new Map(ps.map((p) => [p.bookId, p]))
       bs.sort((a, b) => (pm.get(b.id)?.lastReadAt ?? b.createdAt) - (pm.get(a.id)?.lastReadAt ?? a.createdAt))
       setBooks(bs)
@@ -53,6 +56,8 @@ export function Library() {
           <Icon name="plus" /> {t('PDFを追加')}
         </button>
       </header>
+
+      <GoalChip sessions={sessions} />
 
       {error && (
         <ErrorBox title={t('本棚を読み込めませんでした')}>

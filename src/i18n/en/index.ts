@@ -12,7 +12,8 @@ import lib from './lib'
 import help from './help'
 import customize from './customize'
 import notes from './notes'
+import goals from './goals'
 
-const en: Record<string, string> = { ...common, ...library, ...importer, ...ocr, ...reader, ...pdfviewer, ...settings, ...history, ...lib, ...help, ...customize, ...notes }
+const en: Record<string, string> = { ...common, ...library, ...importer, ...ocr, ...reader, ...pdfviewer, ...settings, ...history, ...lib, ...help, ...customize, ...notes, ...goals }
 
 export default en

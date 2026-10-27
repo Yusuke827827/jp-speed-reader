@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { listSessions, type Session } from '../lib/db'
 import { t } from '../lib/i18n'
 import { formatDate, formatDuration, go, Icon } from './common'
+import { GoalCard } from './GoalCard'
 
 export function History() {
   const [sessions, setSessions] = useState<Session[] | null>(null)
@@ -39,6 +40,8 @@ export function History() {
         </button>
         <h1>{t('読書履歴')}</h1>
       </header>
+
+      {sessions && <GoalCard sessions={sessions} />}
 
       <div className="stats">
         <div className="card stat">

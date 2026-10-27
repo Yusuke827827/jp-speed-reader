@@ -53,6 +53,10 @@ export interface Settings {
   wallpaperBlur: number
   /** 強調色（空なら配色ごとの色） */
   accent: string
+  /** 1 日の読書の目標（時間か字数） */
+  goalKind: 'minutes' | 'chars'
+  goalMinutes: number
+  goalChars: number
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -82,6 +86,9 @@ export const DEFAULT_SETTINGS: Settings = {
   wallpaperDim: 0.55,
   wallpaperBlur: 4,
   accent: '',
+  goalKind: 'minutes',
+  goalMinutes: 15,
+  goalChars: 5000,
 }
 
 export interface ThemeDef {

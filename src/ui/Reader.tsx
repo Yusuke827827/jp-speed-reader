@@ -11,6 +11,8 @@ import { useBook, type LoadedBook } from '../lib/useBook'
 import { ConfirmDialog, ErrorBox, formatDuration, go, Icon, toast } from './common'
 import { RichText } from './rich'
 import { NotesSheet } from './NotesSheet'
+import { achieved, dailyTotals, dayKey } from '../lib/goals'
+import { listSessions } from '../lib/db'
 import { marksInParagraph, useNotes, type Note } from '../lib/notes'
 import { IllustView, loadIllust, releaseIllusts } from './IllustView'
 import { t } from '../lib/i18n'
@@ -199,9 +201,18 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
       fromPercent: s.startPct,
       toPercent: percentAt(text, posRef.current),
       cpm: ms > 0 ? Math.round((s.chars / ms) * 60000) : 0,
-    }).catch(() => {})
+    })
+      .then(async () => {
+        // 今回の読書で今日の目標に届いたら知らせる
+        const goal = { kind: settings.goalKind, amount: settings.goalKind === 'minutes' ? settings.goalMinutes : settings.goalChars }
+        const all = await listSessions()
+        const today = dailyTotals(all).get(dayKey(now))
+        const before = today ? { ms: today.ms - ms, chars: today.chars - s.chars } : undefined
+        if (achieved(today, goal) && !achieved(before, goal)) toast(t('今日の目標を達成しました'))
+      })
+      .catch(() => {})
     if (ms > 2000) setMeasured(Math.round((s.chars / ms) * 60000))
-  }, [meta.id, meta.title, text])
+  }, [meta.id, meta.title, text, settings.goalKind, settings.goalMinutes, settings.goalChars])
 
   // ---------- 再生タイマー ----------
   // setTimeout を毎回「予定時刻」から逆算してかけ直し、遅れが積み重ならないようにする
