@@ -6,10 +6,16 @@ import FlowaKit
 
 struct HistoryView: View {
     let store: BookStore
+    @Environment(ProStore.self) private var pro
     @Environment(\.dismiss) private var dismiss
+    @State private var showPro = false
 
     var body: some View {
-        let stats = HistoryStats(store.sessions)
+        // 無料版は直近 7 日の記録だけを出す（古い記録も残っているので、Pro にすると全部見られる）
+        let sessions = ProLimits.visibleSessions(store.sessions, isPro: pro.isPro)
+        let hidden = store.sessions.count - sessions.count
+        let dayCount = pro.isPro ? 14 : ProLimits.freeHistoryDays
+        let stats = HistoryStats(sessions, days: dayCount)
         List {
             Section {
                 HStack(spacing: 8) {
@@ -20,24 +26,31 @@ struct HistoryView: View {
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color.clear)
             }
-            Section(L("直近14日")) {
+            Section(L("直近\(dayCount)日")) {
                 Chart(stats.days, id: \.start) { d in
                     BarMark(x: .value(L("日付"), d.start, unit: .day), y: .value(L("分"), d.ms / 60000))
                         .foregroundStyle(.tint)
                 }
                 .chartXAxis {
-                    AxisMarks(values: .stride(by: .day, count: 2)) { _ in
+                    AxisMarks(values: .stride(by: .day, count: dayCount > 7 ? 2 : 1)) { _ in
                         AxisValueLabel(format: .dateTime.month(.defaultDigits).day(), centered: true)
                     }
                 }
                 .frame(height: 160)
-                .accessibilityLabel(L("直近14日の読書時間"))
+                .accessibilityLabel(L("直近\(dayCount)日の読書時間"))
+            }
+            if hidden > 0 {
+                Section {
+                    Button(L("Flowa Pro ですべての記録を見る")) { showPro = true }
+                } footer: {
+                    Text(L("無料版では直近 \(ProLimits.freeHistoryDays) 日の記録を表示します。それより前の \(hidden) 件の記録も消えずに残っています。"))
+                }
             }
             Section(L("記録")) {
                 if store.sessions.isEmpty {
                     Text(L("まだ記録がありません。高速読書で再生すると、ここに残ります。")).foregroundStyle(.secondary)
                 }
-                ForEach(store.sessions.prefix(200), id: \.self) { s in
+                ForEach(sessions.prefix(200), id: \.self) { s in
                     VStack(alignment: .leading, spacing: 4) {
                         Text(s.title).font(.headline).lineLimit(1)
                         HStack(spacing: 12) {
@@ -54,6 +67,9 @@ struct HistoryView: View {
             }
         }
         .navigationTitle(L("読書履歴"))
+        .sheet(isPresented: $showPro) {
+            NavigationStack { ProView() }
+        }
         .toolbar {
             ToolbarItem(placement: .confirmationAction) { Button(L("閉じる")) { dismiss() } }
         }

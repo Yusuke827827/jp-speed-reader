@@ -1,0 +1,62 @@
+// 無料版の上限（ProLimits）と、購入済みかの記憶（ProStore）のテスト。
+
+import Foundation
+import XCTest
+@testable import FlowaKit
+
+private func book(_ kind: BookMeta.Kind, _ file: String) -> BookMeta {
+    BookMeta(id: UUID().uuidString, kind: kind, title: file, fileName: file, pageCount: 1)
+}
+
+final class ProTests: XCTestCase {
+    let samples: Set<String> = ["sample-vertical.pdf", "sample-english-paper.pdf", "sample-aozora.txt"]
+
+    /// 無料版は PDF 3 冊まで。テキストとサンプルは数えない
+    func testPdfLimit() {
+        var books = [book(.pdf, "sample-vertical.pdf"), book(.pdf, "sample-english-paper.pdf"), book(.text, "sample-aozora.txt"), book(.text, "a.txt")]
+        XCTAssertEqual(ProLimits.pdfCount(books, samples: samples), 0)
+        for name in ["1.pdf", "2.pdf"] {
+            books.append(book(.pdf, name))
+            XCTAssertTrue(ProLimits.canAddPDF(books: books, samples: samples, isPro: false))
+        }
+        books.append(book(.pdf, "3.pdf"))
+        XCTAssertEqual(ProLimits.pdfCount(books, samples: samples), ProLimits.freePDFBooks)
+        XCTAssertFalse(ProLimits.canAddPDF(books: books, samples: samples, isPro: false))
+        XCTAssertTrue(ProLimits.canAddPDF(books: books, samples: samples, isPro: true))
+    }
+
+    func testThemes() {
+        for id in ["auto", "paper", "light", "sepia", "gray", "dark", "black"] {
+            XCTAssertTrue(ProLimits.themeAllowed(id, isPro: false), id)
+        }
+        for id in ["washi", "parchment", "night", "aurora"] {
+            XCTAssertFalse(ProLimits.themeAllowed(id, isPro: false), id)
+            XCTAssertTrue(ProLimits.themeAllowed(id, isPro: true), id)
+        }
+    }
+
+    /// 無料版の読書履歴は、今日を含む直近 7 日の記録だけ
+    func testHistoryDays() {
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone(identifier: "Asia/Tokyo")!
+        let now = cal.date(from: DateComponents(year: 2026, month: 10, day: 27, hour: 12))!
+        let sessions = [0, 6, 7, 30].map { daysAgo -> ReadingSession in
+            let d = cal.date(byAdding: .day, value: -daysAgo, to: cal.startOfDay(for: now))!
+            return ReadingSession(bookId: "b", title: "\(daysAgo)", start: d, end: d, ms: 1000, chars: 10, fromPercent: 0, toPercent: 1)
+        }
+        XCTAssertEqual(ProLimits.visibleSessions(sessions, isPro: false, now: now, calendar: cal).map(\.title), ["0", "6"])
+        XCTAssertEqual(ProLimits.visibleSessions(sessions, isPro: true, now: now, calendar: cal).count, 4)
+    }
+
+    /// 起動直後は前回の結果を使う。forcePro は記憶に関係なく Pro
+    @MainActor
+    func testStoreStartsFromCache() throws {
+        let name = "flowa-test-\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: name))
+        defer { defaults.removePersistentDomain(forName: name) }
+        XCTAssertFalse(ProStore(defaults: defaults).isPro)
+        XCTAssertTrue(ProStore(defaults: defaults, forcePro: true).isPro)
+        defaults.set(true, forKey: "flowa.isPro")
+        XCTAssertTrue(ProStore(defaults: defaults).isPro)
+    }
+}

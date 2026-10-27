@@ -69,6 +69,7 @@ jobs:
           }
           shoot library-ja ja
           shoot reader-ja ja -FlowaDemoOpen -FlowaDemoStep 12
+          shoot pro-ja ja -FlowaDemoPaywall
           xcrun simctl uninstall "$UDID" app.flowa.reader
           xcrun simctl install "$UDID" build/Build/Products/Debug-iphonesimulator/Flowa.app
           shoot library-en en

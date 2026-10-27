@@ -29,6 +29,7 @@ iOS 版は SwiftUI で作ります。中身は Swift パッケージ `ios/FlowaC
 | `FlowaCore/Sources/FlowaKit/ReaderSettings.swift` | 読み方の設定（端末に保存） | `src/lib/settings.ts` |
 | `FlowaCore/Sources/FlowaKit/ReadingHistory.swift` | 読書の記録と集計（合計・直近 14 日） | `src/lib/db.ts` の Session、`src/ui/History.tsx` |
 | `FlowaCore/Sources/FlowaKit/ReaderModel.swift` | 再生（予定時刻から逆算して待つ）、前後の移動、速度、位置の保存 | `src/ui/Reader.tsx` の画面以外の部分 |
+| `FlowaCore/Sources/FlowaKit/ProLimits.swift`・`ProStore.swift` | Flowa Pro（買い切り）。無料版の上限（PDF 3 冊・Pro だけの配色）と、StoreKit 2 での購入・復元・購入済みかの確認 | — |
 | `FlowaCore/Sources/FlowaUI/*.swift` | 本棚・読書・設定の画面 | `src/ui/Library.tsx`・`Reader.tsx`・`SettingsScreen.tsx` |
 | `FlowaApp/project.yml`・`FlowaApp/Sources/FlowaApp.swift` | アプリ本体（XcodeGen でプロジェクトを作る） | — |
 | `FlowaCore/Tests/FlowaKitTests/*.swift` | サンプル PDF を PDFKit で読み、Web 版と同じページ本文になるか。取り込み・保存・再生の確認 | `public/samples/`・`fixtures/golden/` |
@@ -65,6 +66,21 @@ iOS 版は SwiftUI で作ります。中身は Swift パッケージ `ios/FlowaC
 4. TestFlight で人に配るときに Apple Developer Program（年 99 ドル）に加入する。
 
 `project.yml` を変えたら `xcodegen generate` をやり直してください（`Flowa.xcodeproj` はリポジトリに入れていません）。
+
+## Flowa Pro（アプリ内課金）
+
+無料版と Pro の分け方は [`docs/monetization.md`](../docs/monetization.md) のとおりです。今の iOS 版で Pro だけにしているのは次の 3 つです。
+
+- 本棚に置ける PDF は無料版で 3 冊まで（同梱のサンプルとテキストは数えない）。4 冊目を取り込もうとすると Pro の案内を出し、購入したらそのまま取り込む
+- 和紙・羊皮紙・夜空・オーロラの配色
+- 読書履歴のすべての記録。無料版は今日を含む直近 7 日の記録だけを出す（それより前の記録も消さずに残し、Pro にすると見られる）
+
+文字認識（OCR）・人物の色分けは、iOS 版に加えるときに無料版の上限（OCR は 1 冊 10 ページ）を付けます。
+
+- 商品 ID は `app.flowa.reader.pro`（非消耗型）。App Store Connect の「App 内課金」に同じ ID で登録する
+- Xcode から実行すると、App Store の代わりに `FlowaApp/Flowa.storekit` の商品で購入・復元・返金を試せる（「Debug → StoreKit → Manage Transactions」）
+- 購入済みかは起動のたびに App Store の記録（`Transaction.currentEntitlements`）で確かめ、通信できないときのために前回の結果も端末に残す
+- 画面写真の撮影（`-FlowaDemo`）では Pro として動かす。`-FlowaDemoPaywall` を付けると購入前の状態で Pro の案内を開く
 
 ## iOS 版でまだできないこと
 

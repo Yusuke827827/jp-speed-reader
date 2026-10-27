@@ -12,13 +12,37 @@ final class ImportJob {
     var done = 0
     var total = 0
     var error: String?
+    /// 無料版の上限で止めた取り込み。Pro にしたら resume で続ける
+    var held: Held?
 
-    /// 取り込みを始める。終わったら done を呼ぶ。removeAfter は、他のアプリから渡された一時ファイルを消すとき
-    func run(_ url: URL, store: BookStore, removeAfter: Bool = false, done: ((BookMeta) -> Void)? = nil) {
+    struct Held {
+        var url: URL
+        var removeAfter: Bool
+        var done: ((BookMeta) -> Void)?
+    }
+
+    /// 取り込みを始める。終わったら done を呼ぶ。removeAfter は、他のアプリから渡された一時ファイルを消すとき。
+    /// 無料版で PDF が上限に達していれば取り込まず、held に残す（画面は Pro の案内を出す）
+    func run(_ url: URL, store: BookStore, isPro: Bool, removeAfter: Bool = false, done: ((BookMeta) -> Void)? = nil) {
         guard !running else { return }
+        if url.pathExtension.lowercased() == "pdf", !ProLimits.canAddPDF(books: store.books, samples: Samples.nameSet, isPro: isPro) {
+            held = Held(url: url, removeAfter: removeAfter, done: done)
+            return
+        }
         Task {
             if let meta = await importNow(url, store: store) { done?(meta) }
             if removeAfter { try? FileManager.default.removeItem(at: url) }
+        }
+    }
+
+    /// Pro の案内を閉じたとき。Pro になっていれば止めた取り込みを続け、なっていなければやめる
+    func resume(store: BookStore, isPro: Bool) {
+        guard let h = held else { return }
+        held = nil
+        if isPro {
+            run(h.url, store: store, isPro: true, removeAfter: h.removeAfter, done: h.done)
+        } else if h.removeAfter {
+            try? FileManager.default.removeItem(at: h.url)
         }
     }
 
@@ -60,6 +84,7 @@ final class ImportJob {
 
 struct LibraryView: View {
     let store: BookStore
+    @Environment(ProStore.self) private var pro
     @Binding var settings: ReaderSettings
     let job: ImportJob
     @State private var importing = false
@@ -109,7 +134,7 @@ struct LibraryView: View {
             }
         }
         .fileImporter(isPresented: $importing, allowedContentTypes: [.pdf, .plainText]) { result in
-            if case let .success(url) = result { job.run(url, store: store) }
+            if case let .success(url) = result { job.run(url, store: store, isPro: pro.isPro) }
         }
         .overlay {
             if job.running {
