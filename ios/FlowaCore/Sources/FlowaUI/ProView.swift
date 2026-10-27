@@ -26,7 +26,8 @@ struct ProView: View {
             Section(L("Pro でできること")) {
                 Label(L("PDF を何冊でも本棚に置ける（無料版は \(ProLimits.freePDFBooks) 冊まで。サンプルは数えません）"), systemImage: "books.vertical")
                 Label(L("和紙・羊皮紙・夜空・オーロラの配色"), systemImage: "paintpalette")
-                Label(L("これから加える機能（画像だけの PDF の文字認識・人物の色分け・読書の履歴）もすべて使える"), systemImage: "sparkles")
+                Label(L("読書履歴のすべての記録（無料版は直近 \(ProLimits.freeHistoryDays) 日）"), systemImage: "chart.bar")
+                Label(L("これから加える機能（画像だけの PDF の文字認識・人物の色分け）もすべて使える"), systemImage: "sparkles")
             }
 
             Section {

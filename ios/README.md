@@ -27,6 +27,7 @@ iOS 版は SwiftUI で作ります。中身は Swift パッケージ `ios/FlowaC
 | `FlowaCore/Sources/FlowaKit/BookImporter.swift` | PDF・テキストの取り込み | `src/lib/importer.ts`（OCR・挿絵・文字化けの修復を除く） |
 | `FlowaCore/Sources/FlowaKit/BookStore.swift` | 本棚の保存（1 冊ごとのフォルダに情報・ページ本文・元のファイル）、読んでいた位置 | `src/lib/db.ts` |
 | `FlowaCore/Sources/FlowaKit/ReaderSettings.swift` | 読み方の設定（端末に保存） | `src/lib/settings.ts` |
+| `FlowaCore/Sources/FlowaKit/ReadingHistory.swift` | 読書の記録と集計（合計・直近 14 日） | `src/lib/db.ts` の Session、`src/ui/History.tsx` |
 | `FlowaCore/Sources/FlowaKit/ReaderModel.swift` | 再生（予定時刻から逆算して待つ）、前後の移動、速度、位置の保存 | `src/ui/Reader.tsx` の画面以外の部分 |
 | `FlowaCore/Sources/FlowaKit/ProLimits.swift`・`ProStore.swift` | Flowa Pro（買い切り）。無料版の上限（PDF 3 冊・Pro だけの配色）と、StoreKit 2 での購入・復元・購入済みかの確認 | — |
 | `FlowaCore/Sources/FlowaUI/*.swift` | 本棚・読書・設定の画面 | `src/ui/Library.tsx`・`Reader.tsx`・`SettingsScreen.tsx` |
@@ -68,12 +69,13 @@ iOS 版は SwiftUI で作ります。中身は Swift パッケージ `ios/FlowaC
 
 ## Flowa Pro（アプリ内課金）
 
-無料版と Pro の分け方は [`docs/monetization.md`](../docs/monetization.md) のとおりです。今の iOS 版で Pro だけにしているのは次の 2 つです。
+無料版と Pro の分け方は [`docs/monetization.md`](../docs/monetization.md) のとおりです。今の iOS 版で Pro だけにしているのは次の 3 つです。
 
 - 本棚に置ける PDF は無料版で 3 冊まで（同梱のサンプルとテキストは数えない）。4 冊目を取り込もうとすると Pro の案内を出し、購入したらそのまま取り込む
 - 和紙・羊皮紙・夜空・オーロラの配色
+- 読書履歴のすべての記録。無料版は今日を含む直近 7 日の記録だけを出す（それより前の記録も消さずに残し、Pro にすると見られる）
 
-文字認識（OCR）・人物の色分け・読書の履歴は、iOS 版に加えるときに無料版の上限（OCR は 1 冊 10 ページ、履歴は直近 7 日）を付けます。
+文字認識（OCR）・人物の色分けは、iOS 版に加えるときに無料版の上限（OCR は 1 冊 10 ページ）を付けます。
 
 - 商品 ID は `app.flowa.reader.pro`（非消耗型）。App Store Connect の「App 内課金」に同じ ID で登録する
 - Xcode から実行すると、App Store の代わりに `FlowaApp/Flowa.storekit` の商品で購入・復元・返金を試せる（「Debug → StoreKit → Manage Transactions」）
@@ -83,8 +85,8 @@ iOS 版は SwiftUI で作ります。中身は Swift パッケージ `ios/FlowaC
 ## iOS 版でまだできないこと
 
 - 画像だけのページの文字認識（OCR）。Web 版は Tesseract.js、iOS 版は Vision で作る予定
-- 挿絵の表示（今は高速読書で飛ばす）、全文の表示
-- 人物メモ、読書の履歴、模様のある背景（和紙・夜空などは単色）
+- 挿絵の表示（今は高速読書で飛ばす）
+- 人物メモ、模様のある背景（和紙・夜空などは単色）
 - パスワード付き PDF、文字化けする PDF の修復（ActualText）
 
 ## 移植の順番（予定）
@@ -97,4 +99,5 @@ iOS 版は SwiftUI で作ります。中身は Swift パッケージ `ios/FlowaC
 6. PDF の行と段落の組み立て（済み。アプリでは PDFKit の文字位置から `RawItem` を作って渡す）
 7. 画面の第一段階: 本棚・取り込み・高速読書・設定（済み）
 8. サンプル・他のアプリから開く・目次・PDF 表示・縦書き表示・テーマ（済み）
-9. 挿絵・全文、OCR（Vision）、履歴、人物メモ
+9. 読書履歴・全文の表示（済み）
+10. 挿絵、OCR（Vision）、人物メモ

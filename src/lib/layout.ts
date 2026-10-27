@@ -202,7 +202,11 @@ export function attachRuby(lines: Line[], small: RawItem[], vertical: boolean, b
   for (const it of sorted) {
     const last = runs[runs.length - 1]
     const c = crossOf(it)
-    if (last && Math.abs(last.cross - c) < it.size * 0.6 && posOf(it) - last.e < it.size * 1.6) {
+    // 隣り合う語のルビを 1 つにつながないよう、本文の半字分を超える空きと、ひらがな・カタカナの切り替わりで分ける。
+    // 親文字に合わせて均等に広げたルビ（字間が少し空く）は分けない
+    const kana = (ch: string) => (/[\u3041-\u309F]/.test(ch) ? 'h' : 'k')
+    const sameScript = !last || kana(last.text.slice(-1)) === kana(it.str[0] ?? '')
+    if (last && Math.abs(last.cross - c) < it.size * 0.6 && posOf(it) - last.e < bodySize * 0.5 && sameScript) {
       last.text += it.str
       last.e = Math.max(last.e, endOf(it))
     } else runs.push({ cross: c, s: posOf(it), e: endOf(it), text: it.str, size: it.size })
@@ -282,15 +286,21 @@ export function buildPageText(lines: Line[], vertical: boolean): PageText {
     const t = cleanLine(l.text)
     if (!t) continue
     const { start: lineStart, end: lineEnd } = metrics.get(l.column)!
-    const indented = l.start - lineStart > size * 0.6
+    const head = l.text.replace(/^[ ｜]+/, '')
+    const indented = l.start - lineStart > size * 0.6 || head.startsWith('\u3000')
+    const bracket = PARA_OPENERS.test(head)
     // 字の大きさが前の行と変わる所（題名・著者・見出し）でも段落を分ける
     const resized = prevSize > 0 && Math.abs(l.size - prevSize) > Math.max(l.size, prevSize) * 0.08
     const short = lineEnd - l.end > size * 1.5
     const heading = NAMED_HEADING.test(t) || (short && NUMBERED_HEADING.test(t))
-    const startsPara = PARA_OPENERS.test(l.text.replace(/^[ ｜]+/, '')) || indented || resized || heading || afterHeading
+    // 括弧で始まる行は、前の行が列（行）の途中で終わっているか、文の終わりで終わっているときだけ段落の始まりとみなす。
+    // 前の行が端まで詰まっていて文の途中なら、括弧（『スキル名』など）から始まる折り返しにすぎない
+    // 英語の文の終わり（. : ;）の後の［2］なども段落の始まりにする
+    const opensPara = bracket && (prevShort || SENTENCE_END.test(cur) || /[.:;]$/.test(cur))
+    const startsPara = opensPara || indented || resized || heading || afterHeading
 
     if (cur === '' && paras.length === 0) {
-      contFromPrev = !startsPara
+      contFromPrev = !(indented || bracket)
       cur = t
     } else if (startsPara || (prevShort && SENTENCE_END.test(cur))) {
       paras.push(cur)

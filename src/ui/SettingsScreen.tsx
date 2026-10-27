@@ -1,7 +1,9 @@
+import { WallpaperField } from './WallpaperField'
+import { HelpSection } from './HelpSection'
 import { useEffect, useState } from 'react'
 import { requestPersist, storageInfo } from '../lib/db'
 import { CHUNK_MODES } from '../lib/segment'
-import { DEFAULT_SETTINGS, THEMES, useSettings } from '../lib/settings'
+import { ACCENTS, DEFAULT_SETTINGS, THEMES, useSettings } from '../lib/settings'
 import { CPM_MAX, CPM_MIN, SPEED_PRESETS, WPM_MAX, WPM_MIN } from '../lib/timing'
 import { t } from '../lib/i18n'
 import { formatBytes, go, Icon, toast } from './common'
@@ -46,6 +48,9 @@ export function SettingsScreen() {
           </div>
         </div>
       </div>
+
+      <div className="section-title">{t('使い方')}</div>
+      <HelpSection />
 
       <div className="section-title">{t('速度')}</div>
       <div className="card stack">
@@ -151,6 +156,23 @@ export function SettingsScreen() {
               >
                 {t(th.label)}
               </button>
+            ))}
+          </div>
+        </div>
+        <WallpaperField />
+        <div className="field">
+          <div className="label">{t('強調色')}</div>
+          <div className="row wrap" role="group" aria-label={t('強調色')}>
+            {ACCENTS.map((c) => (
+              <button
+                key={c || 'theme'}
+                className="swatch"
+                aria-pressed={s.accent === c}
+                aria-label={c ? c : t('配色に合わせる')}
+                title={c ? c : t('配色に合わせる')}
+                style={{ background: c || `linear-gradient(135deg, ${theme.accent} 50%, ${theme.bg} 50%)` }}
+                onClick={() => update({ accent: c })}
+              />
             ))}
           </div>
         </div>

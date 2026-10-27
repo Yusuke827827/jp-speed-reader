@@ -57,7 +57,8 @@ describe('画面の翻訳', () => {
   it('t() の外に日本語の文字列が残っていない', () => {
     const left: string[] = []
     for (const file of sources) {
-      const lines = readFileSync(file, 'utf8').split('\n')
+      // Windows で改行が CRLF になっていても行末の \r を残さない（残るとコメントを取り除けない）
+      const lines = readFileSync(file, 'utf8').split(/\r?\n/)
       let inBlock = false
       lines.forEach((raw, i) => {
         let line = raw

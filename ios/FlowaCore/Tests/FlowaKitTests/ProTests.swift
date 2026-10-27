@@ -35,6 +35,19 @@ final class ProTests: XCTestCase {
         }
     }
 
+    /// 無料版の読書履歴は、今日を含む直近 7 日の記録だけ
+    func testHistoryDays() {
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone(identifier: "Asia/Tokyo")!
+        let now = cal.date(from: DateComponents(year: 2026, month: 10, day: 27, hour: 12))!
+        let sessions = [0, 6, 7, 30].map { daysAgo -> ReadingSession in
+            let d = cal.date(byAdding: .day, value: -daysAgo, to: cal.startOfDay(for: now))!
+            return ReadingSession(bookId: "b", title: "\(daysAgo)", start: d, end: d, ms: 1000, chars: 10, fromPercent: 0, toPercent: 1)
+        }
+        XCTAssertEqual(ProLimits.visibleSessions(sessions, isPro: false, now: now, calendar: cal).map(\.title), ["0", "6"])
+        XCTAssertEqual(ProLimits.visibleSessions(sessions, isPro: true, now: now, calendar: cal).count, 4)
+    }
+
     /// 起動直後は前回の結果を使う。forcePro は記憶に関係なく Pro
     @MainActor
     func testStoreStartsFromCache() throws {
