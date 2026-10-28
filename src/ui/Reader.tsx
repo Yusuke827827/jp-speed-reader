@@ -16,6 +16,7 @@ import { listSessions } from '../lib/db'
 import { marksInParagraph, useNotes, type Note } from '../lib/notes'
 import { IllustView, loadIllust, releaseIllusts } from './IllustView'
 import { t } from '../lib/i18n'
+import { charsPerSecond, chunkAtOffset, sentenceRange, speechAvailable, speechText, unlockSpeech, voicesFor } from '../lib/speech'
 
 export function Reader({ id, startPage }: { id: string; startPage?: number }) {
   const { book, error, loading } = useBook(id)
@@ -222,8 +223,10 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
   const indexRef = useRef(index)
   indexRef.current = index
 
+  // 読み上げを使うときは、下の読み上げの処理が単位を進める
+  const ttsOn = settings.tts && speechAvailable()
   useEffect(() => {
-    if (!playing) return
+    if (!playing || ttsOn) return
     const step = () => {
       const i = indexRef.current
       if (i >= chunks.length - 1) {
@@ -259,7 +262,124 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
       readingMs.current += performance.now() - lastTick.current
       lastTick.current = performance.now()
     }
-  }, [playing, chunks, schedule, settings.rampUp, settings.illustMode, endSession, persist])
+  }, [playing, ttsOn, chunks, schedule, settings.rampUp, settings.illustMode, endSession, persist])
+
+  // ---------- 読み上げ ----------
+  // 1 文ずつ読ませ、読んでいる文字の通知（boundary）に合わせて中央の単位を進める。
+  // 通知が来ない声では、文の長さと速さから見積もって進め、文の終わりで合わせ直す
+  const latinBook = useMemo(() => isLatinBook(chunks), [chunks])
+  useEffect(() => {
+    if (!playing || !ttsOn) return
+    const synth = window.speechSynthesis
+    let alive = true
+    let est: number | undefined
+    const voice = synth.getVoices().find((v) => v.voiceURI === settings.ttsVoice)
+    // 見積もりに使う 1 秒あたりの字数。文を読み終えるたびに実際の速さへ寄せる
+    let cps = charsPerSecond(latinBook, settings.ttsRate)
+    lastTick.current = performance.now()
+
+    // 中央の単位を j まで進め、読んだ字数と時間を記録する
+    const advance = (j: number) => {
+      const i = indexRef.current
+      if (j <= i) return
+      if (session.current) for (let k = i; k < j; k++) session.current.chars += chunks[k].len
+      const now = performance.now()
+      readingMs.current += now - lastTick.current
+      lastTick.current = now
+      indexRef.current = j
+      setIndex(j)
+    }
+    const finish = () => {
+      const last = chunks.length - 1
+      advance(last)
+      if (session.current) session.current.chars += chunks[last].len
+      setPlaying(false)
+      toast(t('最後まで読みました'))
+    }
+    const speakFrom = (i: number) => {
+      if (!alive) return
+      if (i >= chunks.length) return finish()
+      const c = chunks[i]
+      if (c.illust) {
+        if (settings.illustMode === 'pause') {
+          setPlaying(false)
+          endSession()
+          persist()
+          return
+        }
+        est = window.setTimeout(() => {
+          if (i + 1 >= chunks.length) return finish()
+          advance(i + 1)
+          speakFrom(i + 1)
+        }, durationOf(schedule, i))
+        return
+      }
+      const [a, b] = sentenceRange(chunks, i, 120)
+      const { text: say, map } = speechText(text.paragraphs[c.para], chunks[a].start, chunks[b - 1].end)
+      const done = () => {
+        window.clearTimeout(est)
+        if (b >= chunks.length) return finish()
+        advance(b)
+        speakFrom(b)
+      }
+      if (!say.trim()) return done()
+      const u = new SpeechSynthesisUtterance(say)
+      u.lang = voice?.lang ?? (latinBook ? 'en-US' : 'ja-JP')
+      if (voice) u.voice = voice
+      u.rate = settings.ttsRate
+      let heard = false
+      let t0 = 0
+      const startOf = (k: number) => {
+        const s = map.findIndex((m) => m >= chunks[k].start)
+        return s < 0 ? map.length : s
+      }
+      const estimate = (k: number, t0: number) => {
+        if (heard || k >= b) return
+        est = window.setTimeout(
+          () => {
+            if (heard || !alive) return
+            advance(k)
+            estimate(k + 1, t0)
+          },
+          Math.max(0, t0 + (startOf(k) / cps) * 1000 - performance.now()),
+        )
+      }
+      u.onstart = () => {
+        if (!alive) return
+        t0 = performance.now()
+        estimate(a + 1, t0)
+      }
+      u.onboundary = (e) => {
+        if (!alive) return
+        heard = true
+        window.clearTimeout(est)
+        advance(chunkAtOffset(chunks, a, b, map[Math.min(e.charIndex, map.length - 1)] ?? 0))
+      }
+      u.onend = () => {
+        if (!alive) return
+        const sec = (performance.now() - t0) / 1000
+        if (!heard && t0 && sec > 0.3) cps = cps / 2 + say.length / sec / 2
+        done()
+      }
+      u.onerror = (e) => {
+        if (!alive || e.error === 'interrupted' || e.error === 'canceled') return
+        window.clearTimeout(est)
+        setPlaying(false)
+        endSession()
+        persist()
+        toast(t('読み上げできませんでした（{error}）', { error: e.error }))
+      }
+      synth.speak(u)
+    }
+    speakFrom(indexRef.current)
+    return () => {
+      alive = false
+      window.clearTimeout(est)
+      synth.cancel()
+      readingMs.current += performance.now() - lastTick.current
+      lastTick.current = performance.now()
+    }
+  }, [playing, ttsOn, chunks, schedule, text, latinBook, settings.ttsRate, settings.ttsVoice, settings.illustMode, endSession, persist])
 
   const play = useCallback(() => {
     if (indexRef.current >= chunks.length - 1) setIndex(0)
@@ -267,8 +387,10 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
     else if (chunks[indexRef.current]?.illust && settings.illustMode === 'pause') setIndex(indexRef.current + 1)
     session.current = { start: Date.now(), startIndex: indexRef.current, startPct: percentAt(text, posRef.current), chars: 0 }
     setMeasured(null)
+    // iPhone では画面に触れた処理の中で読み上げを始めておかないと、後から声が出ない
+    if (ttsOn) unlockSpeech()
     setPlaying(true)
-  }, [chunks, text, settings.illustMode])
+  }, [chunks, text, settings.illustMode, ttsOn])
 
   const pause = useCallback(() => {
     setPlaying(false)
@@ -352,9 +474,11 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
   }
   const [confirmRestart, setConfirmRestart] = useState(false)
   // 欧文が主の本は語/分（WPM）、それ以外は字/分で速度を表示・調整する
-  const latin = useMemo(() => isLatinBook(chunks), [chunks])
+  const latin = latinBook
   const changeSpeed = (dir: 1 | -1) =>
-    latin
+    ttsOn
+      ? update({ ttsRate: Math.round(Math.max(0.5, Math.min(2, settings.ttsRate + dir * 0.1)) * 10) / 10 })
+      : latin
       ? update({ wpm: Math.max(WPM_MIN, Math.min(WPM_MAX, settings.wpm + dir * 10)) })
       : update({ cpm: Math.max(CPM_MIN, Math.min(CPM_MAX, Math.round(settings.cpm + dir * 50))) })
 
@@ -604,8 +728,8 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
             −
           </button>
           <button className="speed-btn grow" onClick={() => setSheet('settings')} aria-label={t('速度と表示の設定')}>
-            {latin ? `${settings.wpm} WPM` : t('{n} 字/分', { n: settings.cpm })}
-            {schedule.limited ? t('（上限）') : ''}
+            {ttsOn ? t('読み上げ ×{rate}', { rate: settings.ttsRate.toFixed(1) }) : latin ? `${settings.wpm} WPM` : t('{n} 字/分', { n: settings.cpm })}
+            {!ttsOn && schedule.limited ? t('（上限）') : ''}
           </button>
           <button className="speed-btn" aria-label={t('速くする')} onClick={() => changeSpeed(1)}>
             {'\uFF0B'}
@@ -1034,11 +1158,53 @@ function QuickSettings({ onClose, chunks, latin }: { onClose: () => void; chunks
           <span>{t('句読点・段落末で間をとる')}</span>
           <input type="checkbox" checked={s.pauses} onChange={(e) => update({ pauses: e.target.checked })} />
         </label>
+        <SpeechField latin={latin} />
         <button className="btn" onClick={() => go('/settings')}>
           {t('詳細設定を開く')}
         </button>
       </div>
     </>
+  )
+}
+
+/** 読み上げの設定。声の一覧は後から届くことがあるので、届いたら出し直す */
+function SpeechField({ latin }: { latin: boolean }) {
+  const [s, update] = useSettings()
+  const [voices, setVoices] = useState(() => voicesFor(latin ? 'en' : 'ja'))
+  useEffect(() => {
+    if (!speechAvailable()) return
+    const load = () => setVoices(voicesFor(latin ? 'en' : 'ja'))
+    load()
+    window.speechSynthesis.addEventListener('voiceschanged', load)
+    return () => window.speechSynthesis.removeEventListener('voiceschanged', load)
+  }, [latin])
+  if (!speechAvailable()) return <p className="small muted">{t('このブラウザは読み上げに対応していません。')}</p>
+  return (
+    <div className="field">
+      <label className="switch">
+        <span>{t('読み上げに合わせて表示する')}</span>
+        <input type="checkbox" checked={s.tts} onChange={(e) => update({ tts: e.target.checked })} />
+      </label>
+      {s.tts && (
+        <>
+          <div className="label">
+            <span>{t('読み上げの速さ')}</span>
+            <span>×{s.ttsRate.toFixed(1)}</span>
+          </div>
+          <input type="range" min={0.5} max={2} step={0.1} value={s.ttsRate} onChange={(e) => update({ ttsRate: Number(e.target.value) })} aria-label={t('読み上げの速さ')} />
+          <div className="label">{t('声')}</div>
+          <select value={s.ttsVoice} onChange={(e) => update({ ttsVoice: e.target.value })} aria-label={t('声')}>
+            <option value="">{t('自動')}</option>
+            {voices.map((v) => (
+              <option key={v.voiceURI} value={v.voiceURI}>
+                {v.name}
+              </option>
+            ))}
+          </select>
+          <p className="small muted">{t('読み上げ中は、表示の速さ（字/分）ではなく声の速さで進みます。声によっては表示が少し遅れます。')}</p>
+        </>
+      )}
+    </div>
   )
 }
 

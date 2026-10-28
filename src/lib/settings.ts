@@ -57,6 +57,12 @@ export interface Settings {
   goalKind: 'minutes' | 'chars'
   goalMinutes: number
   goalChars: number
+  /** 読み上げに合わせて表示する（Web Speech API） */
+  tts: boolean
+  /** 読み上げの速さ（0.5〜2） */
+  ttsRate: number
+  /** 声（voiceURI。空なら言語に合う既定の声） */
+  ttsVoice: string
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -89,6 +95,9 @@ export const DEFAULT_SETTINGS: Settings = {
   goalKind: 'minutes',
   goalMinutes: 15,
   goalChars: 5000,
+  tts: false,
+  ttsRate: 1.2,
+  ttsVoice: '',
 }
 
 export interface ThemeDef {
