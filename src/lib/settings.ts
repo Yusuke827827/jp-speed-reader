@@ -63,6 +63,8 @@ export interface Settings {
   ttsRate: number
   /** 声（voiceURI。空なら言語に合う既定の声） */
   ttsVoice: string
+  /** 読み上げを始めてから止めるまでの分数（0 = 止めない） */
+  sleepMinutes: number
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -98,6 +100,7 @@ export const DEFAULT_SETTINGS: Settings = {
   tts: false,
   ttsRate: 1.2,
   ttsVoice: '',
+  sleepMinutes: 0,
 }
 
 export interface ThemeDef {

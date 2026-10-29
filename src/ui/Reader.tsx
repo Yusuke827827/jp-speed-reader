@@ -381,7 +381,10 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
     }
   }, [playing, ttsOn, chunks, schedule, text, latinBook, settings.ttsRate, settings.ttsVoice, settings.illustMode, endSession, persist])
 
+  // スリープタイマーは、再生ボタンを押した時刻から数える（再生中の移動で数え直さない）
+  const sleepFrom = useRef(0)
   const play = useCallback(() => {
+    sleepFrom.current = Date.now()
     if (indexRef.current >= chunks.length - 1) setIndex(0)
     // 挿絵で止まっていたら、次の本文から再開する
     else if (chunks[indexRef.current]?.illust && settings.illustMode === 'pause') setIndex(indexRef.current + 1)
@@ -399,6 +402,30 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
   }, [endSession, persist])
 
   const toggle = useCallback(() => (playing ? pause() : play()), [playing, pause, play])
+
+  // 読み上げのスリープタイマー: 再生を始めてから決めた分数がたったら止める
+  const [sleepAt, setSleepAt] = useState<number | null>(null)
+  const [, setClock] = useState(0)
+  const pauseRef = useRef(pause)
+  pauseRef.current = pause
+  useEffect(() => {
+    if (!playing || !ttsOn || !settings.sleepMinutes) {
+      setSleepAt(null)
+      return
+    }
+    const at = sleepFrom.current + settings.sleepMinutes * 60000
+    setSleepAt(at)
+    const stop = window.setTimeout(() => {
+      pauseRef.current()
+      toast(t('タイマーで読み上げを止めました'))
+    }, Math.max(0, at - Date.now()))
+    // 残りの分数の表示を 30 秒ごとに新しくする
+    const tick = window.setInterval(() => setClock((n) => n + 1), 30000)
+    return () => {
+      window.clearTimeout(stop)
+      window.clearInterval(tick)
+    }
+  }, [playing, ttsOn, settings.sleepMinutes])
 
   // 再生中は 5 秒ごとに位置を保存。画面を離れる・隠れるときは必ず保存して止める
   useEffect(() => {
@@ -728,7 +755,7 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
             −
           </button>
           <button className="speed-btn grow" onClick={() => setSheet('settings')} aria-label={t('速度と表示の設定')}>
-            {ttsOn ? t('読み上げ ×{rate}', { rate: settings.ttsRate.toFixed(1) }) : latin ? `${settings.wpm} WPM` : t('{n} 字/分', { n: settings.cpm })}
+            {ttsOn ? t('読み上げ ×{rate}', { rate: settings.ttsRate.toFixed(1) }) + (sleepAt ? t('・あと{n}分で停止', { n: Math.max(1, Math.ceil((sleepAt - Date.now()) / 60000)) }) : '') : latin ? `${settings.wpm} WPM` : t('{n} 字/分', { n: settings.cpm })}
             {!ttsOn && schedule.limited ? t('（上限）') : ''}
           </button>
           <button className="speed-btn" aria-label={t('速くする')} onClick={() => changeSpeed(1)}>
@@ -1201,7 +1228,16 @@ function SpeechField({ latin }: { latin: boolean }) {
               </option>
             ))}
           </select>
+          <div className="label">{t('スリープタイマー')}</div>
+          <div className="segmented" role="group" aria-label={t('スリープタイマー')}>
+            {[0, 15, 30, 45, 60].map((n) => (
+              <button key={n} aria-pressed={s.sleepMinutes === n} onClick={() => update({ sleepMinutes: n })}>
+                {n === 0 ? t('なし') : t('{n}分', { n })}
+              </button>
+            ))}
+          </div>
           <p className="small muted">{t('読み上げ中は、表示の速さ（字/分）ではなく声の速さで進みます。声によっては表示が少し遅れます。')}</p>
+          <p className="small muted">{t('スリープタイマーは、再生を始めてから数えます。')}</p>
         </>
       )}
     </div>
