@@ -14,7 +14,8 @@ import customize from './customize'
 import notes from './notes'
 import goals from './goals'
 import speech from './speech'
+import quiz from './quiz'
 
-const en: Record<string, string> = { ...common, ...library, ...importer, ...ocr, ...reader, ...pdfviewer, ...settings, ...history, ...lib, ...help, ...customize, ...notes, ...goals, ...speech }
+const en: Record<string, string> = { ...common, ...library, ...importer, ...ocr, ...reader, ...pdfviewer, ...settings, ...history, ...lib, ...help, ...customize, ...notes, ...goals, ...speech, ...quiz }
 
 export default en

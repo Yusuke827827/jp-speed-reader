@@ -11,6 +11,7 @@ import { useBook, type LoadedBook } from '../lib/useBook'
 import { ConfirmDialog, ErrorBox, formatDuration, go, Icon, toast } from './common'
 import { RichText } from './rich'
 import { NotesSheet } from './NotesSheet'
+import { QuizSheet } from './QuizSheet'
 import { achieved, dailyTotals, dayKey } from '../lib/goals'
 import { listSessions } from '../lib/db'
 import { marksInParagraph, useNotes, type Note } from '../lib/notes'
@@ -510,7 +511,7 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
       : update({ cpm: Math.max(CPM_MIN, Math.min(CPM_MAX, Math.round(settings.cpm + dir * 50))) })
 
   // ---------- 操作 ----------
-  const [sheet, setSheet] = useState<null | 'settings' | 'toc' | 'people' | 'notes'>(null)
+  const [sheet, setSheet] = useState<null | 'settings' | 'toc' | 'people' | 'notes' | 'quiz'>(null)
   const [notes, saveNotes] = useNotes(meta.id, text)
   const openPdfView = () => {
     if (playing) pause()
@@ -576,6 +577,10 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
           if (playing) pause()
           setSheet('notes')
           break
+        case 'q':
+          if (playing) pause()
+          setSheet('quiz')
+          break
         case 'p':
           if (isPdf) openPdfView()
           break
@@ -631,7 +636,8 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
   }, [index, chunks, isPdf, meta.id])
   useEffect(() => releaseIllusts, [])
   // 挿絵を出しているあいだは全文パネルを隠し、絵を大きく見せる
-  const showPanel = !playing && settings.showContext && !chunk?.illust
+  // 理解度の確認の間は、答えが見えないように本文の一覧を隠す
+  const showPanel = !playing && settings.showContext && !chunk?.illust && sheet !== 'quiz'
   const readChars = chunk ? globalOffset(text, { para: chunk.para, offset: chunk.end }) : 0
 
   return (
@@ -669,6 +675,17 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
           }}
         >
           <Icon name="bookmark" />
+        </button>
+        <button
+          className="icon-btn"
+          aria-label={t('理解度の確認')}
+          title={t('理解度の確認 (Q)')}
+          onClick={() => {
+            if (playing) pause()
+            setSheet('quiz')
+          }}
+        >
+          <Icon name="quiz" />
         </button>
         <button className="icon-btn" aria-label={t('人物')} title={t('人物の登録と色分け')} onClick={() => setSheet('people')}>
           <Icon name="people" />
@@ -778,6 +795,7 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
           onClose={() => setSheet(null)}
         />
       )}
+      {sheet === 'quiz' && <QuizSheet book={text} pos={posRef.current} names={names} onJump={(p) => moveTo(chunkIndexAt(chunks, p))} onClose={() => setSheet(null)} />}
       {sheet === 'people' && <PeopleSheet book={book} people={people} onChange={savePeople} onClose={() => setSheet(null)} />}
       {sheet === 'toc' && (
         <TocSheet

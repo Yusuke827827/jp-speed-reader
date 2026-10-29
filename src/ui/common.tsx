@@ -30,6 +30,7 @@ const paths: Record<string, ReactNode> = {
   grid: <path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" />,
   search: <path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4" />,
   bookmark: <path d="M6 3h12v18l-6-4-6 4z" />,
+  quiz: <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM8 12l3 3 5-6" />,
   zoomIn: <path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4M8 11h6M11 8v6" />,
   zoomOut: <path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4M8 11h6" />,
   compare: <path d="M4 4h7v16H4zM13 4h7v16h-7zM15 8h3M15 12h3M15 16h3" />,
