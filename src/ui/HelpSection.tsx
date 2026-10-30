@@ -18,6 +18,7 @@ export function HelpSection() {
     <div className="card help">
       <Topic title={t('本を追加する')}>
         <li>{t('本棚の「PDFを追加」から、小説のPDFかテキスト（.txt）を選びます。青空文庫のテキストなら、題名・目次・ルビも読み取ります。')}</li>
+        <li>{t('EPUB（.epub）も取り込めます。コピー防止（DRM）のかかった本は読めません。')}</li>
         <li>{t('iPhoneでは「ファイル」アプリやiCloud Driveから選べます。PCではドラッグ＆ドロップもできます。')}</li>
         <li>{t('文字の入っていない画像だけのPDFは、取り込んだあとに文字認識（OCR）へ進みます。')}</li>
         <li>{t('まず試すなら、取り込み画面の「サンプルで試す」が手軽です。')}</li>

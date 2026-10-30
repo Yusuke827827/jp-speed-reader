@@ -105,7 +105,7 @@ export function Import() {
             </div>
           ) : (
             <>
-              <p style={{ fontSize: 17, fontWeight: 700, margin: '0 0 4px' }}>{t('小説のPDFかテキストを選んでください')}</p>
+              <p style={{ fontSize: 17, fontWeight: 700, margin: '0 0 4px' }}>{t('小説のPDF・EPUB・テキストを選んでください')}</p>
               <p className="muted small" style={{ margin: '0 0 16px' }}>
                 {t('PCではここにドラッグ＆ドロップもできます。iPhoneでは「ファイル」アプリやiCloud Driveから選べます。')}
               </p>
@@ -115,7 +115,7 @@ export function Import() {
               <input
                 ref={input}
                 type="file"
-                accept="application/pdf,.pdf,text/plain,.txt"
+                accept="application/pdf,.pdf,application/epub+zip,.epub,text/plain,.txt"
                 hidden
                 onChange={(e) => {
                   const f = e.target.files?.[0]
@@ -139,6 +139,7 @@ export function Import() {
             <li>{t('PDFに含まれる文字を取り出し、柱（ページ上部の書名など）・ノンブル・ルビを除いて段落に組み立てます。')}</li>
             <li>{t('文字が入っていないページ（スキャン画像）は、続けて日本語OCRにかけられます。')}</li>
             <li>{t('テキスト（.txt）は UTF-8 と Shift_JIS に対応します。青空文庫形式なら題名・著者・見出し・ルビを読み取ります。')}</li>
+            <li>{t('EPUB（.epub）は、本文・ルビ・目次・挿絵を読み取ります。コピー防止（DRM）のかかった本は読めません。')}</li>
             <li>{t('PDFと本文はこの端末のブラウザ内にだけ保存されます。外部のサーバーには送りません。')}</li>
           </ol>
         </div>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { deleteBook, listBooks, listProgress, listSessions, type BookMeta, type Progress, type Session } from '../lib/db'
+import { deleteBook, isPdfBook, listBooks, listProgress, listSessions, type BookMeta, type Progress, type Session } from '../lib/db'
 import { GoalChip } from './GoalCard'
 import { ConfirmDialog, ErrorBox, formatDate, formatDuration, go, Icon, toast } from './common'
 import { t } from '../lib/i18n'
@@ -73,7 +73,7 @@ export function Library() {
             <div className="small muted">{t('前回の続き')}</div>
             <div style={{ fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{last.title}</div>
             <div className="small muted">
-              {progress.get(last.id)!.percent.toFixed(1)}%{last.kind === 'text' ? '' : t('・p.{page}', { page: progress.get(last.id)!.page + 1 })}
+              {progress.get(last.id)!.percent.toFixed(1)}%{!isPdfBook(last) ? '' : t('・p.{page}', { page: progress.get(last.id)!.page + 1 })}
             </div>
           </div>
           <button className="btn primary" onClick={() => go(`/read/${last.id}`)}>
@@ -102,7 +102,7 @@ export function Library() {
                 <button
                   className="cover"
                   style={{ backgroundImage: b.cover ? `url(${b.cover})` : undefined }}
-                  data-text={b.kind === 'text' ? 'true' : undefined}
+                  data-text={!isPdfBook(b) ? 'true' : undefined}
                   aria-label={t('{title}を開く', { title: b.title })}
                   onClick={() => go(b.ocr.status === 'needed' && b.emptyPages === b.pageCount ? `/ocr/${b.id}` : `/read/${b.id}`)}
                 >
@@ -116,7 +116,7 @@ export function Library() {
                   </div>
                   <div className="small muted">
                     {b.author ? t('{author}・', { author: b.author }) : ''}
-                    {pct.toFixed(1)}%{b.kind === 'text' ? '' : p ? t('・p.{page}/{total}', { page: p.page + 1, total: b.pageCount }) : t('・{n}ページ', { n: b.pageCount })}
+                    {pct.toFixed(1)}%{!isPdfBook(b) ? '' : p ? t('・p.{page}/{total}', { page: p.page + 1, total: b.pageCount }) : t('・{n}ページ', { n: b.pageCount })}
                     <br />
                     {p ? t('{date}・計{duration}', { date: formatDate(p.lastReadAt), duration: formatDuration(p.readingMs) }) : t('未読')}
                   </div>
@@ -130,7 +130,7 @@ export function Library() {
                   </div>
                   {menu === b.id && (
                     <div className="row wrap">
-                      {b.kind !== 'text' && (
+                      {isPdfBook(b) && (
                         <button className="btn small" onClick={() => go(`/pdf/${b.id}`)}>
                           <Icon name="pdf" /> {t('PDF表示')}
                         </button>

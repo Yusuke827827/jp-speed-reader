@@ -12,11 +12,15 @@ export interface PageEntry {
   contFromPrev: boolean
   image?: 'illust' | 'blank'
   illustRect?: [number, number, number, number]
+  /** EPUB の挿絵の画像の場所 */
+  imagePath?: string
 }
 
 export interface Illust {
   page: number
   rect: [number, number, number, number]
+  /** EPUB の挿絵なら、EPUB の中の画像の場所（PDF の挿絵はページから切り出す） */
+  src?: string
 }
 
 export interface Paragraph {
@@ -82,7 +86,7 @@ export function buildBookText(pages: PageEntry[], pageCount: number): BookText {
       })
       prevPage = p.pageIndex
     }
-    if (p.image === 'illust') pending.push({ page: p.pageIndex, rect: p.illustRect ?? [0, 0, 1, 1] })
+    if (p.image === 'illust') pending.push({ page: p.pageIndex, rect: p.illustRect ?? [0, 0, 1, 1], ...(p.imagePath ? { src: p.imagePath } : {}) })
   }
   flush()
   let pos = 0

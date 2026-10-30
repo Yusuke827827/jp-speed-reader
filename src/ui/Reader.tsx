@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { gapBefore, globalOffset, pageAt, referenceParagraphs, percentAt, positionForPage, type BookText, type Paragraph, type TextPosition } from '../lib/book'
-import { addSession, describeStorageError, listBookmarks, saveProgress, getFile, updateBook, type Bookmark, type Person, type TocEntry } from '../lib/db'
+import { addSession, describeStorageError, isPdfBook, listBookmarks, saveProgress, getFile, updateBook, type Bookmark, type Person, type TocEntry } from '../lib/db'
 import { newId } from '../lib/importer'
 import { chapterStarts, personRanges, personTerms, suggestPeople, PERSON_COLORS, type PersonRange } from '../lib/people'
 import { closePdf, openPdf, readOutline } from '../lib/pdf'
@@ -63,18 +63,20 @@ const RAMP = [1.7, 1.4, 1.2, 1.08]
 function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings: Settings; startPage?: number }) {
   const [, update] = useSettings()
   const { meta, text } = book
-  const isPdf = meta.kind !== 'text'
+  const isPdf = isPdfBook(meta)
+  // 挿絵があるのは PDF と EPUB（テキストの本には無い）
+  const hasIllust = meta.kind !== 'text'
   const [people, setPeople] = useState<Person[]>(meta.people ?? [])
   const names = useMemo(() => personTerms(people), [people])
   const chunks = useMemo(() => {
     const all = segmentBook(text, { mode: settings.mode, phraseTarget: settings.phraseTarget, minChars: settings.minChars, names })
     // テキストの本には挿絵が無い。「飛ばす」設定なら挿絵の単位を除く
-    const noIllust = !isPdf || settings.illustMode === 'skip'
+    const noIllust = !hasIllust || settings.illustMode === 'skip'
     // 参考文献の節を飛ばす（全部が参考文献と判定された場合は飛ばさない）
     const refs = settings.skipReferences ? referenceParagraphs(text) : new Set<number>()
     const skipRefs = refs.size > 0 && refs.size < text.paragraphs.length
     return noIllust || skipRefs ? all.filter((c) => !(noIllust && c.illust) && !(skipRefs && refs.has(c.para))) : all
-  }, [text, settings.mode, settings.phraseTarget, settings.minChars, names, settings.illustMode, settings.skipReferences, isPdf])
+  }, [text, settings.mode, settings.phraseTarget, settings.minChars, names, settings.illustMode, settings.skipReferences, hasIllust])
   const schedule = useMemo(
     () =>
       buildSchedule(chunks, {
@@ -625,7 +627,7 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
 
   // 次の挿絵を先に用意しておき、表示のときに待たせない
   useEffect(() => {
-    if (!isPdf) return
+    if (!hasIllust) return
     for (let i = index + 1; i < Math.min(chunks.length, index + 60); i++) {
       const il = chunks[i].illust
       if (il) {
@@ -633,7 +635,7 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
         break
       }
     }
-  }, [index, chunks, isPdf, meta.id])
+  }, [index, chunks, hasIllust, meta.id])
   useEffect(() => releaseIllusts, [])
   // 挿絵を出しているあいだは全文パネルを隠し、絵を大きく見せる
   // 理解度の確認の間は、答えが見えないように本文の一覧を隠す
@@ -1321,7 +1323,7 @@ function segmentLikeWords(s: string): number {
 
 function TocSheet(props: { book: LoadedBook; currentPage: number; onClose: () => void; onJump: (page: number) => void; onJumpPercent: (pct: number) => void }) {
   const { book } = props
-  const isPdf = book.meta.kind !== 'text'
+  const isPdf = isPdfBook(book.meta)
   const [outline, setOutline] = useState<TocEntry[] | null>(book.meta.toc ?? null)
   const [marks, setMarks] = useState<Bookmark[]>([])
   const [pageInput, setPageInput] = useState(String(props.currentPage + 1))

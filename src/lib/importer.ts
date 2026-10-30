@@ -6,6 +6,7 @@ import { garbledRatio, visibleLength } from './normalize'
 import { closePdf, makeCover, openPdf, pageImageRects, pageInk, pageLines, readOutline, readTitle, PdfLoadError } from './pdf'
 import { BLANK_INK, FULL_PAGE, illustrationRect, type Rect } from './illust'
 import { decodeText, parseTextBook } from './textImport'
+import { epubFile, EpubError, readEpub } from './epub'
 import { t } from './i18n'
 
 export interface ImportProgress {
@@ -41,8 +42,10 @@ export async function importPdf(
   signal?: AbortSignal,
 ): Promise<ImportResult> {
   if (/\.txt$/i.test(file.name) || file.type === 'text/plain') return importText(file, onProgress)
+  if (/\.epub$/i.test(file.name) || file.type === 'application/epub+zip') return importEpub(file, onProgress)
+  if (/\.epub$/i.test(file.name) || file.type === 'application/epub+zip') return importEpub(file, onProgress)
   if (file.type && file.type !== 'application/pdf' && !/\.pdf$/i.test(file.name)) {
-    throw new ImportError(t('対応していないファイルです。'), t('小説の PDF（.pdf）か、テキストファイル（.txt、青空文庫形式も可）を選んでください。'))
+    throw new ImportError(t('対応していないファイルです。'), t('小説の PDF（.pdf）、EPUB（.epub）、テキストファイル（.txt、青空文庫形式も可）のどれかを選んでください。'))
   }
   onProgress({ phase: 'reading', done: 0, total: 1 })
   let buf: ArrayBuffer
@@ -224,6 +227,91 @@ async function importText(file: File, onProgress: (p: ImportProgress) => void): 
   }
   onProgress({ phase: 'done', done: 1, total: 1 })
   return { book, garbledPages: 0 }
+}
+
+/** EPUB の取り込み。本文は仮のページに分け、挿絵は画像の場所だけを覚える（画像は読むときに EPUB から取り出す） */
+async function importEpub(file: File, onProgress: (p: ImportProgress) => void): Promise<ImportResult> {
+  onProgress({ phase: 'reading', done: 0, total: 1 })
+  let buf: ArrayBuffer
+  try {
+    buf = await file.arrayBuffer()
+  } catch {
+    throw new ImportError(t('ファイルを読み込めませんでした。'), t('iCloud Drive のファイルは、先に「ファイル」アプリでダウンロードしてから選んでください。'))
+  }
+  let parsed
+  try {
+    parsed = readEpub(buf)
+  } catch (e) {
+    if (!(e instanceof EpubError)) throw e
+    if (e.kind === 'drm') throw new ImportError(t('コピー防止（DRM）のかかったEPUBは読めません。'), t('DRMの無いEPUB（青空文庫のEPUBや、DRMフリーで販売・配布されている本）を選んでください。'))
+    if (e.kind === 'empty') throw new ImportError(t('本文が見つかりませんでした。'), t('画像だけでできたEPUB（漫画など）には対応していません。'))
+    throw new ImportError(t('EPUBとして読み込めませんでした。'), t('ファイルが壊れているか、EPUBではない可能性があります。'))
+  }
+  const all = parsed.pages.map((p) => p.text).join('')
+  if (garbledRatio(all) > 0.05) throw new ImportError(t('文字化けしているようです。'), t('別の EPUB で試してください。'))
+  const id = newId()
+  const pages: PageRecord[] = parsed.pages.map((p, i) => ({
+    bookId: id,
+    pageIndex: i,
+    text: p.text,
+    contFromPrev: false,
+    vertical: parsed.vertical,
+    source: 'text',
+    ...(p.image ? { image: 'illust' as const, imagePath: p.image } : {}),
+  }))
+  const book: BookMeta = {
+    id,
+    kind: 'epub',
+    title: parsed.title ?? file.name.replace(/\.epub$/i, ''),
+    author: parsed.author,
+    toc: parsed.toc,
+    cover: parsed.cover ? await thumbnail(epubFile(buf, parsed.cover), parsed.cover) : undefined,
+    fileName: file.name,
+    fileSize: file.size,
+    fileModified: file.lastModified,
+    pageCount: pages.length,
+    createdAt: Date.now(),
+    vertical: parsed.vertical,
+    emptyPages: 0,
+    ocr: { status: 'none', done: 0, target: 0 },
+    textVersion: 1,
+  }
+  onProgress({ phase: 'saving', done: 0, total: 1 })
+  try {
+    await saveFile(id, new Blob([buf], { type: 'application/epub+zip' }))
+    await putPages(pages)
+    await putBook(book)
+  } catch (e) {
+    await deleteBook(id).catch(() => {})
+    throw new ImportError(describeStorageError(e), '')
+  }
+  onProgress({ phase: 'done', done: 1, total: 1 })
+  return { book, garbledPages: 0 }
+}
+
+/** 画像の種類（拡張子から） */
+export function imageType(path: string): string {
+  const ext = path.toLowerCase().split('.').pop() ?? ''
+  return { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', gif: 'image/gif', webp: 'image/webp', svg: 'image/svg+xml', avif: 'image/avif', bmp: 'image/bmp' }[ext] ?? 'application/octet-stream'
+}
+
+/** 表紙を本棚用に小さくする。作れなければ表紙なしにする */
+async function thumbnail(data: Uint8Array | null, path: string): Promise<string | undefined> {
+  if (!data) return undefined
+  try {
+    const img = await createImageBitmap(new Blob([data as BlobPart], { type: imageType(path) }))
+    const scale = Math.min(1, 360 / img.height)
+    const c = document.createElement('canvas')
+    c.width = Math.round(img.width * scale)
+    c.height = Math.round(img.height * scale)
+    c.getContext('2d')!.drawImage(img, 0, 0, c.width, c.height)
+    img.close()
+    const url = c.toDataURL('image/jpeg', 0.72)
+    c.width = c.height = 0
+    return url
+  } catch {
+    return undefined
+  }
 }
 
 /**

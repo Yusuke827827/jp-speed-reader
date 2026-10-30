@@ -25,7 +25,7 @@ export interface Person {
 export interface BookMeta {
   id: string
   /** 取り込んだファイルの種類（古いデータには無いので、無ければ PDF） */
-  kind?: 'pdf' | 'text'
+  kind?: 'pdf' | 'text' | 'epub'
   title: string
   author?: string
   /** 目次。PDF のしおり、またはテキストの見出しから作る */
@@ -64,6 +64,13 @@ export interface PageRecord {
   image?: 'illust' | 'blank'
   /** 挿絵の範囲（ページに対する割合）。無ければページ全体 */
   illustRect?: [number, number, number, number]
+  /** EPUB の挿絵の画像の場所 */
+  imagePath?: string
+}
+
+/** 元が PDF の本か（古い版で取り込んだ本には kind が無く、すべて PDF） */
+export function isPdfBook(meta: { kind?: string }): boolean {
+  return !meta.kind || meta.kind === 'pdf'
 }
 
 /** OCR をかけるべきページ（文字が取れず、挿絵・白紙でもない） */
