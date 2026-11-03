@@ -445,6 +445,48 @@ select:focus-visible {
   background: var(--surface);
 }
 
+/* シートの見出しの行: 題は太字、閉じるボタンは灰色の丸に × */
+.sheet > .row:first-child {
+  margin-bottom: 4px;
+}
+
+.sheet > .row:first-child > .grow {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+}
+
+.sheet > .row:first-child > .icon-btn[aria-label] {
+  width: 30px;
+  height: 30px;
+  border-radius: 15px;
+  background: var(--surface-2);
+  color: var(--muted);
+}
+
+.sheet > .row:first-child > .icon-btn .icon {
+  width: 16px;
+  height: 16px;
+  stroke-width: 3;
+}
+
+/* シートの中の設定は、項目ごとに白い面に入れる */
+.sheet.stack > .field,
+.sheet.stack > .switch,
+.sheet.stack > .row.wrap,
+.sheet.stack > .list {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.sheet.stack > .switch {
+  padding: 6px 16px;
+}
+
+.sheet.stack > .row.wrap > .field {
+  padding: 0;
+}
+
 .sheet-backdrop {
   position: fixed;
   inset: 0;
@@ -824,8 +866,8 @@ select:focus-visible {
 .reader .r-title {
   flex: 1;
   min-width: 0;
-  font-size: 14px;
-  opacity: 0.75;
+  font-size: 15px;
+  opacity: 0.7;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -940,22 +982,30 @@ select:focus-visible {
   gap: 4px;
 }
 
+.controls {
+  padding: 0 8px;
+}
+
 .controls .icon-btn {
   width: 52px;
   height: 52px;
+  opacity: 0.85;
+}
+
+.controls .icon-btn .icon {
+  width: 26px;
+  height: 26px;
 }
 
 .controls .play {
   width: 72px;
   height: 72px;
-  border-radius: 36px;
-  background: var(--r-accent);
-  color: var(--r-bg);
+  opacity: 1;
 }
 
 .controls .play .icon {
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
 }
 
 .speedrow {
@@ -966,18 +1016,51 @@ select:focus-visible {
 }
 
 .speed-btn {
-  border: 1px solid color-mix(in srgb, var(--r-fg) 25%, transparent);
-  background: transparent;
+  border: none;
+  background: color-mix(in srgb, var(--r-fg) 8%, transparent);
   color: var(--r-fg);
-  border-radius: 10px;
+  border-radius: 20px;
+  min-width: 40px;
   min-height: 40px;
   padding: 0 12px;
   font-variant-numeric: tabular-nums;
-  font-size: 14px;
+  font-size: 18px;
+}
+
+.speed-btn.grow {
+  background: transparent;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.speed-btn:active,
+.reader .icon-btn:active {
+  opacity: 0.5;
+}
+
+/* 表示の設定（iPhone のブックと同じく「Aa」で示す） */
+.icon-btn.aa {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.kbd {
+  font-size: 12px;
+  color: var(--muted);
+  border: 0.5px solid var(--line);
+  border-radius: 4px;
+  padding: 0 5px;
+}
+
+@media (pointer: coarse) {
+  .kbd {
+    display: none;
+  }
 }
 
 .reader .sheet {
-  background: var(--surface);
+  background: var(--bg);
   color: var(--text);
 }
 
@@ -1238,12 +1321,11 @@ select:focus-visible {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  margin: 0 12px 8px;
-  padding: 12px 16px;
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--r-fg) 5%, var(--r-bg));
-  border: 1px solid color-mix(in srgb, var(--r-fg) 12%, transparent);
+  margin: 0 12px 4px;
+  padding: 18px 12px;
   font-family: var(--font-mincho);
+  -webkit-mask-image: linear-gradient(transparent, #000 18px, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(transparent, #000 18px, #000 calc(100% - 24px), transparent);
   font-size: 16px;
   line-height: 2.1;
   max-width: 900px;
@@ -1279,8 +1361,7 @@ select:focus-visible {
 }
 
 .reader .r-title b {
-  font-weight: 700;
-  margin-right: 8px;
+  font-weight: 600;
 }
 
 .reader .r-author {
@@ -1510,7 +1591,8 @@ select:focus-visible {
 
 /* 読書画面: 背景の上の全文パネルとボタンを半透明にする */
 .reader.art .text-panel {
-  background: color-mix(in srgb, var(--r-bg) 62%, transparent);
+  background: color-mix(in srgb, var(--r-bg) 55%, transparent);
+  border-radius: 12px;
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }

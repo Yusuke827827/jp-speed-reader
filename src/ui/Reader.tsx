@@ -513,7 +513,7 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
       : update({ cpm: Math.max(CPM_MIN, Math.min(CPM_MAX, Math.round(settings.cpm + dir * 50))) })
 
   // ---------- 操作 ----------
-  const [sheet, setSheet] = useState<null | 'settings' | 'toc' | 'people' | 'notes' | 'quiz'>(null)
+  const [sheet, setSheet] = useState<null | 'settings' | 'toc' | 'people' | 'notes' | 'quiz' | 'more'>(null)
   const [notes, saveNotes] = useNotes(meta.id, text)
   const openPdfView = () => {
     if (playing) pause()
@@ -659,7 +659,6 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
         </button>
         <div className="r-title">
           <b>{meta.title}</b>
-          {meta.author && <span className="r-author">{meta.author}</span>}
         </div>
         <div className="r-keys" aria-hidden="true">
           {t('Space 再生/停止・←→ 1単位・Shift+←→ 段落・+− 速度')}
@@ -678,27 +677,19 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
         >
           <Icon name="bookmark" />
         </button>
+        <button className="icon-btn aa" aria-label={t('読書設定')} title={t('読書設定')} onClick={() => setSheet('settings')}>
+          Aa
+        </button>
         <button
           className="icon-btn"
-          aria-label={t('理解度の確認')}
-          title={t('理解度の確認 (Q)')}
+          aria-label={t('その他の操作')}
+          title={t('その他の操作')}
           onClick={() => {
             if (playing) pause()
-            setSheet('quiz')
+            setSheet('more')
           }}
         >
-          <Icon name="quiz" />
-        </button>
-        <button className="icon-btn" aria-label={t('人物')} title={t('人物の登録と色分け')} onClick={() => setSheet('people')}>
-          <Icon name="people" />
-        </button>
-        {isPdf && (
-          <button className="icon-btn" aria-label={t('元のPDFを見る')} title={t('元のPDFを見る (P)')} onClick={openPdfView}>
-            <Icon name="pdf" />
-          </button>
-        )}
-        <button className="icon-btn" aria-label={t('読書設定')} title={t('読書設定')} onClick={() => setSheet('settings')}>
-          <Icon name="settings" />
+          <Icon name="more" />
         </button>
       </div>
 
@@ -780,12 +771,58 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
           <button className="speed-btn" aria-label={t('速くする')} onClick={() => changeSpeed(1)}>
             {'\uFF0B'}
           </button>
-          <button className="speed-btn" aria-label={t('最初から読む')} title={t('最初から読む (Home)')} onClick={() => setConfirmRestart(true)}>
-            <Icon name="restart" />
-          </button>
         </div>
       </div>
 
+      {sheet === 'more' && (
+        <>
+          <div className="sheet-backdrop" onClick={() => setSheet(null)} />
+          <div className="sheet action-sheet" role="dialog" aria-label={t('その他の操作')}>
+            <ul className="list group">
+              <li>
+                <button onClick={() => setSheet('quiz')}>
+                  <Icon name="quiz" />
+                  <span className="grow">{t('理解度の確認')}</span>
+                  <span className="kbd">Q</span>
+                </button>
+              </li>
+              <li>
+                <button onClick={() => setSheet('people')}>
+                  <Icon name="people" />
+                  <span className="grow">{t('人物の登録と色分け')}</span>
+                </button>
+              </li>
+              {isPdf && (
+                <li>
+                  <button
+                    onClick={() => {
+                      setSheet(null)
+                      openPdfView()
+                    }}
+                  >
+                    <Icon name="pdf" />
+                    <span className="grow">{t('元のPDFを見る')}</span>
+                    <span className="kbd">P</span>
+                  </button>
+                </li>
+              )}
+            </ul>
+            <ul className="list group">
+              <li>
+                <button
+                  onClick={() => {
+                    setSheet(null)
+                    setConfirmRestart(true)
+                  }}
+                >
+                  <Icon name="restart" />
+                  <span className="grow">{t('最初から読む')}</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </>
+      )}
       {sheet === 'settings' && <QuickSettings onClose={() => setSheet(null)} chunks={chunks} latin={latin} />}
       {sheet === 'notes' && (
         <NotesSheet
