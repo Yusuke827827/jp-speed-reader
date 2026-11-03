@@ -1,16 +1,20 @@
+/* 見た目は iPhone の標準アプリ（設定・ブック）に合わせる。
+   地は薄い灰色、項目は白い角丸の面に入れ、線は髪の毛ほどの細さにする。強調色は主な操作と選択中の印だけに使う */
 :root {
-  --bg: #f6f5f2;
+  --bg: #f2f2f7;
   --surface: #ffffff;
-  --surface-2: #efede8;
+  --surface-2: rgba(118, 118, 128, 0.12);
   --text: #1c1c1e;
-  --muted: #6b6a66;
-  --line: #e2dfd8;
+  --muted: #6e6e73;
+  --line: rgba(60, 60, 67, 0.18);
   --accent: #c8553d;
   --accent-text: #ffffff;
-  --danger: #c0392b;
-  --ok: #2f7d4f;
-  --radius: 14px;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.05);
+  --danger: #e5383b;
+  --ok: #248a3d;
+  --switch-on: #34c759;
+  --radius: 12px;
+  --shadow: none;
+  --seg-on: #ffffff;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --font-ui: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic UI', Meiryo, sans-serif;
@@ -21,14 +25,17 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #17181b;
-    --surface: #212226;
-    --surface-2: #2a2b30;
-    --text: #ecebe7;
-    --muted: #9b9a95;
-    --line: #34353a;
-    --accent: #e0745a;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --bg: #000000;
+    --surface: #1c1c1e;
+    --surface-2: rgba(118, 118, 128, 0.24);
+    --text: #f5f5f7;
+    --muted: #98989f;
+    --line: rgba(84, 84, 88, 0.55);
+    --accent: #e8735a;
+    --danger: #ff453a;
+    --ok: #30d158;
+    --switch-on: #30d158;
+    --seg-on: #636366;
   }
 }
 
@@ -47,10 +54,11 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-ui);
-  font-size: 16px;
-  line-height: 1.6;
+  font-size: 17px;
+  line-height: 1.5;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
 }
 
@@ -74,22 +82,25 @@ a {
 
 .screen {
   min-height: 100%;
-  padding: calc(var(--safe-top) + 8px) 16px calc(var(--safe-bottom) + 32px);
-  max-width: 960px;
+  padding: calc(var(--safe-top) + 4px) 16px calc(var(--safe-bottom) + 40px);
+  max-width: 760px;
   margin: 0 auto;
 }
 
 .topbar {
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-height: 52px;
-  margin-bottom: 8px;
+  gap: 4px;
+  min-height: 44px;
+  margin: 0 -8px 4px;
 }
 
+/* 画面の題は、iPhone の「大きいタイトル」と同じ大きさ */
 .topbar h1 {
-  font-size: 20px;
-  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  margin: 0 0 0 8px;
   flex: 1;
   min-width: 0;
   overflow: hidden;
@@ -105,45 +116,47 @@ a {
   min-height: 44px;
   padding: 0 16px;
   border-radius: 12px;
-  border: 1px solid var(--line);
-  background: var(--surface);
+  border: none;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
   font-weight: 600;
-  font-size: 15px;
+  font-size: 16px;
   white-space: nowrap;
 }
 
 .btn:disabled {
-  opacity: 0.45;
+  opacity: 0.4;
   cursor: default;
 }
 
 .btn.primary {
   background: var(--accent);
-  border-color: var(--accent);
   color: var(--accent-text);
 }
 
 .btn.danger {
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
   color: var(--danger);
 }
 
 .btn.ghost {
   background: transparent;
-  border-color: transparent;
 }
 
 .btn.small {
-  min-height: 36px;
+  min-height: 34px;
   padding: 0 12px;
-  font-size: 14px;
+  font-size: 15px;
+  border-radius: 10px;
 }
 
 .icon-btn {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: 22px;
   border: none;
   background: transparent;
+  color: var(--accent);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -152,7 +165,7 @@ a {
 
 .icon-btn:active,
 .btn:active {
-  transform: scale(0.97);
+  opacity: 0.55;
 }
 
 .icon {
@@ -163,10 +176,8 @@ a {
 
 .card {
   background: var(--surface);
-  border: 1px solid var(--line);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 16px;
+  padding: 14px 16px;
 }
 
 .muted {
@@ -197,8 +208,8 @@ a {
 }
 
 .progress {
-  height: 6px;
-  border-radius: 3px;
+  height: 4px;
+  border-radius: 2px;
   background: var(--surface-2);
   overflow: hidden;
 }
@@ -212,17 +223,16 @@ a {
 .notice {
   border-radius: 12px;
   padding: 12px 14px;
-  background: var(--surface-2);
-  font-size: 14px;
+  background: var(--surface);
+  font-size: 15px;
 }
 
 .notice.error {
-  background: color-mix(in srgb, var(--danger) 12%, var(--surface));
-  border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent);
+  background: color-mix(in srgb, var(--danger) 10%, var(--surface));
 }
 
 .notice.warn {
-  background: color-mix(in srgb, #d9a400 14%, var(--surface));
+  background: color-mix(in srgb, #ff9f0a 14%, var(--surface));
 }
 
 .notice strong {
@@ -230,12 +240,13 @@ a {
   margin-bottom: 2px;
 }
 
+/* iPhone の「セグメントコントロール」 */
 .segmented {
   display: flex;
   background: var(--surface-2);
-  border-radius: 12px;
-  padding: 3px;
-  gap: 2px;
+  border-radius: 9px;
+  padding: 2px;
+  gap: 0;
   overflow-x: auto;
 }
 
@@ -243,17 +254,20 @@ a {
   flex: 1;
   border: none;
   background: transparent;
-  border-radius: 9px;
-  min-height: 38px;
+  border-radius: 7px;
+  min-height: 32px;
   padding: 0 10px;
   font-size: 14px;
+  font-weight: 500;
   white-space: nowrap;
 }
 
 .segmented button[aria-pressed='true'] {
-  background: var(--surface);
-  box-shadow: var(--shadow);
-  font-weight: 700;
+  background: var(--seg-on);
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.12),
+    0 3px 1px rgba(0, 0, 0, 0.04);
+  font-weight: 600;
 }
 
 .field {
@@ -266,6 +280,7 @@ a {
   margin-bottom: 6px;
   display: flex;
   justify-content: space-between;
+  gap: 8px;
 }
 
 input[type='range'] {
@@ -277,16 +292,25 @@ input[type='range'] {
 input[type='number'],
 input[type='text'],
 input[type='search'],
-textarea {
-  border: 1px solid var(--line);
-  background: var(--surface);
+textarea,
+select {
+  border: none;
+  background: var(--surface-2);
   border-radius: 10px;
-  padding: 8px 10px;
+  padding: 8px 12px;
   min-height: 40px;
   width: 100%;
   font-size: 16px; /* iOS のズームを防ぐ */
 }
 
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+  outline-offset: 0;
+}
+
+/* 切り替えは iPhone のスイッチの形にする（中身はふつうのチェックボックス） */
 .switch {
   display: flex;
   align-items: center;
@@ -296,17 +320,47 @@ textarea {
 }
 
 .switch input {
-  width: 22px;
-  height: 22px;
-  accent-color: var(--accent);
+  appearance: none;
+  -webkit-appearance: none;
+  flex: none;
+  position: relative;
+  width: 51px;
+  height: 31px;
+  margin: 0;
+  border-radius: 16px;
+  background: rgba(120, 120, 128, 0.16);
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.switch input::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.15),
+    0 3px 1px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s;
+}
+
+.switch input:checked {
+  background: var(--switch-on);
+}
+
+.switch input:checked::before {
+  transform: translateX(20px);
 }
 
 .section-title {
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 400;
   color: var(--muted);
-  margin: 24px 4px 8px;
-  letter-spacing: 0.04em;
+  margin: 26px 16px 7px;
 }
 
 /* ---------- ダイアログ ---------- */
@@ -314,58 +368,81 @@ textarea {
 .dialog-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
   z-index: 50;
   padding: 16px;
   padding-bottom: calc(var(--safe-bottom) + 16px);
-}
-
-@media (min-width: 640px) {
-  .dialog-backdrop {
-    align-items: center;
-  }
+  animation: fade-in 0.2s ease-out;
 }
 
 .dialog {
   background: var(--surface);
   color: var(--text);
-  border-radius: 18px;
-  padding: 20px;
+  border-radius: 14px;
+  padding: 20px 18px 16px;
   width: 100%;
-  max-width: 420px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  max-width: 340px;
+  text-align: center;
+  animation: pop-in 0.22s ease-out;
 }
 
 .dialog h2 {
-  margin: 0 0 8px;
-  font-size: 18px;
+  margin: 0 0 6px;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.dialog p,
+.dialog > div {
+  font-size: 14px;
 }
 
 .dialog .actions {
   display: flex;
   gap: 8px;
-  justify-content: flex-end;
+  justify-content: stretch;
   margin-top: 16px;
 }
 
+.dialog .actions .btn {
+  flex: 1;
+}
+
+/* 下から出るシート。上に掴み手の線を出す */
 .sheet {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
-  max-height: 80vh;
+  max-height: 86vh;
   overflow-y: auto;
-  background: var(--surface);
+  background: var(--bg);
   color: var(--text);
-  border-radius: 18px 18px 0 0;
-  padding: 16px 16px calc(var(--safe-bottom) + 16px);
+  border-radius: 12px 12px 0 0;
+  padding: 22px 16px calc(var(--safe-bottom) + 20px);
   z-index: 40;
-  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.25);
   max-width: 720px;
   margin: 0 auto;
+  animation: sheet-up 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.sheet::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  width: 36px;
+  height: 5px;
+  margin-left: -18px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--text) 25%, transparent);
+}
+
+.sheet .card {
+  background: var(--surface);
 }
 
 .sheet-backdrop {
@@ -373,66 +450,113 @@ textarea {
   inset: 0;
   z-index: 39;
   background: rgba(0, 0, 0, 0.3);
+  animation: fade-in 0.2s ease-out;
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet,
+  .sheet-backdrop,
+  .dialog,
+  .dialog-backdrop {
+    animation: none;
+  }
 }
 
 .toast {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(var(--safe-bottom) + 24px);
-  background: #222;
+  bottom: calc(var(--safe-bottom) + 28px);
+  background: rgba(28, 28, 30, 0.86);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   color: #fff;
-  padding: 10px 16px;
-  border-radius: 12px;
-  font-size: 14px;
+  padding: 10px 18px;
+  border-radius: 22px;
+  font-size: 15px;
+  font-weight: 500;
   z-index: 60;
   max-width: calc(100% - 32px);
+  animation: fade-in 0.2s ease-out;
 }
 
 /* ---------- 本棚 ---------- */
 
+/* iPhone の「ブック」と同じく、表紙を主役に 3 列で並べる */
 .shelf {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 22px 16px;
+  padding: 0 4px;
 }
 
-@media (max-width: 480px) {
+@media (min-width: 600px) {
   .shelf {
-    grid-template-columns: 1fr;
-    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   }
 }
 
 .book {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 12px;
+  min-width: 0;
 }
 
-@media (max-width: 480px) {
-  .book {
-    flex-direction: row;
-    align-items: stretch;
-  }
+.book-open {
+  border: none;
+  background: none;
+  padding: 0;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: inherit;
+}
+
+.book-open:active .cover {
+  opacity: 0.7;
 }
 
 .cover {
-  aspect-ratio: 1 / 1.414;
+  aspect-ratio: 1 / 1.45;
   width: 100%;
-  border-radius: 8px;
+  border-radius: 4px;
   background: var(--surface-2) center / cover no-repeat;
-  border: 1px solid var(--line);
   flex: none;
   position: relative;
   overflow: hidden;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.12),
+    0 6px 14px rgba(0, 0, 0, 0.12);
 }
 
-@media (max-width: 480px) {
-  .cover {
-    width: 76px;
-  }
+/* 背表紙の折り目のような細い影 */
+.cover::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 6px;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.12), transparent);
+  pointer-events: none;
 }
 
 .cover .badge {
@@ -446,15 +570,208 @@ textarea {
   border-radius: 6px;
 }
 
-.book h3 {
-  font-size: 15px;
-  margin: 0;
-  line-height: 1.4;
+.book-title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   word-break: break-all;
+}
+
+.book-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2px;
+}
+
+.book-pct {
+  font-size: 13px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.book-pct.unread {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.more-btn {
+  border: none;
+  background: none;
+  color: var(--muted);
+  width: 32px;
+  height: 28px;
+  margin-right: -6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.more-btn .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.section-title .count {
+  margin-left: 6px;
+}
+
+/* 前回の続き: 表紙と題名・進み具合を 1 枚にまとめ、全体を押せるようにする */
+.hero {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  color: inherit;
+  align-items: stretch;
+  padding: 14px;
+}
+
+.hero:active {
+  opacity: 0.7;
+}
+
+.hero-cover {
+  width: 84px;
+}
+
+.hero-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hero-title {
+  font-family: var(--font-mincho);
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.hero-author {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.hero-body .progress {
+  margin-top: auto;
+  display: block;
+}
+
+.hero-body .progress > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.hero-meta {
+  font-size: 13px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.hero-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  margin-top: 6px;
+  padding: 6px 14px 6px 10px;
+  border-radius: 16px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.hero-action .icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* 本の操作のシート */
+.action-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.mini-cover {
+  width: 44px;
+}
+
+.mini-cover .cover-title {
+  font-size: 9px;
+  inset: 4px;
+}
+
+.action-title {
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.list.group {
+  background: var(--surface);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.list.group + .list.group {
+  margin-top: 16px;
+}
+
+.list.group li {
+  position: relative;
+}
+
+/* 区切り線は、アイコンの右から引く（iPhone の一覧と同じ） */
+.list.group li + li {
+  border-top: none;
+}
+
+.list.group li + li::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 52px;
+  right: 0;
+  border-top: 0.5px solid var(--line);
+}
+
+.list.group button {
+  padding: 0 16px;
+  min-height: 48px;
+  align-items: center;
+  gap: 14px;
+  font-size: 17px;
+  color: var(--text);
+}
+
+.list.group .icon {
+  color: var(--accent);
+}
+
+.list.group .danger,
+.list.group .danger .icon {
+  color: var(--danger);
+}
+
+.empty-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
 }
 
 .empty-state {
@@ -1538,17 +1855,15 @@ textarea {
 /* ---------- 読書の目標と連続記録 ---------- */
 
 .goal-chip {
-  display: inline-block;
-  font-size: 13px;
-  font-weight: 600;
-  padding: 4px 12px;
-  border-radius: 999px;
-  background: var(--surface-2);
-  margin-bottom: 12px;
+  font-size: 15px;
+  color: var(--muted);
+  margin: -2px 0 4px;
+  font-variant-numeric: tabular-nums;
 }
 
 .goal-chip.done {
-  background: color-mix(in srgb, var(--accent) 22%, var(--surface));
+  color: var(--ok);
+  font-weight: 600;
 }
 
 .goal-card {

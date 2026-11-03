@@ -33,6 +33,11 @@ const dict: Record<string, string> = {
   '「{title}」のPDF・抽出した本文・読書位置・しおり・履歴をこの端末から削除します。元に戻せません。':
     'This removes the PDF, extracted text, reading position, bookmarks, and history for "{title}" from this device. This can\'t be undone.',
   削除する: 'Delete',
+  '{title}の続きから読む': 'Continue reading {title}',
+  '{pct}%読了': '{pct}% read',
+  'すべての本': 'All books',
+  '読了': 'Finished',
+  '本棚から削除': 'Remove from library',
 }
 
 export default dict
