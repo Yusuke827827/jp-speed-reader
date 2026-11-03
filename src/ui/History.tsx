@@ -43,20 +43,20 @@ export function History() {
 
       {sessions && <GoalCard sessions={sessions} />}
 
-      <div className="stats">
-        <div className="card stat">
+      <ul className="list group plain stats">
+        <li>
+          <span className="grow">{t('合計時間')}</span>
           <b>{formatDuration(stats.ms)}</b>
-          <span className="small muted">{t('合計時間')}</span>
-        </div>
-        <div className="card stat">
+        </li>
+        <li>
+          <span className="grow">{t('読んだ文字数')}</span>
           <b>{stats.chars.toLocaleString()}</b>
-          <span className="small muted">{t('読んだ文字数')}</span>
-        </div>
-        <div className="card stat">
+        </li>
+        <li>
+          <span className="grow">{t('平均 字/分')}</span>
           <b>{stats.cpm}</b>
-          <span className="small muted">{t('平均 字/分')}</span>
-        </div>
-      </div>
+        </li>
+      </ul>
 
       <div className="section-title">{t('直近14日')}</div>
       <div className="card">
@@ -74,7 +74,7 @@ export function History() {
       {sessions === null ? (
         <p className="muted">{t('読み込み中…')}</p>
       ) : sessions.length === 0 ? (
-        <p className="muted">{t('まだ記録がありません。高速読書で再生して一時停止すると、ここに記録されます。')}</p>
+        <p className="section-foot">{t('まだ記録がありません。高速読書で再生して一時停止すると、ここに記録されます。')}</p>
       ) : (
         <div className="card">
           <ul className="list">

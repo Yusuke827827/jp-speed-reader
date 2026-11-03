@@ -33,6 +33,8 @@ const dict: Record<string, string> = {
   'このアプリ用に書いた短い文章です。': 'Short pieces written for this app.',
   '保存容量: {used} 使用 / 上限の目安 {quota}': 'Storage: {used} used / approx. limit {quota}',
   '（自動削除されない設定）': ' (protected from automatic deletion)',
+  'PDF・EPUB・テキスト（.txt）に対応しています。本はこの端末の中だけに保存し、外部には送りません。': 'PDF, EPUB and text (.txt) files are supported. Books are stored only on this device and never sent anywhere.',
+  'PCでは、ここにファイルをドラッグ＆ドロップすることもできます。': 'On a computer, you can also drag and drop a file here.',
 }
 
 export default dict

@@ -75,7 +75,7 @@ export function Import() {
 
       <div className="stack">
         <div
-          className={`dropzone${over ? ' over' : ''}`}
+          className={`card dropzone${over ? ' over' : ''}`}
           onDragOver={(e) => {
             e.preventDefault()
             setOver(true)
@@ -90,7 +90,7 @@ export function Import() {
         >
           {busy ? (
             <div className="stack" aria-live="polite">
-              <div style={{ fontWeight: 700 }}>
+              <div style={{ fontWeight: 600 }}>
                 {progress!.phase === 'reading' && t('ファイルを読み込んでいます')}
                 {progress!.phase === 'extracting' && t('本文を取り出しています（{done} / {total} ページ）', { done: progress!.done, total: progress!.total })}
                 {progress!.phase === 'repairing' && t('欠けた文字を補っています（{done} / {total} ページ）', { done: progress!.done, total: progress!.total })}
@@ -105,13 +105,14 @@ export function Import() {
             </div>
           ) : (
             <>
-              <p style={{ fontSize: 17, fontWeight: 700, margin: '0 0 4px' }}>{t('小説のPDF・EPUB・テキストを選んでください')}</p>
-              <p className="muted small" style={{ margin: '0 0 16px' }}>
-                {t('PCではここにドラッグ＆ドロップもできます。iPhoneでは「ファイル」アプリやiCloud Driveから選べます。')}
-              </p>
-              <button className="btn primary" onClick={() => input.current?.click()}>
-                <Icon name="plus" /> {t('ファイルを選ぶ')}
+              <div className="drop-icon" aria-hidden="true">
+                <Icon name="fileAdd" />
+              </div>
+              <button className="btn primary wide" onClick={() => input.current?.click()}>
+                {t('ファイルを選ぶ')}
               </button>
+              <p className="drop-note">{t('PDF・EPUB・テキスト（.txt）に対応しています。本はこの端末の中だけに保存し、外部には送りません。')}</p>
+              <p className="drop-note desktop-only">{t('PCでは、ここにファイルをドラッグ＆ドロップすることもできます。')}</p>
               <input
                 ref={input}
                 type="file"
@@ -132,37 +133,27 @@ export function Import() {
             {error.hint}
           </ErrorBox>
         )}
-
-        <div className="card">
-          <div style={{ fontWeight: 700, marginBottom: 6 }}>{t('読み込みの流れ')}</div>
-          <ol className="small muted" style={{ margin: 0, paddingLeft: 20 }}>
-            <li>{t('PDFに含まれる文字を取り出し、柱（ページ上部の書名など）・ノンブル・ルビを除いて段落に組み立てます。')}</li>
-            <li>{t('文字が入っていないページ（スキャン画像）は、続けて日本語OCRにかけられます。')}</li>
-            <li>{t('テキスト（.txt）は UTF-8 と Shift_JIS に対応します。青空文庫形式なら題名・著者・見出し・ルビを読み取ります。')}</li>
-            <li>{t('EPUB（.epub）は、本文・ルビ・目次・挿絵を読み取ります。コピー防止（DRM）のかかった本は読めません。')}</li>
-            <li>{t('PDFと本文はこの端末のブラウザ内にだけ保存されます。外部のサーバーには送りません。')}</li>
-          </ol>
-        </div>
-
-        <div className="card">
-          <div style={{ fontWeight: 700, marginBottom: 6 }}>{t('サンプルで試す')}</div>
-          <p className="small muted" style={{ marginTop: 0 }}>{t('このアプリ用に書いた短い文章です。')}</p>
-          <div className="row wrap">
-            {SAMPLES.map((s) => (
-              <button key={s.file} className="btn small" disabled={busy} onClick={() => loadSample(s.file)}>
-                {s.label()}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {storage && storage.quota > 0 && (
-          <p className="small muted">
-            {t('保存容量: {used} 使用 / 上限の目安 {quota}', { used: formatBytes(storage.usage), quota: formatBytes(storage.quota) })}
-            {storage.persisted ? t('（自動削除されない設定）') : ''}
-          </p>
-        )}
       </div>
+
+      <div className="section-title">{t('サンプルで試す')}</div>
+      <ul className="list group plain">
+        {SAMPLES.map((s) => (
+          <li key={s.file}>
+            <button disabled={busy} onClick={() => loadSample(s.file)}>
+              <span className="grow">{s.label()}</span>
+              <Icon name="chevron" className="icon chevron" />
+            </button>
+          </li>
+        ))}
+      </ul>
+      <p className="section-foot">{t('このアプリ用に書いた短い文章です。')}</p>
+
+      {storage && storage.quota > 0 && (
+        <p className="section-foot">
+          {t('保存容量: {used} 使用 / 上限の目安 {quota}', { used: formatBytes(storage.usage), quota: formatBytes(storage.quota) })}
+          {storage.persisted ? t('（自動削除されない設定）') : ''}
+        </p>
+      )}
     </div>
   )
 }

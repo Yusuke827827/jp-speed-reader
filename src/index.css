@@ -822,16 +822,65 @@ select:focus-visible {
 }
 
 .dropzone {
-  border: 2px dashed var(--line);
-  border-radius: 18px;
-  padding: 32px 16px;
   text-align: center;
-  background: var(--surface);
+  padding: 28px 20px 18px;
+  border: 2px dashed transparent;
 }
 
 .dropzone.over {
   border-color: var(--accent);
   background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+}
+
+.drop-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 16px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.drop-icon .icon {
+  width: 28px;
+  height: 28px;
+}
+
+.btn.wide {
+  width: 100%;
+  max-width: 360px;
+}
+
+.drop-note {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 12px 0 0;
+}
+
+@media (pointer: coarse) {
+  .desktop-only {
+    display: none;
+  }
+}
+
+/* 一覧の下の小さな注記（iPhone の設定の「フッター」） */
+.section-foot {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 7px 16px 0;
+}
+
+.list.group.plain li + li::before {
+  left: 16px;
+}
+
+.list.group .chevron {
+  width: 16px;
+  height: 16px;
+  color: color-mix(in srgb, var(--muted) 60%, transparent) !important;
 }
 
 /* ---------- 高速読書 ---------- */
@@ -1206,19 +1255,20 @@ select:focus-visible {
 /* ---------- 履歴 ---------- */
 
 .stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  margin-top: 16px;
+}
+
+/* 合計の数字は、一覧の右端に値として並べる */
+.stats li {
+  display: flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 16px;
   gap: 8px;
 }
 
-.stat {
-  text-align: center;
-  padding: 12px 6px;
-}
-
-.stat b {
-  display: block;
-  font-size: 22px;
+.stats li b {
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
@@ -1253,6 +1303,7 @@ select:focus-visible {
 .preview-box {
   border-radius: 12px;
   height: 96px;
+  margin-top: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1622,25 +1673,49 @@ select:focus-visible {
 /* ---------- 使い方 ---------- */
 
 .help {
-  padding: 4px 16px;
+  padding: 0 0 0 16px;
 }
 
 .help-topic + .help-topic {
-  border-top: 1px solid var(--line);
+  border-top: 0.5px solid var(--line);
 }
 
+/* 開閉の三角は使わず、iPhone の一覧と同じく右端の「>」を回して示す */
 .help-topic summary {
   cursor: pointer;
-  font-weight: 600;
-  padding: 12px 0;
-  list-style-position: inside;
+  font-weight: 400;
+  padding: 11px 16px 11px 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.help-topic summary::-webkit-details-marker {
+  display: none;
+}
+
+.help-topic summary::after {
+  content: '';
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid color-mix(in srgb, var(--muted) 60%, transparent);
+  border-bottom: 2px solid color-mix(in srgb, var(--muted) 60%, transparent);
+  transform: rotate(-45deg);
+  transition: transform 0.2s;
+}
+
+.help-topic[open] summary::after {
+  transform: rotate(45deg);
 }
 
 .help-topic ul {
-  margin: 0 0 12px;
-  padding-left: 20px;
-  font-size: 14px;
-  line-height: 1.8;
+  margin: 0 16px 12px 0;
+  padding-left: 18px;
+  font-size: 15px;
+  line-height: 1.7;
   color: var(--muted);
 }
 
@@ -1978,24 +2053,44 @@ select:focus-visible {
 }
 
 .goal-day {
-  font-size: 12px;
-  line-height: 30px;
-  border-radius: 8px;
-  background: var(--surface-2);
+  font-size: 13px;
+  line-height: 32px;
+  width: 32px;
+  margin: 0 auto;
+  border-radius: 16px;
   font-variant-numeric: tabular-nums;
 }
 
 .goal-day.some {
-  background: color-mix(in srgb, var(--accent) 18%, var(--surface));
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
 }
 
 .goal-day.ok {
   background: var(--accent);
   color: var(--accent-text);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .goal-day.today {
-  outline: 2px solid var(--accent);
-  outline-offset: -2px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.goal-day.today.ok {
+  color: var(--accent-text);
+}
+
+/* 設定の説明文は、iPhone の設定の注記と同じく小さく詰めて組む */
+.card p.small.muted {
+  line-height: 1.5;
+}
+
+/* 暗い配色では、セグメントの選ばれた側を白にせず、地より少し明るい色にする（白地に白文字で読めなくなるため） */
+:root[data-theme='night'],
+:root[data-theme='aurora'],
+:root[data-theme='forest'],
+:root[data-theme='ocean'],
+:root[data-wallpaper='dark'] {
+  --seg-on: rgba(255, 255, 255, 0.24);
+  --switch-on: #30d158;
 }

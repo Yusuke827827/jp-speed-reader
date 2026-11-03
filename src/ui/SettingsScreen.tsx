@@ -22,7 +22,7 @@ export function SettingsScreen() {
         <button className="icon-btn" aria-label={t('戻る')} onClick={() => history.length > 1 ? history.back() : go('/')}>
           <Icon name="back" />
         </button>
-        <h1>{t('読書設定')}</h1>
+        <h1>{t('設定')}</h1>
       </header>
 
       <div className={`preview-box bg-${theme.id}`} style={{ backgroundColor: theme.bg, color: theme.fg, fontFamily: s.font === 'mincho' ? 'var(--font-mincho)' : 'var(--font-gothic)', fontSize: Math.min(s.fontSize, 40) }}>
@@ -48,9 +48,6 @@ export function SettingsScreen() {
           </div>
         </div>
       </div>
-
-      <div className="section-title">{t('使い方')}</div>
-      <HelpSection />
 
       <div className="section-title">{t('速度')}</div>
       <div className="card stack">
@@ -291,6 +288,9 @@ export function SettingsScreen() {
           </tbody>
         </table>
       </div>
+
+      <div className="section-title">{t('使い方')}</div>
+      <HelpSection />
 
       <div className="section-title">{t('保存データ')}</div>
       <div className="card stack small">
