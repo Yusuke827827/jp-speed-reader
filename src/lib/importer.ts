@@ -32,6 +32,18 @@ export class ImportError extends Error {
   }
 }
 
+/**
+ * 表紙にするページ。1 ページ目が絵や画像なら 1 ページ目。1 ページ目が文字だけなら、最初の 3 ページの挿絵を使い、
+ * それも無ければ表紙なし（本棚では題名を縦に組んだ仮の表紙になる）。本文のページが表紙に並ぶのを避けるため
+ */
+export function coverPage(pages: Pick<PageRecord, 'pageIndex' | 'source' | 'image'>[]): number | null {
+  const first = pages.find((p) => p.pageIndex === 0)
+  if (!first) return null
+  if (first.source !== 'text' || first.image) return first.image === 'blank' ? null : 0
+  const il = pages.find((p) => p.pageIndex > 0 && p.pageIndex < 3 && p.image === 'illust')
+  return il ? il.pageIndex : null
+}
+
 export function newId() {
   return (crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`).replace(/-/g, '')
 }
@@ -150,7 +162,10 @@ export async function importPdf(
       fileModified: file.lastModified,
       pageCount,
       createdAt: Date.now(),
-      cover: await makeCover(doc),
+      cover: await (async () => {
+        const cp = coverPage(pages)
+        return cp === null ? undefined : makeCover(doc, cp)
+      })(),
       vertical: textPages > 0 ? verticalVotes > textPages / 2 : false,
       emptyPages,
       ocr: {
@@ -287,6 +302,12 @@ async function importEpub(file: File, onProgress: (p: ImportProgress) => void): 
   }
   onProgress({ phase: 'done', done: 1, total: 1 })
   return { book, garbledPages: 0 }
+}
+
+/** EPUB に入っている表紙を、本棚用の小さな画像にする（表紙を選び直すときに使う） */
+export async function epubCoverImage(buf: ArrayBuffer): Promise<string | undefined> {
+  const parsed = readEpub(buf)
+  return parsed.cover ? thumbnail(epubFile(buf, parsed.cover), parsed.cover) : undefined
 }
 
 /** 画像の種類（拡張子から） */

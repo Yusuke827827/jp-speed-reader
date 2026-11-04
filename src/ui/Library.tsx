@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { deleteBook, isPdfBook, listBooks, listProgress, listSessions, type BookMeta, type Progress, type Session } from '../lib/db'
 import { GoalChip } from './GoalCard'
+import { CoverSheet } from './CoverSheet'
 import { ConfirmDialog, ErrorBox, formatDate, formatDuration, go, Icon, toast } from './common'
 import { t } from '../lib/i18n'
 
@@ -23,6 +24,7 @@ export function Library() {
   const [error, setError] = useState<string | null>(null)
   const [toDelete, setToDelete] = useState<BookMeta | null>(null)
   const [menu, setMenu] = useState<BookMeta | null>(null)
+  const [coverFor, setCoverFor] = useState<BookMeta | null>(null)
 
   const load = async () => {
     try {
@@ -174,6 +176,17 @@ export function Library() {
                   </button>
                 </li>
               )}
+              <li>
+                <button
+                  onClick={() => {
+                    setCoverFor(menu)
+                    setMenu(null)
+                  }}
+                >
+                  <Icon name="grid" />
+                  <span className="grow">{t('表紙を変える')}</span>
+                </button>
+              </li>
               {menu.emptyPages > 0 && (
                 <li>
                   <button onClick={() => go(`/ocr/${menu.id}`)}>
@@ -199,6 +212,18 @@ export function Library() {
             </ul>
           </div>
         </>
+      )}
+
+      {coverFor && (
+        <CoverSheet
+          book={coverFor}
+          onClose={() => setCoverFor(null)}
+          onDone={(cover) => {
+            setBooks((bs) => bs && bs.map((b) => (b.id === coverFor.id ? { ...b, cover } : b)))
+            setCoverFor(null)
+            toast(t('表紙を変えました'))
+          }}
+        />
       )}
 
       {toDelete && (

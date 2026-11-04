@@ -2112,3 +2112,30 @@ select:focus-visible {
 .list.group button:disabled {
   opacity: 0.45;
 }
+
+/* 表紙の候補を 3 列で並べる */
+.cover-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: 16px 12px;
+}
+
+.cover-pick {
+  border: none;
+  background: none;
+  padding: 0;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.cover-pick:disabled {
+  opacity: 0.5;
+}
+
+.cover-pick .cover {
+  background-color: var(--surface);
+}

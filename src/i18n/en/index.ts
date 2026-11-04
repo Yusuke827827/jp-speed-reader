@@ -17,7 +17,8 @@ import speech from './speech'
 import quiz from './quiz'
 import epub from './epub'
 import backup from './backup'
+import cover from './cover'
 
-const en: Record<string, string> = { ...common, ...library, ...importer, ...ocr, ...reader, ...pdfviewer, ...settings, ...history, ...lib, ...help, ...customize, ...notes, ...goals, ...speech, ...quiz, ...epub, ...backup }
+const en: Record<string, string> = { ...common, ...library, ...importer, ...ocr, ...reader, ...pdfviewer, ...settings, ...history, ...lib, ...help, ...customize, ...notes, ...goals, ...speech, ...quiz, ...epub, ...backup, ...cover }
 
 export default en

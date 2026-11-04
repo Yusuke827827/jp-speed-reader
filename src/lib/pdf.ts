@@ -168,9 +168,9 @@ export async function renderToCanvas(doc: PDFDocumentProxy, pageIndex: number, l
   return canvas
 }
 
-export async function makeCover(doc: PDFDocumentProxy): Promise<string | undefined> {
+export async function makeCover(doc: PDFDocumentProxy, pageIndex = 0): Promise<string | undefined> {
   try {
-    const c = await renderToCanvas(doc, 0, 360)
+    const c = await renderToCanvas(doc, pageIndex, 360)
     const url = c.toDataURL('image/jpeg', 0.72)
     c.width = c.height = 0
     return url
