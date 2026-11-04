@@ -3,6 +3,8 @@
 
 import type { ReactNode } from 'react'
 import { t } from '../lib/i18n'
+import { useSettings } from '../lib/settings'
+import { go } from './common'
 
 function Topic({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -14,6 +16,7 @@ function Topic({ title, children }: { title: string; children: ReactNode }) {
 }
 
 export function HelpSection() {
+  const [, update] = useSettings()
   return (
     <div className="card help">
       <Topic title={t('本を追加する')}>
@@ -65,6 +68,15 @@ export function HelpSection() {
         <li>{t('機種変更するときは、設定の「書き出し・読み込み」で本ごと書き出し、新しい端末で読み込みます。iPhoneでは「ファイル」に保存するか、AirDropで送れます。')}</li>
         <li>{t('設定の「ホーム画面から開いたら、続きをすぐ読む」をオンにすると、ホーム画面のアイコンから前回の本がすぐ開きます。')}</li>
       </Topic>
+      <button
+        className="help-intro"
+        onClick={() => {
+          update({ introSeen: false })
+          go('/')
+        }}
+      >
+        {t('はじめの案内をもう一度見る')}
+      </button>
     </div>
   )
 }

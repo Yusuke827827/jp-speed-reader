@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { deleteBook, isPdfBook, listBooks, listProgress, listSessions, type BookMeta, type Progress, type Session } from '../lib/db'
 import { GoalChip } from './GoalCard'
 import { CoverSheet } from './CoverSheet'
+import { Intro } from './Intro'
+import { loadSettings, useSettings } from '../lib/settings'
 import { ConfirmDialog, ErrorBox, formatDate, formatDuration, go, Icon, toast } from './common'
 import { t } from '../lib/i18n'
 
@@ -25,6 +27,16 @@ export function Library() {
   const [toDelete, setToDelete] = useState<BookMeta | null>(null)
   const [menu, setMenu] = useState<BookMeta | null>(null)
   const [coverFor, setCoverFor] = useState<BookMeta | null>(null)
+  const [, updateSettings] = useSettings()
+  const [intro, setIntro] = useState(false)
+  // 保存した設定を読み終えてから、案内を出すかを決める（読み込み前の初期値で出してしまわないように）
+  useEffect(() => {
+    loadSettings().then((s) => setIntro(!s.introSeen))
+  }, [])
+  const closeIntro = () => {
+    setIntro(false)
+    updateSettings({ introSeen: true })
+  }
 
   const load = async () => {
     try {
@@ -225,6 +237,8 @@ export function Library() {
           }}
         />
       )}
+
+      {intro && <Intro onClose={closeIntro} />}
 
       {toDelete && (
         <ConfirmDialog

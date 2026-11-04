@@ -2139,3 +2139,117 @@ select:focus-visible {
 .cover-pick .cover {
   background-color: var(--surface);
 }
+
+/* ---------- はじめの案内 ---------- */
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: calc(var(--safe-top) + 12px) 24px calc(var(--safe-bottom) + 24px);
+  animation: fade-in 0.25s ease-out;
+}
+
+.intro-skip {
+  align-self: flex-end;
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 17px;
+  min-height: 44px;
+  padding: 0 4px;
+}
+
+.intro-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  max-width: 420px;
+  animation: intro-in 0.3s ease-out;
+}
+
+@keyframes intro-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+
+.intro-icon {
+  width: 96px;
+  height: 96px;
+  border-radius: 24px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+.intro-icon .icon {
+  width: 46px;
+  height: 46px;
+}
+
+.intro-body h2 {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+
+.intro-body p {
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0;
+}
+
+.intro-dots {
+  display: flex;
+  gap: 8px;
+  margin: 24px 0;
+}
+
+.intro-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--text) 20%, transparent);
+}
+
+.intro-dots span.on {
+  background: var(--text);
+}
+
+.intro-actions {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.intro-actions .btn {
+  min-height: 50px;
+  max-width: none;
+}
+
+.help-intro {
+  border: none;
+  border-top: 0.5px solid var(--line);
+  background: none;
+  color: var(--accent);
+  width: 100%;
+  text-align: left;
+  min-height: 44px;
+  padding: 0;
+  font-size: 17px;
+}

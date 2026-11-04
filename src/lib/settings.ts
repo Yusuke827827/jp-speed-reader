@@ -67,6 +67,8 @@ export interface Settings {
   sleepMinutes: number
   /** ホーム画面から開いたら、前回の本の続きをすぐ開く */
   resumeOnLaunch: boolean
+  /** 初めて開いたときの案内を見たか */
+  introSeen: boolean
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -104,6 +106,7 @@ export const DEFAULT_SETTINGS: Settings = {
   ttsVoice: '',
   sleepMinutes: 0,
   resumeOnLaunch: false,
+  introSeen: false,
 }
 
 export interface ThemeDef {

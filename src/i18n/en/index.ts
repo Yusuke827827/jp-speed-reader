@@ -18,7 +18,8 @@ import quiz from './quiz'
 import epub from './epub'
 import backup from './backup'
 import cover from './cover'
+import intro from './intro'
 
-const en: Record<string, string> = { ...common, ...library, ...importer, ...ocr, ...reader, ...pdfviewer, ...settings, ...history, ...lib, ...help, ...customize, ...notes, ...goals, ...speech, ...quiz, ...epub, ...backup, ...cover }
+const en: Record<string, string> = { ...common, ...library, ...importer, ...ocr, ...reader, ...pdfviewer, ...settings, ...history, ...lib, ...help, ...customize, ...notes, ...goals, ...speech, ...quiz, ...epub, ...backup, ...cover, ...intro }
 
 export default en
