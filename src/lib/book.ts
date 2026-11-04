@@ -119,6 +119,19 @@ export function positionForPage(book: BookText, page: number): TextPosition {
   return { para: Math.max(0, last), offset: 0 }
 }
 
+/** 読書位置の textVersion がこの値なら、別の端末から移した位置なので、読んだ割合から引き直す */
+export const MOVED_TEXT_VERSION = -1
+
+/** 読んだ割合（%）に当たる本文の位置 */
+export function positionForPercent(book: BookText, percent: number): TextPosition {
+  const target = Math.max(0, Math.min(book.totalChars, (percent / 100) * book.totalChars))
+  for (let i = book.paragraphs.length - 1; i >= 0; i--) {
+    const p = book.paragraphs[i]
+    if (p.globalStart <= target && (p.text.length > 0 || i === 0)) return { para: i, offset: Math.min(p.text.length, Math.round(target - p.globalStart)) }
+  }
+  return { para: 0, offset: 0 }
+}
+
 export function globalOffset(book: BookText, pos: TextPosition): number {
   const para = book.paragraphs[pos.para]
   return para ? para.globalStart + pos.offset : 0

@@ -1,0 +1,33 @@
+// 英語の訳（キーは画面の日本語の文）: 書き出し・読み込み
+const dict: Record<string, string> = {
+  '書き出しました（{size}）': 'Exported ({size})',
+  '書き出せませんでした: {message}': 'Couldn’t export: {message}',
+  'このアプリで書き出したファイルではないか、壊れています。': 'This file wasn’t exported by this app, or it is damaged.',
+  '読み込みました（本の追加 {added}・位置の引き継ぎ {matched}）': 'Imported ({added} books added, {matched} positions restored)',
+  '読み込めませんでした: {message}': 'Couldn’t import: {message}',
+  '本ごと全部を書き出す': 'Export everything, including books',
+  'PDF・EPUBも含めます（約{size}）。新しい端末にそのまま移せます。': 'Includes the PDFs and EPUBs (about {size}). Move straight to a new device.',
+  '作成中…': 'Preparing…',
+  '位置・メモ・設定だけを書き出す': 'Export positions, notes and settings only',
+  '小さなファイルです。読み込む端末に、同じ本を先に取り込んでおいてください。': 'A small file. Add the same books on the other device first.',
+  '書き出したファイルを読み込む': 'Import an exported file',
+  '読み込んでも、この端末の本や記録は消えません。足し合わせて、新しい方の読書位置を残します。': 'Importing never deletes books or records on this device. Data is merged and the newer reading position is kept.',
+  '種類': 'Type',
+  '本ごと全部': 'Everything, including books',
+  '位置・メモ・設定だけ': 'Positions, notes and settings only',
+  '書き出した日時': 'Exported at',
+  'この端末に足す本': 'Books to add',
+  '位置とメモを引き継ぐ本': 'Books whose position and notes carry over',
+  'この端末に無い本': 'Books not on this device',
+  '次の本はこの端末に無いため、位置とメモを引き継げません。先に取り込んでから、もう一度読み込んでください。': 'These books aren’t on this device, so their positions and notes can’t carry over. Add them first, then import again.',
+  'ほか{n}冊': ' and {n} more',
+  '設定と壁紙も、書き出したときのものにする': 'Also use the exported settings and wallpaper',
+  '読み込む': 'Import',
+  '書き出し・読み込み': 'Export and import',
+  'ホーム画面から開いたら、続きをすぐ読む': 'Resume reading when opened from the Home Screen',
+  '本棚を飛ばして、前回読んでいた本を開きます。': 'Skips the library and opens the book you were reading.',
+  '機種変更するときは、設定の「書き出し・読み込み」で本ごと書き出し、新しい端末で読み込みます。iPhoneでは「ファイル」に保存するか、AirDropで送れます。': 'When you change devices, export everything from “Export and import” in Settings and import it on the new device. On iPhone, save it to Files or send it with AirDrop.',
+  '設定の「ホーム画面から開いたら、続きをすぐ読む」をオンにすると、ホーム画面のアイコンから前回の本がすぐ開きます。': 'Turn on “Resume reading when opened from the Home Screen” in Settings to open your last book straight from the Home Screen icon.',
+}
+
+export default dict

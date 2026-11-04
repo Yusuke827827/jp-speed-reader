@@ -1,5 +1,6 @@
 import { WallpaperField } from './WallpaperField'
 import { HelpSection } from './HelpSection'
+import { BackupSection } from './BackupSection'
 import { useEffect, useState } from 'react'
 import { requestPersist, storageInfo } from '../lib/db'
 import { CHUNK_MODES } from '../lib/segment'
@@ -47,6 +48,13 @@ export function SettingsScreen() {
             ))}
           </div>
         </div>
+        <label className="switch">
+          <span>
+            {t('ホーム画面から開いたら、続きをすぐ読む')}
+            <span className="row-sub">{t('本棚を飛ばして、前回読んでいた本を開きます。')}</span>
+          </span>
+          <input type="checkbox" checked={s.resumeOnLaunch} onChange={(e) => update({ resumeOnLaunch: e.target.checked })} />
+        </label>
       </div>
 
       <div className="section-title">{t('速度')}</div>
@@ -288,6 +296,9 @@ export function SettingsScreen() {
           </tbody>
         </table>
       </div>
+
+      <div className="section-title">{t('書き出し・読み込み')}</div>
+      <BackupSection />
 
       <div className="section-title">{t('使い方')}</div>
       <HelpSection />

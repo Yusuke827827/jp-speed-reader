@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { gapBefore, globalOffset, pageAt, referenceParagraphs, percentAt, positionForPage, type BookText, type Paragraph, type TextPosition } from '../lib/book'
+import { gapBefore, globalOffset, MOVED_TEXT_VERSION, pageAt, positionForPercent, referenceParagraphs, percentAt, positionForPage, type BookText, type Paragraph, type TextPosition } from '../lib/book'
 import { addSession, describeStorageError, isPdfBook, listBookmarks, saveProgress, getFile, updateBook, type Bookmark, type Person, type TocEntry } from '../lib/db'
 import { newId } from '../lib/importer'
 import { chapterStarts, personRanges, personTerms, suggestPeople, PERSON_COLORS, type PersonRange } from '../lib/people'
@@ -141,6 +141,8 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
     if (startPage !== undefined) return positionForPage(text, startPage)
     const p = book.progress
     if (!p) return { para: 0, offset: 0 }
+    // 別の端末から移した位置は、読んだ割合から引き直す
+    if (p.textVersion === MOVED_TEXT_VERSION) return positionForPercent(text, p.percent)
     // OCR などで本文が変わった後は、段落番号がずれるのでページから位置を引き直す
     if (p.textVersion !== meta.textVersion) return positionForPage(text, p.page)
     return { para: p.para, offset: p.offset }

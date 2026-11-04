@@ -2094,3 +2094,21 @@ select:focus-visible {
   --seg-on: rgba(255, 255, 255, 0.24);
   --switch-on: #30d158;
 }
+
+/* 一覧の行の下に添える小さな説明 */
+.row-sub {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.4;
+  margin-top: 1px;
+}
+
+.list.group button:has(.row-sub) {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.list.group button:disabled {
+  opacity: 0.45;
+}

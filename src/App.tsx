@@ -5,14 +5,26 @@ import { Ocr } from './ui/Ocr'
 import { PdfViewer } from './ui/PdfViewer'
 import { Reader } from './ui/Reader'
 import { SettingsScreen } from './ui/SettingsScreen'
-import { ToastHost, useRoute } from './ui/common'
+import { go, ToastHost, useRoute } from './ui/common'
 import { useEffect } from 'react'
-import { themeOf, useSettings } from './lib/settings'
+import { loadSettings, themeOf, useSettings } from './lib/settings'
+import { isStandalone, lastReadBookId, shouldResume } from './lib/resume'
+
+// 起動したときの画面。ホーム画面から本棚が開いたときに、続きを開くかを決めるのに使う
+const launchHash = location.hash
 import { useWallpaper } from './lib/wallpaper'
 
 export default function App() {
   const { parts, query } = useRoute()
   const [settings] = useSettings()
+  useEffect(() => {
+    loadSettings().then(async (s) => {
+      if (!shouldResume(launchHash, isStandalone(), s.resumeOnLaunch)) return
+      const id = await lastReadBookId().catch(() => null)
+      // 読み込みを待つ間に別の画面へ移っていたら、何もしない
+      if (id && shouldResume(location.hash, true, true)) go(`/read/${id}`)
+    })
+  }, [])
   // 質感のある背景を選んだときは、本棚などの画面にも同じ背景を使う
   const wallpaper = useWallpaper()
   // 自分の写真の壁紙と強調色を、本棚・読書画面の両方に使う

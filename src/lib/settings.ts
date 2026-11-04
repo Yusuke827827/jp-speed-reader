@@ -65,6 +65,8 @@ export interface Settings {
   ttsVoice: string
   /** 読み上げを始めてから止めるまでの分数（0 = 止めない） */
   sleepMinutes: number
+  /** ホーム画面から開いたら、前回の本の続きをすぐ開く */
+  resumeOnLaunch: boolean
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -101,6 +103,7 @@ export const DEFAULT_SETTINGS: Settings = {
   ttsRate: 1.2,
   ttsVoice: '',
   sleepMinutes: 0,
+  resumeOnLaunch: false,
 }
 
 export interface ThemeDef {
