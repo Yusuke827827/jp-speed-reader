@@ -81,10 +81,10 @@ export function SettingsScreen() {
           <input type="number" inputMode="numeric" min={WPM_MIN} max={WPM_MAX} value={s.wpm} onChange={(e) => update({ wpm: Math.max(WPM_MIN, Math.min(WPM_MAX, Number(e.target.value) || DEFAULT_SETTINGS.wpm)) })} />
         </label>
         <p className="small muted" style={{ margin: 0 }}>
-          {t('欧文（英語など）の文は語数で速度を合わせます。英語の黙読は一般に毎分200〜300語程度と言われます。')}
+          {t('欧文（英語など）は語数で速度を合わせます。')}
         </p>
         <p className="small muted" style={{ margin: 0 }}>
-          {t('速度は「空白を除いた文字数 ÷ 表示時間」で決めています。句読点の間を入れても、本全体の平均が設定値と一致するように各単位の表示時間を配分します。日本語の黙読は一般に毎分400〜600字程度と言われます。')}
+          {t('句読点の間を入れても、本全体の平均が設定の速度になるよう表示時間を割り振ります。')}
         </p>
         <label className="switch">
           <span>{t('句読点・段落末で間をとる')}</span>
@@ -226,7 +226,7 @@ export function SettingsScreen() {
               {t('注視点を強調')}
             </button>
           </div>
-          <p className="small muted">{t('「注視点を強調」は、単位の前から約3分の1の文字に色を付け、その文字を画面中央に置きます。はみ出す場合は中央寄せを優先します。')}</p>
+          <p className="small muted">{t('「注視点を強調」は、前から約3分の1の文字に色を付けて中央に置きます。')}</p>
         </div>
         <div className="field">
           <div className="label">{t('挿絵の位置に来たら')}</div>
@@ -253,7 +253,7 @@ export function SettingsScreen() {
           <input type="checkbox" checked={s.skipReferences} onChange={(e) => update({ skipReferences: e.target.checked })} />
         </label>
         <p className="small muted" style={{ margin: 0 }}>
-          {t('「References」「参考文献」などの見出しから、付録（Appendix）の見出しの手前までを高速読書で飛ばします。PDF表示と全文パネルでは読めます。')}
+          {t('「参考文献」「References」から付録の手前までを飛ばします。PDF表示では読めます。')}
         </p>
         <label className="switch">
           <span>{t('登録した人物名を色分け')}</span>
@@ -328,7 +328,7 @@ export function SettingsScreen() {
           </button>
         )}
         <p className="muted" style={{ margin: 0 }}>
-          {t('iPhoneのSafariでは、ホーム画面に追加していないサイトのデータは、7日間使わないと削除されることがあります。長編を読むときは「共有 → ホーム画面に追加」で起動してください。')}
+          {t('iPhoneでは、ホーム画面に追加しないと、7日間使わなかったときにデータが消えることがあります。')}
         </p>
         <button className="btn small" onClick={() => update({ ...DEFAULT_SETTINGS })}>
           {t('読書設定を初期値に戻す')}

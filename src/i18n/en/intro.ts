@@ -11,6 +11,11 @@ const dict: Record<string, string> = {
   '{i}枚目／{n}枚': 'Page {i} of {n}',
   'はじめる': 'Get started',
   'はじめの案内をもう一度見る': 'Show the welcome guide again',
+  '欧文（英語など）は語数で速度を合わせます。': 'English and other Latin-script text is timed by word count.',
+  '句読点の間を入れても、本全体の平均が設定の速度になるよう表示時間を割り振ります。': 'Even with pauses at punctuation, display times are adjusted so the book averages the set speed.',
+  '「注視点を強調」は、前から約3分の1の文字に色を付けて中央に置きます。': '“Highlight focus point” colors the character about a third of the way in and centers it.',
+  '「参考文献」「References」から付録の手前までを飛ばします。PDF表示では読めます。': 'Skips from “References” up to the appendix. You can still read it in the PDF view.',
+  'iPhoneでは、ホーム画面に追加しないと、7日間使わなかったときにデータが消えることがあります。': 'On iPhone, data may be removed after 7 days without use unless the app is added to the Home Screen.',
 }
 
 export default dict
