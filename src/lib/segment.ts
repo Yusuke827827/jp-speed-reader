@@ -230,9 +230,37 @@ function splitChars(s: string): string[] {
   return out
 }
 
-/** BudouX の結果を補正する。句読点だけ・閉じ括弧だけの断片を前に寄せる */
+/**
+ * BudouX が 1 つの語の途中で切ってしまう平仮名の語。挨拶・感動詞・副詞など、文節の区切りと取り違えやすいもの。
+ * 実際の小説で「なる｜ほど」「おは｜よう」のように切れていた語を中心に挙げている
+ */
+const KEEP_WORDS = [
+  'なるほど', 'おはよう', 'ありがとう', 'こんにちは', 'こんばんは', 'さようなら', 'いただきます', 'ごちそうさま', 'おやすみ', 'すみません',
+  'もちろん', 'やっぱり', 'やはり', 'とにかく', 'とりあえず', 'いきなり', 'ゆっくり', 'しっかり', 'すっかり', 'はっきり', 'あっさり', 'こっそり', 'のんびり',
+  'なんとか', 'なんだか', 'いったい', 'ちょっと', 'もしかして', 'まったく', 'せっかく', 'わざわざ', 'さすが', 'ところが', 'けれども', 'それでも',
+]
+
+/** 語の途中に当たる区切りを返す（その位置では切らない）。「まあまあ」「おいおい」のような平仮名 2 字の繰り返しも 1 語とみなす */
+function protectedBreaks(text: string): Set<number> {
+  const out = new Set<number>()
+  const mark = (start: number, len: number) => {
+    for (let k = start + 1; k < start + len; k++) out.add(k)
+  }
+  for (const w of KEEP_WORDS) for (let i = text.indexOf(w); i >= 0; i = text.indexOf(w, i + 1)) mark(i, w.length)
+  for (const m of text.matchAll(/([\u3041-\u3096ー]{2})\1/g)) mark(m.index!, 4)
+  return out
+}
+
+/** BudouX の結果を補正する。句読点だけ・閉じ括弧だけの断片を前に寄せ、語の途中の区切りはつなぐ */
 function phrasesOf(sentence: string): string[] {
-  const raw = budoux().parse(sentence)
+  const keep = protectedBreaks(sentence)
+  const raw: string[] = []
+  let at = 0
+  for (const piece of budoux().parse(sentence)) {
+    if (raw.length && keep.has(at)) raw[raw.length - 1] += piece
+    else raw.push(piece)
+    at += piece.length
+  }
   const out: string[] = []
   let carry = '' // 前の文節の末尾にあった開き括弧（次の文節の頭へ移す）
   for (const piece of raw) {

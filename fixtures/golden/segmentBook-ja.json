@@ -2308,20 +2308,12 @@
     "len": 6
    },
    {
-    "text": "「おは",
+    "text": "「おはよう。",
     "para": 0,
     "start": 16,
-    "end": 19,
-    "pause": "none",
-    "len": 3
-   },
-   {
-    "text": "よう。",
-    "para": 0,
-    "start": 19,
     "end": 22,
     "pause": "sentence",
-    "len": 3
+    "len": 6
    },
    {
     "text": "今日は",
@@ -2664,20 +2656,12 @@
     "len": 6
    },
    {
-    "text": "「おは",
+    "text": "「おはよう。",
     "para": 0,
     "start": 16,
-    "end": 19,
-    "pause": "none",
-    "len": 3
-   },
-   {
-    "text": "よう。",
-    "para": 0,
-    "start": 19,
     "end": 22,
     "pause": "sentence",
-    "len": 3
+    "len": 6
    },
    {
     "text": "今日は",
