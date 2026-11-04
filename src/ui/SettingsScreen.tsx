@@ -16,13 +16,17 @@ export function SettingsScreen() {
     storageInfo().then(setStorage).catch(() => {})
   }, [])
   const theme = THEMES.find((th) => th.id === s.theme)!
+  const fromReader = location.hash.includes('from=reader')
 
   return (
-    <div className="screen" role="main">
+    <div className={`screen${fromReader ? '' : ' with-tabs'}`} role="main">
       <header className="topbar" role="none">
-        <button className="icon-btn" aria-label={t('戻る')} onClick={() => history.length > 1 ? history.back() : go('/')}>
-          <Icon name="back" />
-        </button>
+        {/* 読書画面の「詳細設定を開く」から来たときだけ、読書画面へ戻るボタンを出す */}
+        {fromReader && (
+          <button className="icon-btn" aria-label={t('戻る')} onClick={() => (history.length > 1 ? history.back() : go('/'))}>
+            <Icon name="back" />
+          </button>
+        )}
         <h1>{t('設定')}</h1>
       </header>
 

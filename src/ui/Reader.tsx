@@ -19,7 +19,7 @@ import { IllustView, loadIllust, releaseIllusts } from './IllustView'
 import { t } from '../lib/i18n'
 import { charsPerSecond, chunkAtOffset, sentenceRange, speechAvailable, speechText, unlockSpeech, voicesFor } from '../lib/speech'
 
-export function Reader({ id, startPage }: { id: string; startPage?: number }) {
+export function Reader({ id, startPage, startPos }: { id: string; startPage?: number; startPos?: TextPosition }) {
   const { book, error, loading } = useBook(id)
   const [settings] = useSettings()
   if (loading) return <div className="screen muted">{t('読み込み中…')}</div>
@@ -55,12 +55,12 @@ export function Reader({ id, startPage }: { id: string; startPage?: number }) {
         </div>
       </div>
     )
-  return <ReaderView book={book} settings={settings} startPage={startPage} />
+  return <ReaderView book={book} settings={settings} startPage={startPage} startPos={startPos} />
 }
 
 const RAMP = [1.7, 1.4, 1.2, 1.08]
 
-function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings: Settings; startPage?: number }) {
+function ReaderView({ book, settings, startPage, startPos }: { book: LoadedBook; settings: Settings; startPage?: number; startPos?: TextPosition }) {
   const [, update] = useSettings()
   const { meta, text } = book
   const isPdf = isPdfBook(meta)
@@ -138,6 +138,7 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
 
   // ---------- 位置 ----------
   const initialPos = useMemo<TextPosition>(() => {
+    if (startPos && text.paragraphs[startPos.para]) return startPos
     if (startPage !== undefined) return positionForPage(text, startPage)
     const p = book.progress
     if (!p) return { para: 0, offset: 0 }
@@ -1247,7 +1248,7 @@ function QuickSettings({ onClose, chunks, latin }: { onClose: () => void; chunks
           <input type="checkbox" checked={s.pauses} onChange={(e) => update({ pauses: e.target.checked })} />
         </label>
         <SpeechField latin={latin} />
-        <button className="btn" onClick={() => go('/settings')}>
+        <button className="btn" onClick={() => go('/settings?from=reader')}>
           {t('詳細設定を開く')}
         </button>
       </div>

@@ -5,6 +5,8 @@ import { Ocr } from './ui/Ocr'
 import { PdfViewer } from './ui/PdfViewer'
 import { Reader } from './ui/Reader'
 import { SettingsScreen } from './ui/SettingsScreen'
+import { AllNotes } from './ui/AllNotes'
+import { TabBar, TAB_SCREENS } from './ui/TabBar'
 import { go, ToastHost, useRoute } from './ui/common'
 import { useEffect } from 'react'
 import { activeTheme, loadSettings, themeOf, useSettings, useSystemDark } from './lib/settings'
@@ -81,7 +83,10 @@ export default function App() {
       break
     case 'read': {
       const p = num('page')
-      view = <Reader key={`${id}-${p ?? ''}`} id={id} startPage={p !== undefined ? p - 1 : undefined} />
+      // メモの一覧から来たときは、印を付けた文の位置から開く
+      const para = query.get('para')
+      const startPos = para !== null ? { para: Number(para) || 0, offset: Number(query.get('offset')) || 0 } : undefined
+      view = <Reader key={`${id}-${p ?? ''}-${para ?? ''}-${query.get('offset') ?? ''}`} id={id} startPage={p !== undefined ? p - 1 : undefined} startPos={startPos} />
       break
     }
     case 'pdf':
@@ -93,12 +98,16 @@ export default function App() {
     case 'history':
       view = <History />
       break
+    case 'notes':
+      view = <AllNotes />
+      break
     default:
       view = <Library />
   }
   return (
     <>
       {view}
+      {TAB_SCREENS.includes(screen ?? '') && <TabBar screen={screen ?? ''} />}
       <ToastHost />
     </>
   )

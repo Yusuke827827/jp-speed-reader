@@ -17,7 +17,7 @@ const paths: Record<string, ReactNode> = {
   prevPara: <path d="M18 6l-6 6 6 6M11 6l-6 6 6 6" />,
   nextPara: <path d="M6 6l6 6-6 6M13 6l6 6-6 6" />,
   restart: <path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4" />,
-  book: <path d="M5 4h9a4 4 0 0 1 4 4v12H9a4 4 0 0 1-4-4zM5 16a4 4 0 0 1 4-4h9" />,
+  book: <path d="M12 6.5C10 5 7 4.5 4 4.5v13c3 0 6 .5 8 2 2-1.5 5-2 8-2v-13c-3 0-6 .5-8 2zM12 6.5v13" />,
   pdf: <path d="M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6" />,
   settings: (
     <g>
@@ -31,6 +31,8 @@ const paths: Record<string, ReactNode> = {
   search: <path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4" />,
   bookmark: <path d="M6 3h12v18l-6-4-6 4z" />,
   chevron: <path d="M9 5l7 7-7 7" />,
+  highlighter: <path d="M15 4l5 5-9 9H6v-5zM13 6l5 5M4 21h8" />,
+  chart: <path d="M5 20V11M12 20V5M19 20v-7M3 20h18" />,
   fileAdd: <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M12 11v6M9 14h6" />,
   quiz: <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM8 12l3 3 5-6" />,
   zoomIn: <path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4M8 11h6M11 8v6" />,

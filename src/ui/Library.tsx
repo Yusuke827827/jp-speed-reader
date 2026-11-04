@@ -70,15 +70,9 @@ export function Library() {
   const lastP = last ? progress.get(last.id) : undefined
 
   return (
-    <div className="screen" role="main">
+    <div className="screen with-tabs" role="main">
       <header className="topbar" role="none">
         <h1>{t('本棚')}</h1>
-        <button className="icon-btn" aria-label={t('読書履歴')} title={t('読書履歴')} onClick={() => go('/history')}>
-          <Icon name="history" />
-        </button>
-        <button className="icon-btn" aria-label={t('設定')} title={t('設定')} onClick={() => go('/settings')}>
-          <Icon name="settings" />
-        </button>
         <button className="icon-btn" aria-label={t('本を追加')} title={t('本を追加')} onClick={() => go('/import')}>
           <Icon name="plus" />
         </button>

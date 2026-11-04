@@ -19,7 +19,8 @@ import epub from './epub'
 import backup from './backup'
 import cover from './cover'
 import intro from './intro'
+import tabs from './tabs'
 
-const en: Record<string, string> = { ...common, ...library, ...importer, ...ocr, ...reader, ...pdfviewer, ...settings, ...history, ...lib, ...help, ...customize, ...notes, ...goals, ...speech, ...quiz, ...epub, ...backup, ...cover, ...intro }
+const en: Record<string, string> = { ...common, ...library, ...importer, ...ocr, ...reader, ...pdfviewer, ...settings, ...history, ...lib, ...help, ...customize, ...notes, ...goals, ...speech, ...quiz, ...epub, ...backup, ...cover, ...intro, ...tabs }
 
 export default en

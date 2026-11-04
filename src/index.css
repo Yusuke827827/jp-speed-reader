@@ -2324,3 +2324,58 @@ select:focus-visible {
     min-width: 30px;
   }
 }
+
+/* ---------- 画面の下のタブ ---------- */
+
+.tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  display: flex;
+  justify-content: space-around;
+  padding: 6px 8px calc(var(--safe-bottom) + 4px);
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-top: 0.5px solid var(--line);
+}
+
+.tabbar button {
+  flex: 1;
+  max-width: 120px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 0;
+  min-height: 44px;
+}
+
+.tabbar button .icon {
+  width: 26px;
+  height: 26px;
+}
+
+.tabbar button.on {
+  color: var(--accent);
+}
+
+.screen.with-tabs {
+  padding-bottom: calc(var(--safe-bottom) + 96px);
+}
+
+input[type='search'].search {
+  min-height: 36px;
+}
+
+/* タブのある画面では、知らせをタブの上に出す */
+body:has(.tabbar) .toast {
+  bottom: calc(var(--safe-bottom) + 72px);
+}

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { listSessions, type Session } from '../lib/db'
 import { t } from '../lib/i18n'
-import { formatDate, formatDuration, go, Icon } from './common'
+import { formatDate, formatDuration, go } from './common'
 import { GoalCard } from './GoalCard'
 
 export function History() {
@@ -33,12 +33,9 @@ export function History() {
   const max = Math.max(1, ...stats.days.map((d) => d.ms))
 
   return (
-    <div className="screen" role="main">
+    <div className="screen with-tabs" role="main">
       <header className="topbar" role="none">
-        <button className="icon-btn" aria-label={t('本棚へ戻る')} onClick={() => go('/')}>
-          <Icon name="back" />
-        </button>
-        <h1>{t('読書履歴')}</h1>
+        <h1>{t('記録')}</h1>
       </header>
 
       {sessions && <GoalCard sessions={sessions} />}
