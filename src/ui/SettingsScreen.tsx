@@ -156,7 +156,7 @@ export function SettingsScreen() {
                 key={th.id}
                 className={`btn small bg-${th.id}`}
                 aria-pressed={s.theme === th.id}
-                style={{ background: th.bg, color: th.fg, borderColor: s.theme === th.id ? 'var(--accent)' : 'var(--line)', borderWidth: 2 }}
+                style={{ background: th.bg, color: th.fg, borderColor: s.theme === th.id ? 'var(--accent)' : 'var(--line)', borderWidth: 2, borderStyle: 'solid' }}
                 onClick={() => update({ theme: th.id })}
               >
                 {t(th.label)}
@@ -164,6 +164,28 @@ export function SettingsScreen() {
             ))}
           </div>
         </div>
+        <label className="switch">
+          <span>
+            {t('端末がダークモードのときは暗い配色にする')}
+            <span className="row-sub">{t('明るい配色を選んでいるときだけ、下の配色に切り替えます。')}</span>
+          </span>
+          <input type="checkbox" checked={s.autoDark} onChange={(e) => update({ autoDark: e.target.checked })} />
+        </label>
+        {s.autoDark && (
+          <div className="row wrap" role="group" aria-label={t('ダークモードのときの配色')}>
+            {THEMES.filter((th) => th.dark).map((th) => (
+              <button
+                key={th.id}
+                className={`btn small bg-${th.id}`}
+                aria-pressed={s.darkTheme === th.id}
+                style={{ background: th.bg, color: th.fg, borderColor: s.darkTheme === th.id ? 'var(--accent)' : 'var(--line)', borderWidth: 2, borderStyle: 'solid' }}
+                onClick={() => update({ darkTheme: th.id })}
+              >
+                {t(th.label)}
+              </button>
+            ))}
+          </div>
+        )}
         <WallpaperField />
         <div className="field">
           <div className="label">{t('強調色')}</div>

@@ -16,6 +16,9 @@ const dict: Record<string, string> = {
   '「注視点を強調」は、前から約3分の1の文字に色を付けて中央に置きます。': '“Highlight focus point” colors the character about a third of the way in and centers it.',
   '「参考文献」「References」から付録の手前までを飛ばします。PDF表示では読めます。': 'Skips from “References” up to the appendix. You can still read it in the PDF view.',
   'iPhoneでは、ホーム画面に追加しないと、7日間使わなかったときにデータが消えることがあります。': 'On iPhone, data may be removed after 7 days without use unless the app is added to the Home Screen.',
+  '端末がダークモードのときは暗い配色にする': 'Use a dark theme when the device is in Dark Mode',
+  '明るい配色を選んでいるときだけ、下の配色に切り替えます。': 'Switches to the theme below only when a light theme is selected.',
+  'ダークモードのときの配色': 'Theme in Dark Mode',
 }
 
 export default dict

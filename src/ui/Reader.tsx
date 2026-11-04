@@ -5,7 +5,7 @@ import { newId } from '../lib/importer'
 import { chapterStarts, personRanges, personTerms, suggestPeople, PERSON_COLORS, type PersonRange } from '../lib/people'
 import { closePdf, openPdf, readOutline } from '../lib/pdf'
 import { chunkIndexAt, isLatinBook, paragraphStartIndex, segmentBook, CHUNK_MODES, visible, type Chunk } from '../lib/segment'
-import { THEMES, themeOf, useSettings, type Settings } from '../lib/settings'
+import { activeTheme, THEMES, themeOf, useSettings, useSystemDark, type Settings } from '../lib/settings'
 import { buildSchedule, durationOf, remainingMs, SPEED_PRESETS, CPM_MAX, CPM_MIN, WPM_PRESETS, WPM_MAX, WPM_MIN } from '../lib/timing'
 import { useBook, type LoadedBook } from '../lib/useBook'
 import { ConfirmDialog, ErrorBox, formatDuration, go, Icon, toast } from './common'
@@ -620,7 +620,8 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
   }
 
   // ---------- 表示 ----------
-  const theme = themeOf(settings.theme)
+  const systemDark = useSystemDark()
+  const theme = themeOf(activeTheme(settings, systemDark))
   const pos = chunk ? { para: chunk.para, offset: chunk.start } : posRef.current
   const percent = percentAt(text, pos)
   const page = pageAt(text, pos)
@@ -1189,7 +1190,7 @@ function QuickSettings({ onClose, chunks, latin }: { onClose: () => void; chunks
                 key={th.id}
                 className={`btn small bg-${th.id}`}
                 aria-pressed={s.theme === th.id}
-                style={{ background: th.bg, color: th.fg, borderColor: s.theme === th.id ? 'var(--accent)' : 'var(--line)', borderWidth: 2 }}
+                style={{ background: th.bg, color: th.fg, borderColor: s.theme === th.id ? 'var(--accent)' : 'var(--line)', borderWidth: 2, borderStyle: 'solid' }}
                 onClick={() => update({ theme: th.id })}
               >
                 {t(th.label)}

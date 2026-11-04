@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react'
 import { getKV, setKV } from './db'
 import { detectLang, setUiLang } from './i18n'
 import type { ChunkMode } from './segment'
@@ -69,6 +69,9 @@ export interface Settings {
   resumeOnLaunch: boolean
   /** 初めて開いたときの案内を見たか */
   introSeen: boolean
+  /** 端末がダークモードのときは、明るい配色の代わりに darkTheme を使う */
+  autoDark: boolean
+  darkTheme: Theme
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -107,6 +110,8 @@ export const DEFAULT_SETTINGS: Settings = {
   sleepMinutes: 0,
   resumeOnLaunch: false,
   introSeen: false,
+  autoDark: true,
+  darkTheme: 'dark',
 }
 
 export interface ThemeDef {
@@ -139,6 +144,29 @@ export const THEMES: ThemeDef[] = [
 
 export function themeOf(id: Theme): ThemeDef {
   return THEMES.find((t) => t.id === id) ?? THEMES[0]
+}
+
+/** 今使う配色。端末がダークモードで、選んだ配色が明るいときは、暗い方の配色に替える */
+export function activeTheme(s: Pick<Settings, 'theme' | 'autoDark' | 'darkTheme'>, systemDark: boolean): Theme {
+  return s.autoDark && systemDark && !themeOf(s.theme).dark ? s.darkTheme : s.theme
+}
+
+// ダークモードの問い合わせは 1 つだけ作って使い回す（描画のたびに作ると、切り替えの知らせを受け取り損ねる）
+const darkQuery = typeof window !== 'undefined' ? window.matchMedia?.('(prefers-color-scheme: dark)') : undefined
+
+/** 端末がダークモードか。切り替えたら、その場で知らせる */
+export function useSystemDark(): boolean {
+  return useSyncExternalStore(
+    (on) => {
+      if (!darkQuery) return () => {}
+      // 古い Safari は addEventListener に対応していない
+      if (darkQuery.addEventListener) darkQuery.addEventListener('change', on)
+      else darkQuery.addListener(on)
+      return () => (darkQuery.removeEventListener ? darkQuery.removeEventListener('change', on) : darkQuery.removeListener(on))
+    },
+    () => !!darkQuery?.matches,
+    () => false,
+  )
 }
 
 const KEY = 'settings'

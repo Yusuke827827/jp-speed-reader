@@ -7,7 +7,7 @@ import { Reader } from './ui/Reader'
 import { SettingsScreen } from './ui/SettingsScreen'
 import { go, ToastHost, useRoute } from './ui/common'
 import { useEffect } from 'react'
-import { loadSettings, themeOf, useSettings } from './lib/settings'
+import { activeTheme, loadSettings, themeOf, useSettings, useSystemDark } from './lib/settings'
 import { isStandalone, lastReadBookId, shouldResume } from './lib/resume'
 
 // 起動したときの画面。ホーム画面から本棚が開いたときに、続きを開くかを決めるのに使う
@@ -17,6 +17,7 @@ import { useWallpaper } from './lib/wallpaper'
 export default function App() {
   const { parts, query } = useRoute()
   const [settings] = useSettings()
+  const themeId = activeTheme(settings, useSystemDark())
   useEffect(() => {
     loadSettings().then(async (s) => {
       if (!shouldResume(launchHash, isStandalone(), s.resumeOnLaunch)) return
@@ -29,7 +30,7 @@ export default function App() {
   const wallpaper = useWallpaper()
   // 自分の写真の壁紙と強調色を、本棚・読書画面の両方に使う
   useEffect(() => {
-    const t = themeOf(settings.theme)
+    const t = themeOf(themeId)
     const root = document.documentElement
     const on = settings.wallpaperOn && !!wallpaper
     if (on) {
@@ -44,14 +45,14 @@ export default function App() {
     }
     if (settings.accent) root.style.setProperty('--accent', settings.accent)
     else root.style.removeProperty('--accent')
-  }, [settings.theme, settings.wallpaperOn, settings.wallpaperDim, settings.wallpaperBlur, settings.accent, wallpaper])
+  }, [themeId, settings.wallpaperOn, settings.wallpaperDim, settings.wallpaperBlur, settings.accent, wallpaper])
   useEffect(() => {
-    const t = themeOf(settings.theme)
+    const t = themeOf(themeId)
     const root = document.documentElement
     if (t.art) root.dataset.theme = t.id
     else delete root.dataset.theme
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', t.art ? t.bg : '#1d1f24')
-  }, [settings.theme])
+  }, [themeId])
   const [screen, id] = parts
   const num = (k: string) => {
     const v = Number(query.get(k))
