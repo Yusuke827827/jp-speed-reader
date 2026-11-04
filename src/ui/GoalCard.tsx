@@ -55,7 +55,7 @@ export function GoalCard({ sessions }: { sessions: Session[] }) {
           <span className="small muted">{t('連続日数')}</span>
         </div>
       </div>
-      <div className="progress" aria-label={t('今日の進み具合')}>
+      <div className="progress" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(ratio * 100)} aria-label={t('今日の進み具合')}>
         <div style={{ width: `${ratio * 100}%` }} />
       </div>
 

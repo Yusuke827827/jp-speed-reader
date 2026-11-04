@@ -65,8 +65,8 @@ export function Import() {
   const pct = progress ? (progress.done / Math.max(1, progress.total)) * 100 : 0
 
   return (
-    <div className="screen">
-      <header className="topbar">
+    <div className="screen" role="main">
+      <header className="topbar" role="none">
         <button className="icon-btn" aria-label={t('本棚へ戻る')} onClick={() => go('/')} disabled={busy}>
           <Icon name="back" />
         </button>

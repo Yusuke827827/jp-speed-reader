@@ -14,6 +14,13 @@ import { isStandalone, lastReadBookId, shouldResume } from './lib/resume'
 const launchHash = location.hash
 import { useWallpaper } from './lib/wallpaper'
 
+/** 色の上に置く文字の色。明るさの差が大きい方（白か黒）を選ぶ */
+function textOn(hex: string): string {
+  const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((x) => (x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4))
+  const l = 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
+  return 1.05 / (l + 0.05) >= (l + 0.05) / 0.05 ? '#ffffff' : '#111111'
+}
+
 export default function App() {
   const { parts, query } = useRoute()
   const [settings] = useSettings()
@@ -43,8 +50,13 @@ export default function App() {
       delete root.dataset.wallpaper
       root.style.removeProperty('--wallpaper')
     }
-    if (settings.accent) root.style.setProperty('--accent', settings.accent)
-    else root.style.removeProperty('--accent')
+    if (settings.accent) {
+      root.style.setProperty('--accent', settings.accent)
+      root.style.setProperty('--accent-text', textOn(settings.accent))
+    } else {
+      root.style.removeProperty('--accent')
+      root.style.removeProperty('--accent-text')
+    }
   }, [themeId, settings.wallpaperOn, settings.wallpaperDim, settings.wallpaperBlur, settings.accent, wallpaper])
   useEffect(() => {
     const t = themeOf(themeId)

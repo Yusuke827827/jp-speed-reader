@@ -18,8 +18,8 @@ export function SettingsScreen() {
   const theme = THEMES.find((th) => th.id === s.theme)!
 
   return (
-    <div className="screen">
-      <header className="topbar">
+    <div className="screen" role="main">
+      <header className="topbar" role="none">
         <button className="icon-btn" aria-label={t('戻る')} onClick={() => history.length > 1 ? history.back() : go('/')}>
           <Icon name="back" />
         </button>

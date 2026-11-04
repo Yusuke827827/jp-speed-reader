@@ -7,7 +7,8 @@
   --text: #1c1c1e;
   --muted: #6e6e73;
   --line: rgba(60, 60, 67, 0.18);
-  --accent: #c8553d;
+  /* 白地に対して文字の明るさの差が 4.5 倍以上になる濃さ（WCAG の AA） */
+  --accent: #a9412c;
   --accent-text: #ffffff;
   --danger: #e5383b;
   --ok: #248a3d;
@@ -32,6 +33,8 @@
     --muted: #98989f;
     --line: rgba(84, 84, 88, 0.55);
     --accent: #e8735a;
+    /* 明るい強調色の上に白い文字は読みにくいので、塗ったボタンの文字は黒に近い色にする */
+    --accent-text: #1a0d09;
     --danger: #ff453a;
     --ok: #30d158;
     --switch-on: #30d158;
@@ -2054,8 +2057,12 @@ select:focus-visible {
 
 .goal-day {
   font-size: 13px;
-  line-height: 32px;
-  width: 32px;
+  width: 100%;
+  max-width: 32px;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin: 0 auto;
   border-radius: 16px;
   font-variant-numeric: tabular-nums;
@@ -2252,4 +2259,68 @@ select:focus-visible {
   min-height: 44px;
   padding: 0;
   font-size: 17px;
+}
+
+/* 文字を大きくしたとき（画面の幅が狭くなったとき）も、横にはみ出さないようにする */
+.btn {
+  white-space: normal;
+  text-align: center;
+}
+
+.goal-cal > * {
+  min-width: 0;
+}
+
+@media (max-width: 320px) {
+  .reader .r-top .icon-btn {
+    width: 36px;
+  }
+  .reader .r-title {
+    display: none;
+  }
+  .reader .r-top {
+    justify-content: space-between;
+  }
+}
+
+.bars {
+  gap: 2px;
+}
+
+.bars > div {
+  min-width: 0;
+}
+
+.bars > div > span {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* 再生ボタンの列は、狭い幅では少しずつ縮める */
+.controls .icon-btn {
+  flex: 0 1 52px;
+  min-width: 34px;
+}
+
+.controls .play {
+  flex: 0 1 72px;
+  min-width: 52px;
+}
+
+@media (max-width: 240px) {
+  .reader .r-top {
+    padding-left: 2px;
+    padding-right: 2px;
+    gap: 0;
+  }
+  .reader .r-top .icon-btn {
+    width: 34px;
+  }
+  .controls {
+    padding: 0;
+    gap: 0;
+  }
+  .controls .icon-btn {
+    min-width: 30px;
+  }
 }

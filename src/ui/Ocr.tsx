@@ -71,7 +71,7 @@ export function Ocr({ id, garbled }: { id: string; garbled: number }) {
     run.current?.cancel()
   }
 
-  if (!book) return <div className="screen">{error ? <ErrorBox title={error} /> : <p className="muted">{t('読み込み中…')}</p>}</div>
+  if (!book) return <div className="screen" role="main">{error ? <ErrorBox title={error} /> : <p className="muted">{t('読み込み中…')}</p>}</div>
 
   const remaining = book.emptyPages
   const done = progress?.done ?? 0
@@ -82,8 +82,8 @@ export function Ocr({ id, garbled }: { id: string; garbled: number }) {
   const eta = perPage > 0 ? Math.round((perPage * (total - done)) / 60) : null
 
   return (
-    <div className="screen">
-      <header className="topbar">
+    <div className="screen" role="main">
+      <header className="topbar" role="none">
         <button className="icon-btn" aria-label={t('本棚へ戻る')} onClick={() => go('/')}>
           <Icon name="back" />
         </button>

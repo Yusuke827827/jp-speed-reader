@@ -70,8 +70,8 @@ export function Library() {
   const lastP = last ? progress.get(last.id) : undefined
 
   return (
-    <div className="screen">
-      <header className="topbar">
+    <div className="screen" role="main">
+      <header className="topbar" role="none">
         <h1>{t('本棚')}</h1>
         <button className="icon-btn" aria-label={t('読書履歴')} title={t('読書履歴')} onClick={() => go('/history')}>
           <Icon name="history" />

@@ -25,7 +25,7 @@ export function Reader({ id, startPage }: { id: string; startPage?: number }) {
   if (loading) return <div className="screen muted">{t('読み込み中…')}</div>
   if (error || !book)
     return (
-      <div className="screen">
+      <div className="screen" role="main">
         <ErrorBox title={t('本を開けませんでした')}>{error}</ErrorBox>
         <button className="btn" style={{ marginTop: 12 }} onClick={() => go('/')}>
           {t('本棚へ戻る')}
@@ -34,8 +34,8 @@ export function Reader({ id, startPage }: { id: string; startPage?: number }) {
     )
   if (book.text.totalChars === 0)
     return (
-      <div className="screen">
-        <header className="topbar">
+      <div className="screen" role="main">
+        <header className="topbar" role="none">
           <button className="icon-btn" aria-label={t('本棚へ戻る')} onClick={() => go('/')}>
             <Icon name="back" />
           </button>
@@ -647,6 +647,7 @@ function ReaderView({ book, settings, startPage }: { book: LoadedBook; settings:
 
   return (
     <div
+      role="main"
       className={`reader bg-${theme.id}${theme.art || settings.wallpaperOn ? ' art' : ''}${theme.dark ? ' dark' : ''}${settings.wallpaperOn ? ' has-wallpaper' : ''}${playing ? ' playing' : ''}`}
       style={
         {
@@ -1034,7 +1035,7 @@ function TextPanel(props: {
     paras.push(<p key={pi}>{spans}</p>)
   }
   return (
-    <div className="text-panel" aria-label={t('本文')} onPointerDown={(e) => e.stopPropagation()} onPointerUp={(e) => e.stopPropagation()}>
+    <div className="text-panel" tabIndex={0} role="region" aria-label={t('本文')} onPointerDown={(e) => e.stopPropagation()} onPointerUp={(e) => e.stopPropagation()}>
       {from > 0 && <p className="muted-line">…</p>}
       {paras}
       {to < book.paragraphs.length && <p className="muted-line">…</p>}

@@ -75,7 +75,7 @@ export function PdfViewer({ id, initialPage, compare: compareInit, fromReader }:
 
   if (error)
     return (
-      <div className="screen">
+      <div className="screen" role="main">
         <ErrorBox title={t('PDFを表示できませんでした')}>{error}</ErrorBox>
         <button className="btn" style={{ marginTop: 12 }} onClick={() => go('/')}>
           {t('本棚へ戻る')}

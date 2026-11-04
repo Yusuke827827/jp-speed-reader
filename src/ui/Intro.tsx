@@ -29,7 +29,7 @@ export function Intro({ onClose }: { onClose: () => void }) {
         <h2>{p.title()}</h2>
         <p>{p.body()}</p>
       </div>
-      <div className="intro-dots" aria-label={t('{i}枚目／{n}枚', { i: i + 1, n: pages.length })}>
+      <div className="intro-dots" role="img" aria-label={t('{i}枚目／{n}枚', { i: i + 1, n: pages.length })}>
         {pages.map((_, k) => (
           <span key={k} className={k === i ? 'on' : ''} />
         ))}

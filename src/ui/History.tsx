@@ -33,8 +33,8 @@ export function History() {
   const max = Math.max(1, ...stats.days.map((d) => d.ms))
 
   return (
-    <div className="screen">
-      <header className="topbar">
+    <div className="screen" role="main">
+      <header className="topbar" role="none">
         <button className="icon-btn" aria-label={t('本棚へ戻る')} onClick={() => go('/')}>
           <Icon name="back" />
         </button>
