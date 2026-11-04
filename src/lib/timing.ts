@@ -166,6 +166,35 @@ export function remainingMs(chunks: Chunk[], s: Schedule, from: number): number 
   return ms
 }
 
+export interface ChapterTime {
+  /** 読み終えた／読んでいる途中／まだ */
+  state: 'done' | 'current' | 'todo'
+  /** 途中なら残りの時間、まだなら章全体の時間（ミリ秒）。読み終えた章は 0 */
+  ms: number
+}
+
+/**
+ * 目次の章ごとの時間。starts[i] は i 番目の見出しが始まる単位の番号、depths[i] はその深さ。
+ * 章の終わりは、同じかより浅い次の見出しの手前（小見出しは親の章に含める）
+ */
+export function chapterTimes(starts: number[], depths: number[], total: number, index: number, duration: (i: number) => number): ChapterTime[] {
+  const sum = [0]
+  for (let i = 0; i < total; i++) sum.push(sum[i] + duration(i))
+  const span = (a: number, b: number) => sum[Math.max(0, Math.min(total, b))] - sum[Math.max(0, Math.min(total, a))]
+  return starts.map((start, i) => {
+    let end = total
+    for (let k = i + 1; k < starts.length; k++) {
+      if (depths[k] <= depths[i]) {
+        end = starts[k]
+        break
+      }
+    }
+    if (index >= end) return { state: 'done', ms: 0 }
+    if (index >= start) return { state: 'current', ms: span(index, end) }
+    return { state: 'todo', ms: span(start, end) }
+  })
+}
+
 export const SPEED_PRESETS = [
   { label: 'ゆっくり', cpm: 400 },
   { label: '標準', cpm: 600 },

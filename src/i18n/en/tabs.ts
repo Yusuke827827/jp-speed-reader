@@ -14,6 +14,7 @@ const dict: Record<string, string> = {
   '見つかりませんでした。': 'Nothing found.',
   '「記録」のタブで1日の目標（時間か字数）を決めると、達成した日と連続日数が記録されます。': 'Set a daily goal (time or characters) in the Activity tab to track the days you reach it and your streak.',
   '「メモ」のタブには、全部の本の印が集まります。押すと、その文から読めます。': 'The Notes tab collects marks from all your books. Tap one to read from that sentence.',
+  'あと{time}': '{time} left',
 }
 
 export default dict

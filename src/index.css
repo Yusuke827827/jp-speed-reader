@@ -2379,3 +2379,24 @@ input[type='search'].search {
 body:has(.tabbar) .toast {
   bottom: calc(var(--safe-bottom) + 72px);
 }
+
+/* 目次の章ごとの時間。読んでいる章は強調色、読み終えた章は薄くする */
+.toc-time {
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.toc-current .toc-time {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.toc-current .grow {
+  font-weight: 600;
+}
+
+.toc-done .grow {
+  color: var(--muted);
+}

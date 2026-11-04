@@ -119,6 +119,30 @@ export function positionForPage(book: BookText, page: number): TextPosition {
   return { para: Math.max(0, last), offset: 0 }
 }
 
+/**
+ * 目次の見出しの本文上の位置。ページの頭から、前の見出しより後ろで、見出しの文字と同じ（またはそれで始まる）段落を探す。
+ * 1 ページに見出しが 2 つある本（テキスト・EPUB の仮のページ）でも、章の境目を正しく取るため。見つからなければページの頭
+ */
+export function headingPositions(book: BookText, entries: { title: string; page: number }[]): TextPosition[] {
+  const norm = (s: string) => s.replace(/[\s　]/g, '')
+  let after = 0
+  return entries.map((e) => {
+    const pagePos = positionForPage(book, e.page)
+    const from = Math.max(pagePos.para, after)
+    const title = norm(e.title)
+    // 同じページの中か、その少し先までを探す（遠くの同じ言葉に飛ばないように）
+    for (let i = from; i < Math.min(book.paragraphs.length, from + 200); i++) {
+      const tx = norm(book.paragraphs[i].text)
+      if (title && (tx === title || (tx.startsWith(title) && tx.length <= title.length + 20))) {
+        after = i + 1
+        return { para: i, offset: 0 }
+      }
+    }
+    after = Math.max(after, pagePos.para)
+    return pagePos
+  })
+}
+
 /** 読書位置の textVersion がこの値なら、別の端末から移した位置なので、読んだ割合から引き直す */
 export const MOVED_TEXT_VERSION = -1
 

@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { gapBefore, globalOffset, MOVED_TEXT_VERSION, pageAt, positionForPercent, referenceParagraphs, percentAt, positionForPage, type BookText, type Paragraph, type TextPosition } from '../lib/book'
+import { gapBefore, globalOffset, headingPositions, MOVED_TEXT_VERSION, pageAt, positionForPercent, referenceParagraphs, percentAt, positionForPage, type BookText, type Paragraph, type TextPosition } from '../lib/book'
 import { addSession, describeStorageError, isPdfBook, listBookmarks, saveProgress, getFile, updateBook, type Bookmark, type Person, type TocEntry } from '../lib/db'
 import { newId } from '../lib/importer'
 import { chapterStarts, personRanges, personTerms, suggestPeople, PERSON_COLORS, type PersonRange } from '../lib/people'
 import { closePdf, openPdf, readOutline } from '../lib/pdf'
 import { chunkIndexAt, isLatinBook, paragraphStartIndex, segmentBook, CHUNK_MODES, visible, type Chunk } from '../lib/segment'
 import { activeTheme, THEMES, themeOf, useSettings, useSystemDark, type Settings } from '../lib/settings'
-import { buildSchedule, durationOf, remainingMs, SPEED_PRESETS, CPM_MAX, CPM_MIN, WPM_PRESETS, WPM_MAX, WPM_MIN } from '../lib/timing'
+import { buildSchedule, chapterTimes, durationOf, remainingMs, type ChapterTime, SPEED_PRESETS, CPM_MAX, CPM_MIN, WPM_PRESETS, WPM_MAX, WPM_MIN } from '../lib/timing'
 import { useBook, type LoadedBook } from '../lib/useBook'
 import { ConfirmDialog, ErrorBox, formatDuration, go, Icon, toast } from './common'
 import { RichText } from './rich'
@@ -845,10 +845,23 @@ function ReaderView({ book, settings, startPage, startPos }: { book: LoadedBook;
         <TocSheet
           book={book}
           currentPage={page}
+          timesOf={(entries) =>
+            chapterTimes(
+              headingPositions(text, entries).map((pos) => chunkIndexAt(chunks, pos)),
+              entries.map((e) => e.depth),
+              chunks.length,
+              index,
+              (i) => durationOf(schedule, i),
+            )
+          }
           onClose={() => setSheet(null)}
           onJump={(pg) => {
             setSheet(null)
             moveTo(chunkIndexAt(chunks, positionForPage(text, pg)))
+          }}
+          onJumpPos={(pos) => {
+            setSheet(null)
+            moveTo(chunkIndexAt(chunks, pos))
           }}
           onJumpPercent={(pct) => {
             setSheet(null)
@@ -1363,7 +1376,17 @@ function segmentLikeWords(s: string): number {
   return segmentBook(one, { mode: 'bunsetsu', phraseTarget: 8 }).length
 }
 
-function TocSheet(props: { book: LoadedBook; currentPage: number; onClose: () => void; onJump: (page: number) => void; onJumpPercent: (pct: number) => void }) {
+function TocSheet(props: {
+  book: LoadedBook
+  currentPage: number
+  /** 目次の章ごとの残り時間 */
+  timesOf: (entries: TocEntry[]) => ChapterTime[]
+  onClose: () => void
+  onJump: (page: number) => void
+  /** 目次の見出しへ（ページの頭ではなく、見出しの段落へ）飛ぶ */
+  onJumpPos: (pos: TextPosition) => void
+  onJumpPercent: (pct: number) => void
+}) {
   const { book } = props
   const isPdf = isPdfBook(book.meta)
   const [outline, setOutline] = useState<TocEntry[] | null>(book.meta.toc ?? null)
@@ -1389,6 +1412,10 @@ function TocSheet(props: { book: LoadedBook; currentPage: number; onClose: () =>
       alive = false
     }
   }, [book.meta.id, book.meta.toc])
+  // シートを開いている間は読書位置が動かないので、目次が届いたときに 1 度だけ計算する
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const times = useMemo(() => (outline ? props.timesOf(outline) : []), [outline])
+  const headings = useMemo(() => (outline ? headingPositions(book.text, outline) : []), [outline, book.text])
   return (
     <>
       <div className="sheet-backdrop" onClick={props.onClose} />
@@ -1452,9 +1479,14 @@ function TocSheet(props: { book: LoadedBook; currentPage: number; onClose: () =>
             <ul className="list">
               {outline.map((o, i) => (
                 <li key={i}>
-                  <button onClick={() => props.onJump(o.page)} style={{ paddingLeft: 4 + o.depth * 16 }}>
+                  <button onClick={() => (headings[i] ? props.onJumpPos(headings[i]) : props.onJump(o.page))} style={{ paddingLeft: 4 + o.depth * 16 }} className={times[i] ? `toc-${times[i].state}` : undefined}>
                     <span className="grow">{o.title}</span>
-                    <span className="small muted">p.{o.page + 1}</span>
+                    {times[i] && (
+                      <span className="toc-time">
+                        {times[i].state === 'done' ? t('読了') : times[i].state === 'current' ? t('あと{time}', { time: formatDuration(times[i].ms) }) : formatDuration(times[i].ms)}
+                      </span>
+                    )}
+                    {isPdf && <span className="small muted">p.{o.page + 1}</span>}
                   </button>
                 </li>
               ))}
