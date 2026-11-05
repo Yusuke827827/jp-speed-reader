@@ -190,6 +190,52 @@ export function SettingsScreen() {
             ))}
           </div>
         )}
+        <div className="field">
+          <div className="label">{t('夜の暖色表示')}</div>
+          <div className="segmented" role="group" aria-label={t('夜の暖色表示')}>
+            {(
+              [
+                ['off', t('しない')],
+                ['night', t('夜だけ')],
+                ['always', t('いつも')],
+              ] as const
+            ).map(([v, l]) => (
+              <button key={v} aria-pressed={s.warm === v} onClick={() => update({ warm: v })}>
+                {l}
+              </button>
+            ))}
+          </div>
+          {s.warm !== 'off' && (
+            <>
+              <div className="label" style={{ marginTop: 8 }}>
+                <span>{t('暖色の濃さ')}</span>
+                <span>{Math.round(s.warmStrength * 100)}%</span>
+              </div>
+              <input type="range" min={0.05} max={0.5} step={0.05} value={s.warmStrength} onChange={(e) => update({ warmStrength: Number(e.target.value) })} aria-label={t('暖色の濃さ')} />
+            </>
+          )}
+          {s.warm === 'night' && (
+            <div className="row" style={{ marginTop: 4 }}>
+              <select value={s.warmFrom} onChange={(e) => update({ warmFrom: Number(e.target.value) })} aria-label={t('始める時刻')} style={{ maxWidth: 100 }}>
+                {Array.from({ length: 24 }, (_, h) => (
+                  <option key={h} value={h}>
+                    {t('{h}時', { h })}
+                  </option>
+                ))}
+              </select>
+              <span className="small muted">{t('から')}</span>
+              <select value={s.warmTo} onChange={(e) => update({ warmTo: Number(e.target.value) })} aria-label={t('終える時刻')} style={{ maxWidth: 100 }}>
+                {Array.from({ length: 24 }, (_, h) => (
+                  <option key={h} value={h}>
+                    {t('{h}時', { h })}
+                  </option>
+                ))}
+              </select>
+              <span className="small muted">{t('まで')}</span>
+            </div>
+          )}
+          <p className="small muted" style={{ margin: '6px 0 0' }}>{t('画面全体を薄い橙色にして、青い光を減らします。iPhoneの「Night Shift」と同じ考え方です。')}</p>
+        </div>
         <WallpaperField />
         <div className="field">
           <div className="label">{t('強調色')}</div>

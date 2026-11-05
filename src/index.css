@@ -2400,3 +2400,14 @@ body:has(.tabbar) .toast {
 .toc-done .grow {
   color: var(--muted);
 }
+
+/* 夜の暖色表示。乗算で重ねるので、白は橙に、黒は黒のままになる */
+.warm-filter {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  background: #ff9a3c;
+  mix-blend-mode: multiply;
+  transition: opacity 0.6s;
+}

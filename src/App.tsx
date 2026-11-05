@@ -8,8 +8,8 @@ import { SettingsScreen } from './ui/SettingsScreen'
 import { AllNotes } from './ui/AllNotes'
 import { TabBar, TAB_SCREENS } from './ui/TabBar'
 import { go, ToastHost, useRoute } from './ui/common'
-import { useEffect } from 'react'
-import { activeTheme, loadSettings, themeOf, useSettings, useSystemDark } from './lib/settings'
+import { useEffect, useMemo, useState } from 'react'
+import { activeTheme, isWarmTime, loadSettings, themeOf, useSettings, useSystemDark } from './lib/settings'
 import { isStandalone, lastReadBookId, shouldResume } from './lib/resume'
 
 // 起動したときの画面。ホーム画面から本棚が開いたときに、続きを開くかを決めるのに使う
@@ -27,6 +27,14 @@ export default function App() {
   const { parts, query } = useRoute()
   const [settings] = useSettings()
   const themeId = activeTheme(settings, useSystemDark())
+  // 夜の暖色表示は、1 分ごとに時刻を見直す
+  const [clock, setClock] = useState(0)
+  useEffect(() => {
+    if (settings.warm !== 'night') return
+    const id = window.setInterval(() => setClock((n) => n + 1), 60000)
+    return () => window.clearInterval(id)
+  }, [settings.warm])
+  const warm = useMemo(() => isWarmTime(settings), [settings, clock])
   useEffect(() => {
     loadSettings().then(async (s) => {
       if (!shouldResume(launchHash, isStandalone(), s.resumeOnLaunch)) return
@@ -107,6 +115,8 @@ export default function App() {
   return (
     <>
       {view}
+      {/* 画面全体に薄い橙を乗算で重ね、青い光を減らす（操作は下へ通す） */}
+      {warm && <div className="warm-filter" style={{ opacity: settings.warmStrength }} aria-hidden="true" />}
       {TAB_SCREENS.includes(screen ?? '') && <TabBar screen={screen ?? ''} />}
       <ToastHost />
     </>

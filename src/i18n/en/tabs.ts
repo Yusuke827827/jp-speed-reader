@@ -15,6 +15,17 @@ const dict: Record<string, string> = {
   '「記録」のタブで1日の目標（時間か字数）を決めると、達成した日と連続日数が記録されます。': 'Set a daily goal (time or characters) in the Activity tab to track the days you reach it and your streak.',
   '「メモ」のタブには、全部の本の印が集まります。押すと、その文から読めます。': 'The Notes tab collects marks from all your books. Tap one to read from that sentence.',
   'あと{time}': '{time} left',
+  '夜の暖色表示': 'Warm colors at night',
+  'しない': 'Off',
+  '夜だけ': 'At night',
+  'いつも': 'Always',
+  '暖色の濃さ': 'Warmth',
+  '始める時刻': 'Start time',
+  '終える時刻': 'End time',
+  '{h}時': '{h}:00',
+  'から': 'to',
+  'まで': '',
+  '画面全体を薄い橙色にして、青い光を減らします。iPhoneの「Night Shift」と同じ考え方です。': 'Tints the whole screen a light orange to reduce blue light, the same idea as Night Shift on iPhone.',
 }
 
 export default dict

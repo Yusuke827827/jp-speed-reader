@@ -72,6 +72,13 @@ export interface Settings {
   /** 端末がダークモードのときは、明るい配色の代わりに darkTheme を使う */
   autoDark: boolean
   darkTheme: Theme
+  /** 夜の暖色表示: しない／決めた時間だけ／いつも */
+  warm: 'off' | 'night' | 'always'
+  /** 暖色の濃さ（0.05〜0.5） */
+  warmStrength: number
+  /** 夜とみなす時間（時）。開始が終了より遅ければ日をまたぐ */
+  warmFrom: number
+  warmTo: number
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -112,6 +119,10 @@ export const DEFAULT_SETTINGS: Settings = {
   introSeen: false,
   autoDark: true,
   darkTheme: 'dark',
+  warm: 'off',
+  warmStrength: 0.25,
+  warmFrom: 21,
+  warmTo: 6,
 }
 
 export interface ThemeDef {
@@ -144,6 +155,15 @@ export const THEMES: ThemeDef[] = [
 
 export function themeOf(id: Theme): ThemeDef {
   return THEMES.find((t) => t.id === id) ?? THEMES[0]
+}
+
+/** 今が夜の暖色表示の時間か。開始が終了より遅い（21 時〜6 時など）ときは、日をまたいだ範囲とみなす */
+export function isWarmTime(s: Pick<Settings, 'warm' | 'warmFrom' | 'warmTo'>, now = new Date()): boolean {
+  if (s.warm === 'off') return false
+  if (s.warm === 'always') return true
+  const h = now.getHours()
+  if (s.warmFrom === s.warmTo) return false
+  return s.warmFrom < s.warmTo ? h >= s.warmFrom && h < s.warmTo : h >= s.warmFrom || h < s.warmTo
 }
 
 /** 今使う配色。端末がダークモードで、選んだ配色が明るいときは、暗い方の配色に替える */
