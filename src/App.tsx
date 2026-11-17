@@ -17,7 +17,10 @@ const launchHash = location.hash
 
 // 英語学習の画面は AI の部品が大きいので、開いたときに読み込む
 const Study = lazy(() => import('./ui/Study').then((m) => ({ default: m.Study })))
-const Vocab = lazy(() => import('./ui/Study').then((m) => ({ default: m.Vocab })))
+const MaterialView = lazy(() => import('./ui/Study').then((m) => ({ default: m.MaterialView })))
+const GrammarView = lazy(() => import('./ui/Study').then((m) => ({ default: m.GrammarView })))
+const Vocab = lazy(() => import('./ui/Vocab').then((m) => ({ default: m.Vocab })))
+const Review = lazy(() => import('./ui/Vocab').then((m) => ({ default: m.Review })))
 import { useWallpaper } from './lib/wallpaper'
 
 /** 色の上に置く文字の色。明るさの差が大きい方（白か黒）を選ぶ */
@@ -118,6 +121,15 @@ export default function App() {
       break
     case 'vocab':
       view = <Vocab />
+      break
+    case 'review':
+      view = <Review />
+      break
+    case 'm':
+      view = <MaterialView key={id} id={id ?? ''} />
+      break
+    case 'grammar':
+      view = <GrammarView key={id ?? ''} grammar={id ? decodeURIComponent(id) : undefined} />
       break
     default:
       view = <Library />

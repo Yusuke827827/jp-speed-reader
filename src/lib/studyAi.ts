@@ -26,6 +26,7 @@ import {
   type StudyModel,
   type WordEntry,
 } from './study'
+import { newMaterial, putMaterial, splitForAnalysis, type Material } from './studyTools'
 
 const KEY_STORE = 'flowa.study.apiKey'
 const MODEL_STORE = 'flowa.study.model'
@@ -175,4 +176,96 @@ export async function lookupWord(word: string, sentence: string, transport?: Tra
   }
   await setKV(key, w).catch(() => undefined)
   return w
+}
+
+// ---- 教材の本棚 ----
+
+const MATERIALS_KEY = 'study:materials'
+
+export async function loadMaterials(): Promise<Material[]> {
+  return (await getKV<Material[]>(MATERIALS_KEY).catch(() => undefined)) ?? []
+}
+
+export async function saveMaterials(list: Material[]) {
+  await setKV(MATERIALS_KEY, list)
+}
+
+/** 教材の解析結果を順に読み出す（保存の場所が消えていたものは飛ばす） */
+export async function loadAnalyses(m: Material): Promise<Analysis[]> {
+  const out: Analysis[] = []
+  for (const k of m.keys) {
+    const a = await getKV<Analysis>(k).catch(() => undefined)
+    if (a) out.push(a)
+  }
+  return out
+}
+
+/** 文章を解析して、教材として本棚に入れる。長い文章は分けて順に送る */
+export async function createMaterial(
+  direction: Direction,
+  text: string,
+  opts: { folder?: string; transport?: Transport; onProgress?: (done: number, total: number) => void; now?: number } = {},
+): Promise<Material> {
+  const pieces = splitForAnalysis(text)
+  if (!pieces.length) throw new StudyError('other', 'empty')
+  const analyses: Analysis[] = []
+  const keys: string[] = []
+  for (let i = 0; i < pieces.length; i++) {
+    opts.onProgress?.(i, pieces.length)
+    const a = await analyze(direction, pieces[i], opts.transport)
+    analyses.push(a)
+    keys.push(analysisCacheKey(direction, pieces[i], a.model))
+  }
+  opts.onProgress?.(pieces.length, pieces.length)
+  const now = opts.now ?? Date.now()
+  const m = newMaterial(`m${now.toString(36)}${Math.random().toString(36).slice(2, 6)}`, keys, analyses, opts.folder ?? '', now)
+  await saveMaterials(putMaterial(await loadMaterials(), m))
+  return m
+}
+
+/** ファイルから文章を取り出す（テキスト・PDF は文字をそのまま、画像は端末の中で文字を読む） */
+export async function readFileText(file: File, lang: 'eng' | 'jpn', onProgress?: (p: number) => void): Promise<string> {
+  if (file.type.startsWith('image/')) return readImageText(file, lang, onProgress)
+  const buf = await file.arrayBuffer()
+  if (file.type === 'application/pdf' || /\.pdf$/i.test(file.name)) {
+    const { openPdf, closePdf } = await import('./pdf')
+    const doc = await openPdf(buf)
+    try {
+      const pages: string[] = []
+      for (let i = 1; i <= doc.numPages; i++) {
+        const c = await (await doc.getPage(i)).getTextContent()
+        pages.push(c.items.map((it) => ('str' in it ? it.str + (it.hasEOL ? '\n' : '') : '')).join(''))
+        onProgress?.(i / doc.numPages)
+      }
+      return pages.join('\n').replace(/-\n(?=[a-z])/g, '').replace(/[ \t]*\n[ \t]*(?=[a-z])/g, ' ').trim()
+    } finally {
+      await closePdf(doc)
+    }
+  }
+  const { decodeText } = await import('./textImport')
+  return decodeText(buf).trim()
+}
+
+// ---- 写真・スクショの文字を読む（端末の中で。画像は外に送らない） ----
+
+export async function readImageText(file: Blob, lang: 'eng' | 'jpn', onProgress?: (p: number) => void): Promise<string> {
+  const { createOcrWorker } = await import('./ocr')
+  const worker = await createOcrWorker(lang, (p, status) => {
+    if (status.startsWith('recognizing')) onProgress?.(p)
+  })
+  try {
+    const { data } = await worker.recognize(file)
+    const text = data.text
+    // 英語は行末のハイフンでの分割をつなぎ、行をつないで段落ごとにする。日本語は文字間の空白を消す
+    return lang === 'eng'
+      ? text
+          .replace(/-\n(?=[a-z])/g, '')
+          .split(/\n{2,}/)
+          .map((p) => p.replace(/\s*\n\s*/g, ' ').trim())
+          .filter(Boolean)
+          .join('\n')
+      : text.replace(/(?<=\P{ASCII})[ \t]+(?=\P{ASCII})/gu, '').trim()
+  } finally {
+    await worker.terminate()
+  }
 }
