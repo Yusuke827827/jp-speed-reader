@@ -1,44 +1,286 @@
-// 「英語」のタブ。
-//   本棚（#/study）    ：文章を撮る・貼る・ファイルで取り込み、AI が解析して教材にする。教材を並べる
-//   教材（#/m/:id）    ：文ごとに S・V・O・C の印・訳・文法・難しめの単語。流して読む・音読・画像で保存
-//   文法（#/grammar/:g）：その文法が出てくる文を、全部の教材から集める
+// 「英語」のタブ。日本語→自然な英語、英語→日本語に訳し、英文に S・V・O・C・M の印を付ける。
+// 英文の単語を押すと、文の中での意味・ほかの訳・類義語・例文を出し、単語帳に入れられる。
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { getKV, setKV } from '../lib/db'
 import { t } from '../lib/i18n'
-import { GRAMMAR, MODELS, addVocab, vocabId, type Analysis, type Direction, type Grammar, type Sentence, type StudyModel } from '../lib/study'
+import { speechAvailable, unlockSpeech, voicesFor } from '../lib/speech'
 import {
-  createMaterial,
-  getApiKey,
-  getModel,
-  getSpend,
-  loadAnalyses,
-  loadMaterials,
-  lookupWord,
-  readFileText,
-  saveMaterials,
-  setApiKey,
-  setModel,
-} from '../lib/studyAi'
-import { dueItems, folders, grammarCounts, recordReading, sentencesOf, updateMaterial, vocabProgress, type Material } from '../lib/studyTools'
-import { ConfirmDialog, formatDate, go, Icon, toast } from './common'
-import { FlowView, ReadAloudSheet, shareSentence } from './StudyFlow'
-import { Legend, SentenceCard, WordSheet, errorText, useVocab, type SentenceActions } from './StudyParts'
+  MAX_INPUT,
+  MODELS,
+  addVocab,
+  removeVocab,
+  searchVocab,
+  toggleLearned,
+  tokenize,
+  type Analysis,
+  type Direction,
+  type Part,
+  type Role,
+  type Sentence,
+  type StudyModel,
+  type VocabItem,
+  type WordEntry,
+} from '../lib/study'
+import { StudyError, analyze, getApiKey, getModel, getSpend, lookupWord, setApiKey, setModel } from '../lib/studyAi'
+import { go, Icon, toast } from './common'
 
-/** 上限なく貼れる長さ（これを超える分は AI に何回かに分けて送る） */
-const MAX_PASTE = 20000
+const VOCAB_KEY = 'vocab'
+const LAST_KEY = 'study:last'
 
-export function useMaterials(): [Material[] | null, (next: Material[]) => void] {
-  const [list, setList] = useState<Material[] | null>(null)
+function roleName(r: Role): string {
+  switch (r) {
+    case 'S':
+      return t('主語')
+    case 'V':
+      return t('動詞')
+    case 'O':
+      return t('目的語')
+    case 'C':
+      return t('補語')
+    case 'M':
+      return t('修飾語')
+    default:
+      return ''
+  }
+}
+
+export function errorText(e: unknown): string {
+  const kind = e instanceof StudyError ? e.kind : 'other'
+  switch (kind) {
+    case 'no-key':
+      return t('AI を使うには、下の「AI の設定」で API キーを入れてください。')
+    case 'auth':
+      return t('API キーが正しくないか、使えない状態です。')
+    case 'rate':
+      return t('混み合っています。少し待ってからもう一度試してください。')
+    case 'network':
+      return t('通信できませんでした。インターネットにつながっているか確かめてください。')
+    case 'refusal':
+      return t('この文は AI が扱えませんでした。')
+    case 'too-long':
+      return t('文が長すぎます。{n}字以内に分けてください。', { n: MAX_INPUT })
+    case 'bad-json':
+      return t('AI の返事を読み取れませんでした。もう一度試してください。')
+    default:
+      return t('うまくいきませんでした。もう一度試してください。')
+  }
+}
+
+export function useVocab(): [VocabItem[], (next: VocabItem[]) => void] {
+  const [list, setList] = useState<VocabItem[]>([])
   useEffect(() => {
-    loadMaterials()
-      .then(setList)
+    getKV<VocabItem[]>(VOCAB_KEY)
+      .then((v) => setList(v ?? []))
       .catch(() => setList([]))
   }, [])
-  const save = (next: Material[]) => {
+  const save = (next: VocabItem[]) => {
     setList(next)
-    saveMaterials(next).catch(() => toast(t('保存できませんでした')))
+    setKV(VOCAB_KEY, next).catch(() => toast(t('保存できませんでした')))
   }
   return [list, save]
+}
+
+function speak(text: string) {
+  if (!speechAvailable()) return
+  unlockSpeech()
+  const u = new SpeechSynthesisUtterance(text)
+  u.lang = 'en-US'
+  const v = voicesFor('en')[0]
+  if (v) u.voice = v
+  window.speechSynthesis.cancel()
+  window.speechSynthesis.speak(u)
+}
+
+/** 押せる単語を並べる */
+function Words({ text, onWord }: { text: string; onWord: (w: string) => void }) {
+  return (
+    <>
+      {tokenize(text).map((tk, i) =>
+        tk.word ? (
+          <button key={i} className="study-word" onClick={() => onWord(tk.text)}>
+            {tk.text}
+          </button>
+        ) : (
+          <span key={i}>{tk.text}</span>
+        ),
+      )}
+    </>
+  )
+}
+
+function PartView({ part, onWord }: { part: Part; onWord: (w: string) => void }) {
+  const label = part.role === 'X' ? '' : part.role
+  return (
+    <span className={`study-part role-${part.role}`} title={roleName(part.role)}>
+      <span className="study-part-text">
+        {part.inner.length ? (
+          <>
+            {part.inner.map((x, i) => (
+              <span key={i} className={`study-inner role-${x.role}`}>
+                <span className="study-part-text">
+                  <Words text={x.text} onWord={onWord} />
+                </span>
+                <span className="study-label">{x.role === 'X' ? '' : x.role.toLowerCase()}</span>
+              </span>
+            ))}
+          </>
+        ) : (
+          <Words text={part.text} onWord={onWord} />
+        )}
+      </span>
+      <span className="study-label">
+        {label}
+        {part.note && <span className="study-note">{part.note}</span>}
+      </span>
+    </span>
+  )
+}
+
+function SentenceCard({ s, direction, onWord }: { s: Sentence; direction: Direction; onWord: (w: string, sentence: string) => void }) {
+  return (
+    <div className="card stack study-sentence">
+      <div className="row">
+        <span className="study-pattern">{s.pattern === 'other' ? t('その他') : s.pattern}</span>
+        <div className="grow" />
+        {speechAvailable() && (
+          <button className="icon-btn" aria-label={t('英文を読み上げる')} onClick={() => speak(s.en)}>
+            <Icon name="play" />
+          </button>
+        )}
+      </div>
+      <div className="study-parts" lang="en">
+        {s.parts.map((p, i) => (
+          <PartView key={i} part={p} onWord={(w) => onWord(w, s.en)} />
+        ))}
+      </div>
+      {!s.checked && <div className="notice warn small">{t('AI の区切りが元の文と一致しません。印は参考にしてください。')}</div>}
+      <div className="study-ja">{s.ja}</div>
+      {s.explanation && <div className="small muted">{s.explanation}</div>}
+      {s.alt.length > 0 && (
+        <div className="small">
+          <div className="muted">{direction === 'ja-en' ? t('別の言い方') : t('別の訳')}</div>
+          <ul className="study-alt">
+            {s.alt.map((a, i) => (
+              <li key={i} lang={direction === 'ja-en' ? 'en' : 'ja'}>
+                {a}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function Legend() {
+  return (
+    <div className="study-legend small" aria-label={t('印の見方')}>
+      {(['S', 'V', 'O', 'C', 'M'] as Role[]).map((r) => (
+        <span key={r} className={`study-chip role-${r}`}>
+          {r} {roleName(r)}
+        </span>
+      ))}
+      <span className="muted">{t('小文字は節の中の要素')}</span>
+    </div>
+  )
+}
+
+/** 単語の説明（下から出るシート） */
+export function WordSheet(props: { word: string; sentence: string; onClose: () => void; vocab: VocabItem[]; onSave: (list: VocabItem[]) => void }) {
+  const [entry, setEntry] = useState<WordEntry | null>(null)
+  const [err, setErr] = useState<string | null>(null)
+  useEffect(() => {
+    lookupWord(props.word, props.sentence)
+      .then(setEntry)
+      .catch((e) => setErr(errorText(e)))
+  }, [props.word, props.sentence])
+  const saved = entry && props.vocab.some((v) => v.id === entry.lemma.trim().toLowerCase())
+  return (
+    <>
+      <div className="sheet-backdrop" onClick={props.onClose} />
+      <div className="sheet stack" role="dialog" aria-label={t('単語の説明')}>
+        <div className="row">
+          <div className="grow" lang="en" style={{ fontWeight: 700, fontSize: 20 }}>
+            {entry?.lemma ?? props.word}
+            {entry?.ipa && <span className="muted small"> {entry.ipa}</span>}
+          </div>
+          {speechAvailable() && (
+            <button className="icon-btn" aria-label={t('発音を聞く')} onClick={() => speak(entry?.lemma ?? props.word)}>
+              <Icon name="play" />
+            </button>
+          )}
+          <button className="icon-btn" aria-label={t('閉じる')} onClick={props.onClose}>
+            <Icon name="close" />
+          </button>
+        </div>
+        {err && <div className="notice error">{err}</div>}
+        {!entry && !err && <div className="muted">{t('調べています…')}</div>}
+        {entry && <WordBody entry={entry} />}
+        {entry && (
+          <button
+            className={`btn ${saved ? '' : 'primary'}`}
+            onClick={() => {
+              props.onSave(addVocab(props.vocab, entry, props.sentence))
+              toast(saved ? t('単語帳の説明を新しくしました') : t('単語帳に入れました'))
+            }}
+          >
+            <Icon name="bookmark" />
+            {saved ? t('単語帳の説明を新しくする') : t('単語帳に入れる')}
+          </button>
+        )}
+      </div>
+    </>
+  )
+}
+
+function WordBody({ entry }: { entry: WordEntry }) {
+  return (
+    <div className="stack study-entry">
+      <div>
+        <div className="small muted">{t('この文での意味')}</div>
+        <div style={{ fontSize: 18, fontWeight: 600 }}>{entry.sense}</div>
+      </div>
+      {entry.meanings.length > 0 && (
+        <div>
+          <div className="small muted">{t('ほかの訳')}</div>
+          <ul className="study-list">
+            {entry.meanings.map((m, i) => (
+              <li key={i}>
+                <span className="study-pos">{m.pos}</span> {m.ja}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {entry.synonyms.length > 0 && (
+        <div>
+          <div className="small muted">{t('類義語')}</div>
+          <ul className="study-list">
+            {entry.synonyms.map((s, i) => (
+              <li key={i}>
+                <b lang="en">{s.word}</b> {s.ja}
+                {s.nuance && <div className="small muted">{s.nuance}</div>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {entry.examples.length > 0 && (
+        <div>
+          <div className="small muted">{t('例文')}</div>
+          <ul className="study-list">
+            {entry.examples.map((x, i) => (
+              <li key={i}>
+                <div lang="en">{x.en}</div>
+                <div className="small muted">{x.ja}</div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  )
 }
 
 function AiSettings() {
@@ -104,58 +346,42 @@ function AiSettings() {
   )
 }
 
-function modeLabel(d: Direction): string {
-  return d === 'en-ja' ? t('英語 → 日本語') : d === 'ja-en' ? t('日本語 → 英語') : t('英作文の添削')
-}
-
-/** 本棚：取り込みと教材の一覧 */
 export function Study() {
   const [direction, setDirection] = useState<Direction>('en-ja')
   const [text, setText] = useState('')
-  const [folder, setFolder] = useState('')
-  const [busy, setBusy] = useState<string | null>(null)
+  const [result, setResult] = useState<Analysis | null>(null)
+  const [busy, setBusy] = useState(false)
   const [err, setErr] = useState<string | null>(null)
-  const [materials] = useMaterials()
-  const [vocab] = useVocab()
-  const [shelf, setShelf] = useState('')
-  const fileRef = useRef<HTMLInputElement>(null)
-  const photoRef = useRef<HTMLInputElement>(null)
+  const [word, setWord] = useState<{ word: string; sentence: string } | null>(null)
+  const [vocab, saveVocab] = useVocab()
+
+  // 前回の結果を出しておく
+  useEffect(() => {
+    getKV<Analysis>(LAST_KEY)
+      .then((a) => {
+        if (!a) return
+        setResult(a)
+        setDirection(a.direction)
+        setText(a.source)
+      })
+      .catch(() => undefined)
+  }, [])
 
   const run = async () => {
+    setBusy(true)
     setErr(null)
-    setBusy(t('解析中…'))
     try {
-      const m = await createMaterial(direction, text, {
-        folder,
-        onProgress: (done, total) => total > 1 && setBusy(t('解析中… {done} / {total}', { done: Math.min(done + 1, total), total })),
-      })
-      setText('')
-      go(`/m/${m.id}`)
+      const a = await analyze(direction, text)
+      setResult(a)
+      setKV(LAST_KEY, a).catch(() => undefined)
     } catch (e) {
       setErr(errorText(e))
     } finally {
-      setBusy(null)
+      setBusy(false)
     }
   }
 
-  const readFile = async (file: File | undefined) => {
-    if (!file) return
-    setErr(null)
-    setBusy(t('文字を読み取っています…'))
-    try {
-      const s = await readFileText(file, direction === 'ja-en' ? 'jpn' : 'eng', (p) => setBusy(t('文字を読み取っています… {p}%', { p: Math.round(p * 100) })))
-      if (!s) setErr(t('文字が見つかりませんでした。'))
-      else setText((cur) => (cur ? `${cur}\n${s}` : s).slice(0, MAX_PASTE))
-    } catch {
-      setErr(t('ファイルを読めませんでした。'))
-    } finally {
-      setBusy(null)
-    }
-  }
-
-  const due = dueItems(vocab).length
-  const shown = (materials ?? []).filter((m) => !shelf || m.folder === shelf).sort((a, b) => b.openedAt - a.openedAt)
-  const pieces = Math.ceil(text.length / 1200)
+  const unlearned = useMemo(() => vocab.filter((v) => !v.learned).length, [vocab])
 
   return (
     <div className="screen with-tabs" role="main">
@@ -164,348 +390,140 @@ export function Study() {
         <div className="grow" />
         <button className="btn small" onClick={() => go('/vocab')}>
           <Icon name="bookmark" />
-          {t('単語帳')}
-          {due > 0 && <span className="study-badge">{due}</span>}
+          {t('単語帳')} {vocab.length > 0 && <span className="muted">{unlearned}</span>}
         </button>
       </header>
 
-      <div className="card stack">
-        <div className="segmented" role="group" aria-label={t('モード')}>
-          {(['en-ja', 'ja-en', 'fix'] as Direction[]).map((d) => (
-            <button key={d} aria-pressed={direction === d} onClick={() => setDirection(d)}>
-              {modeLabel(d)}
-            </button>
-          ))}
-        </div>
-        <div className="row wrap">
-          <button className="btn small" onClick={() => photoRef.current?.click()} disabled={!!busy}>
-            <Icon name="scan" />
-            {t('撮る・写真から')}
-          </button>
-          <button className="btn small" onClick={() => fileRef.current?.click()} disabled={!!busy}>
-            <Icon name="pdf" />
-            {t('ファイルから')}
-          </button>
-          <input ref={photoRef} type="file" accept="image/*" capture="environment" hidden onChange={(e) => readFile(e.target.files?.[0]).finally(() => (e.target.value = ''))} />
-          <input ref={fileRef} type="file" accept=".txt,.pdf,text/plain,application/pdf,image/*" hidden onChange={(e) => readFile(e.target.files?.[0]).finally(() => (e.target.value = ''))} />
-        </div>
-        <textarea
-          className="study-input"
-          lang={direction === 'ja-en' ? 'ja' : 'en'}
-          rows={5}
-          maxLength={MAX_PASTE}
-          value={text}
-          placeholder={direction === 'en-ja' ? t('英文を貼り付けてください') : direction === 'ja-en' ? t('日本語の文を入れてください') : t('自分で書いた英文を入れてください')}
-          aria-label={t('解析する文')}
-          onChange={(e) => setText(e.target.value)}
-        />
-        <input type="text" value={folder} onChange={(e) => setFolder(e.target.value)} placeholder={t('フォルダ（例: 教科書 Lesson 3）')} aria-label={t('フォルダ')} list="study-folders" />
-        <datalist id="study-folders">
-          {folders(materials ?? []).map((f) => (
-            <option key={f} value={f} />
-          ))}
-        </datalist>
-        <div className="row">
-          <span className="small muted grow">
-            {text.length.toLocaleString()} {t('字')}
-            {pieces > 1 && ` · ${t('{n}回に分けて解析します', { n: pieces })}`}
-          </span>
-          {text && (
-            <button className="btn small ghost" onClick={() => setText('')}>
-              {t('消す')}
-            </button>
-          )}
-        </div>
-        <button className="btn primary" disabled={!!busy || !text.trim()} onClick={run}>
-          <Icon name="bolt" />
-          {busy ?? (direction === 'fix' ? t('添削して教材にする') : t('解析して教材にする'))}
+      <div className="segmented" role="group" aria-label={t('訳す向き')}>
+        <button aria-pressed={direction === 'en-ja'} onClick={() => setDirection('en-ja')}>
+          {t('英語 → 日本語')}
         </button>
-        {err && <div className="notice error">{err}</div>}
+        <button aria-pressed={direction === 'ja-en'} onClick={() => setDirection('ja-en')}>
+          {t('日本語 → 英語')}
+        </button>
       </div>
 
-      <div className="row" style={{ marginTop: 20 }}>
-        <div className="section-title grow" style={{ margin: 0 }}>
-          {t('教材')} <span className="muted">{materials?.length ?? 0}</span>
-        </div>
-        {(materials?.length ?? 0) > 0 && (
-          <button className="btn small ghost" onClick={() => go('/grammar')}>
-            {t('文法で探す')}
+      <textarea
+        className="study-input"
+        lang={direction === 'en-ja' ? 'en' : 'ja'}
+        rows={4}
+        maxLength={MAX_INPUT}
+        value={text}
+        placeholder={direction === 'en-ja' ? t('英文を貼り付けてください') : t('日本語の文を入れてください')}
+        aria-label={t('解析する文')}
+        onChange={(e) => setText(e.target.value)}
+      />
+      <div className="row">
+        <span className="small muted grow">
+          {text.length} / {MAX_INPUT}
+        </span>
+        {text && (
+          <button className="btn small ghost" onClick={() => setText('')}>
+            {t('消す')}
           </button>
         )}
-      </div>
-      {folders(materials ?? []).length > 0 && (
-        <div className="segmented" role="group" aria-label={t('フォルダ')} style={{ marginTop: 8 }}>
-          <button aria-pressed={!shelf} onClick={() => setShelf('')}>
-            {t('すべて')}
-          </button>
-          {folders(materials ?? []).map((f) => (
-            <button key={f} aria-pressed={shelf === f} onClick={() => setShelf(f)}>
-              {f}
-            </button>
-          ))}
-        </div>
-      )}
-      {materials && materials.length === 0 && <p className="muted small">{t('まだ教材がありません。英文を撮るか貼って「解析して教材にする」を押すと、ここに並びます。')}</p>}
-      <div className="stack" style={{ marginTop: 10 }}>
-        {shown.map((m) => {
-          const v = vocabProgress(m, vocab)
-          return (
-            <button key={m.id} className="card study-material" onClick={() => go(`/m/${m.id}`)}>
-              <div className="row">
-                {m.folder && <span className="study-chip">{m.folder}</span>}
-                <span className="small muted">{modeLabel(m.direction)}</span>
-                <div className="grow" />
-                {m.last > 0 && m.last < m.count - 1 && <span className="study-chip study-continue">{t('続き {n}文目から', { n: m.last + 1 })}</span>}
-              </div>
-              <div className="study-material-title" lang="en">
-                {m.title}
-              </div>
-              <div className="small muted">
-                {t('音読 {a}/{b}', { a: m.readOk.length, b: m.count })} · {t('語彙 {a}/{b}', { a: v.have, b: v.total })} · {formatDate(m.openedAt)}
-              </div>
-            </button>
-          )
-        })}
+        <button className="btn primary" disabled={busy || !text.trim()} onClick={run}>
+          <Icon name="bolt" />
+          {busy ? t('解析中…') : direction === 'en-ja' ? t('訳して構造を見る') : t('英語にして構造を見る')}
+        </button>
       </div>
 
+      {err && <div className="notice error">{err}</div>}
+
+      {result && (
+        <div className="stack">
+          <Legend />
+          {result.sentences.map((s, i) => (
+            <SentenceCard key={i} s={s} direction={result.direction} onWord={(w, sentence) => setWord({ word: w, sentence })} />
+          ))}
+          <p className="small muted" style={{ margin: 0 }}>
+            {t('英文の単語を押すと、意味・類義語・例文を出して単語帳に入れられます。AI の解析は間違えることがあります。')}
+          </p>
+        </div>
+      )}
+
       <AiSettings />
+
+      {word && <WordSheet word={word.word} sentence={word.sentence} vocab={vocab} onSave={saveVocab} onClose={() => setWord(null)} />}
     </div>
   )
 }
 
-/** 教材の画面で使う、練習のシートと単語のシートをまとめた状態 */
-function useSentenceActions(vocab: ReturnType<typeof useVocab>[0], saveVocab: ReturnType<typeof useVocab>[1], onTouch: (s: Sentence) => void) {
-  const [word, setWord] = useState<{ word: string; sentence: string } | null>(null)
-  const [flow, setFlow] = useState<Sentence[] | null>(null)
-  const [reading, setReading] = useState<Sentence | null>(null)
-  const [adding, setAdding] = useState<string | null>(null)
-  const actions: SentenceActions = {
-    onWord: (w, sentence) => setWord({ word: w, sentence }),
-    onFlow: (s) => {
-      onTouch(s)
-      setFlow([s])
-    },
-    onReadAloud: (s) => {
-      onTouch(s)
-      setReading(s)
-    },
-    onShare: (s) => shareSentence(s).catch(() => toast(t('画像を作れませんでした'))),
-    onAddHard: async (s) => {
-      let list = vocab
-      const todo = s.hard.filter((h) => !list.some((v) => v.id === vocabId(h.word) || v.entry.word.toLowerCase() === h.word.toLowerCase()))
-      if (!todo.length) return toast(t('すべて単語帳に入っています'))
-      try {
-        for (let i = 0; i < todo.length; i++) {
-          setAdding(t('単語帳に入れています… {done} / {total}', { done: i + 1, total: todo.length }))
-          list = addVocab(list, await lookupWord(todo[i].word, s.en), s.en)
-        }
-        saveVocab(list)
-        toast(t('{n}語を単語帳に入れました', { n: todo.length }))
-      } catch (e) {
-        saveVocab(list)
-        toast(errorText(e))
-      } finally {
-        setAdding(null)
-      }
-    },
-  }
-  return { actions, word, setWord, flow, setFlow, reading, setReading, adding }
-}
-
-/** 教材の画面 */
-export function MaterialView({ id }: { id: string }) {
-  const [materials, saveList] = useMaterials()
-  const [analyses, setAnalyses] = useState<Analysis[] | null>(null)
+/** 単語帳の画面 */
+export function Vocab() {
   const [vocab, saveVocab] = useVocab()
-  const [renaming, setRenaming] = useState(false)
-  const [confirmDelete, setConfirmDelete] = useState(false)
-  const m = materials?.find((x) => x.id === id)
-  const sentences = useMemo(() => sentencesOf(analyses ?? []), [analyses])
-  const indexOf = (s: Sentence) => sentences.indexOf(s)
-  const opened = useRef(false)
-
-  useEffect(() => {
-    if (!m || !materials || opened.current) return
-    opened.current = true
-    loadAnalyses(m).then((a) => {
-      setAnalyses(a)
-      // 続きの文まで送る（最初に表示したときだけ）
-      if (m.last) requestAnimationFrame(() => document.getElementById(`s${m.last}`)?.scrollIntoView({ block: 'center' }))
-    })
-    // 開いた時刻を本棚の並び順に使う
-    saveList(updateMaterial(materials, id, (x) => ({ ...x, openedAt: Date.now() })))
-  }, [m, materials, id, saveList])
-
-  const touch = (s: Sentence) => {
-    if (!materials) return
-    const i = indexOf(s)
-    if (i >= 0) saveList(updateMaterial(materials, id, (x) => ({ ...x, last: i })))
-  }
-  const sa = useSentenceActions(vocab, saveVocab, touch)
-
-  if (materials && !m)
-    return (
-      <div className="screen" role="main">
-        <header className="topbar" role="none">
-          <button className="icon-btn" aria-label={t('戻る')} onClick={() => go('/study')}>
-            <Icon name="back" />
-          </button>
-        </header>
-        <div className="notice error">{t('この教材は見つかりませんでした。')}</div>
-      </div>
-    )
-  if (!m || !analyses) return <div className="screen" role="main" />
-
-  const v = vocabProgress(m, vocab)
+  const [q, setQ] = useState('')
+  const [filter, setFilter] = useState<'todo' | 'all' | 'learned'>('todo')
+  const [open, setOpen] = useState<string | null>(null)
+  const shown = searchVocab(vocab, q).filter((v) => (filter === 'all' ? true : filter === 'learned' ? v.learned : !v.learned))
   return (
     <div className="screen" role="main">
       <header className="topbar" role="none">
         <button className="icon-btn" aria-label={t('戻る')} onClick={() => (history.length > 1 ? history.back() : go('/study'))}>
           <Icon name="back" />
         </button>
-        <div className="grow" />
-        <button className="icon-btn" aria-label={t('名前とフォルダを変える')} onClick={() => setRenaming((r) => !r)}>
-          <Icon name="text" />
-        </button>
-        <button className="icon-btn" aria-label={t('教材を削除')} onClick={() => setConfirmDelete(true)}>
-          <Icon name="trash" />
-        </button>
+        <h1>{t('単語帳')}</h1>
       </header>
-      {renaming ? (
-        <div className="card stack">
-          <label className="field">
-            <div className="label">{t('名前')}</div>
-            <input type="text" defaultValue={m.title} id="m-title" />
-          </label>
-          <label className="field">
-            <div className="label">{t('フォルダ')}</div>
-            <input type="text" defaultValue={m.folder} id="m-folder" />
-          </label>
-          <button
-            className="btn small primary"
-            onClick={() => {
-              const title = (document.getElementById('m-title') as HTMLInputElement).value.trim() || m.title
-              const folder = (document.getElementById('m-folder') as HTMLInputElement).value.trim()
-              saveList(updateMaterial(materials!, id, (x) => ({ ...x, title, folder })))
-              setRenaming(false)
-            }}
-          >
-            {t('保存')}
-          </button>
+      {vocab.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-title">{t('まだ単語がありません')}</div>
+          <p className="muted">{t('「英語」のタブで英文の単語を押し、「単語帳に入れる」を選ぶとここに並びます。')}</p>
         </div>
       ) : (
         <>
-          <h1 className="study-material-head" lang="en">
-            {m.title}
-          </h1>
-          <div className="small muted">
-            {m.folder && `${m.folder} · `}
-            {t('音読 {a}/{b}', { a: m.readOk.length, b: m.count })} · {t('語彙 {a}/{b}', { a: v.have, b: v.total })}
+          <input type="search" className="search" placeholder={t('単語・意味で探す')} value={q} onChange={(e) => setQ(e.target.value)} aria-label={t('単語を探す')} />
+          <div className="segmented" role="group" style={{ marginTop: 10 }}>
+            {(
+              [
+                ['todo', t('覚えていない')],
+                ['all', t('すべて')],
+                ['learned', t('覚えた')],
+              ] as const
+            ).map(([k, label]) => (
+              <button key={k} aria-pressed={filter === k} onClick={() => setFilter(k)}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <div className="stack" style={{ marginTop: 12 }}>
+            {shown.length === 0 && <div className="muted">{t('見つかりませんでした。')}</div>}
+            {shown.map((v) => (
+              <div key={v.id} className="card stack">
+                <button className="study-vocab-head" aria-expanded={open === v.id} onClick={() => setOpen(open === v.id ? null : v.id)}>
+                  <span className="grow">
+                    <b lang="en">{v.entry.lemma}</b> <span className="muted">{v.entry.sense}</span>
+                  </span>
+                  {v.learned && <span className="study-chip">{t('覚えた')}</span>}
+                  <Icon name="chevron" />
+                </button>
+                {open === v.id && (
+                  <>
+                    <div className="small muted" lang="en">
+                      {v.context}
+                    </div>
+                    <WordBody entry={v.entry} />
+                    <div className="row wrap">
+                      {speechAvailable() && (
+                        <button className="btn small" onClick={() => speak(v.entry.lemma)}>
+                          <Icon name="play" />
+                          {t('発音を聞く')}
+                        </button>
+                      )}
+                      <button className="btn small" onClick={() => saveVocab(toggleLearned(vocab, v.id))}>
+                        {v.learned ? t('覚えていないに戻す') : t('覚えたにする')}
+                      </button>
+                      <button className="btn small danger" onClick={() => saveVocab(removeVocab(vocab, v.id))}>
+                        <Icon name="trash" />
+                        {t('削除')}
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
           </div>
         </>
       )}
-      <div className="row wrap" style={{ margin: '12px 0' }}>
-        <button className="btn primary" onClick={() => sa.setFlow(sentences.slice(m.last < sentences.length - 1 ? m.last : 0))}>
-          <Icon name="bolt" />
-          {m.last > 0 && m.last < sentences.length - 1 ? t('続き {n}文目から流して読む', { n: m.last + 1 }) : t('全体を流して読む')}
-        </button>
-      </div>
-      <Legend />
-      {sa.adding && <div className="notice">{sa.adding}</div>}
-      <div className="stack" style={{ marginTop: 10 }}>
-        {sentences.map((s, i) => (
-          <div key={i} id={`s${i}`} className={m.readOk.includes(i) ? 'study-read-ok' : ''}>
-            <div className="small muted study-num">
-              {i + 1}
-              {m.readOk.includes(i) && ` · ${t('音読済み')}`}
-            </div>
-            <SentenceCard s={s} direction={m.direction} actions={sa.actions} />
-          </div>
-        ))}
-      </div>
-      <p className="small muted">{t('英文の単語を押すと、意味・類義語・例文を出して単語帳に入れられます。AI の解析は間違えることがあります。')}</p>
-
-      {sa.word && <WordSheet word={sa.word.word} sentence={sa.word.sentence} vocab={vocab} onSave={saveVocab} onClose={() => sa.setWord(null)} />}
-      {sa.flow && <FlowView sentences={sa.flow} onClose={() => sa.setFlow(null)} />}
-      {sa.reading && (
-        <ReadAloudSheet
-          sentence={sa.reading}
-          onClose={() => sa.setReading(null)}
-          onScore={(score) => {
-            const i = indexOf(sa.reading!)
-            if (i >= 0) saveList(updateMaterial(materials!, id, (x) => recordReading(x, i, score)))
-          }}
-        />
-      )}
-      {confirmDelete && (
-        <ConfirmDialog
-          title={t('教材を削除しますか？')}
-          body={t('単語帳に入れた単語は残ります。')}
-          confirmLabel={t('削除')}
-          danger
-          onCancel={() => setConfirmDelete(false)}
-          onConfirm={() => {
-            saveList(materials!.filter((x) => x.id !== id))
-            go('/study')
-          }}
-        />
-      )}
-    </div>
-  )
-}
-
-/** 文法ごとに、全部の教材から文を集める */
-export function GrammarView({ grammar }: { grammar?: string }) {
-  const [materials] = useMaterials()
-  const [vocab, saveVocab] = useVocab()
-  const [items, setItems] = useState<{ m: Material; s: Sentence }[] | null>(null)
-  const g = GRAMMAR.includes(grammar as Grammar) ? (grammar as Grammar) : null
-  const sa = useSentenceActions(vocab, saveVocab, () => undefined)
-
-  useEffect(() => {
-    if (!materials || !g) return
-    ;(async () => {
-      const out: { m: Material; s: Sentence }[] = []
-      for (const m of materials.filter((x) => x.grammar.includes(g))) for (const s of sentencesOf(await loadAnalyses(m))) if (s.grammar.includes(g)) out.push({ m, s })
-      setItems(out)
-    })()
-  }, [materials, g])
-
-  return (
-    <div className="screen" role="main">
-      <header className="topbar" role="none">
-        <button className="icon-btn" aria-label={t('戻る')} onClick={() => (history.length > 1 ? history.back() : go('/study'))}>
-          <Icon name="back" />
-        </button>
-        <h1>{g ?? t('文法で探す')}</h1>
-      </header>
-      {!g ? (
-        <div className="stack">
-          {grammarCounts(materials ?? []).map(({ grammar: x, count }) => (
-            <button key={x} className="card row study-material" onClick={() => go(`/grammar/${encodeURIComponent(x)}`)}>
-              <span className="grow">{x}</span>
-              <span className="muted small">{t('{n}本の教材', { n: count })}</span>
-              <Icon name="chevron" />
-            </button>
-          ))}
-          {materials && !materials.length && <p className="muted">{t('まだ教材がありません。')}</p>}
-        </div>
-      ) : (
-        <div className="stack">
-          {items?.length === 0 && <p className="muted">{t('見つかりませんでした。')}</p>}
-          {items?.map(({ m, s }, i) => (
-            <div key={i}>
-              <button className="small muted study-link" onClick={() => go(`/m/${m.id}`)}>
-                {m.title}
-              </button>
-              <SentenceCard s={s} direction={m.direction} actions={sa.actions} />
-            </div>
-          ))}
-        </div>
-      )}
-      {sa.word && <WordSheet word={sa.word.word} sentence={sa.word.sentence} vocab={vocab} onSave={saveVocab} onClose={() => sa.setWord(null)} />}
-      {sa.flow && <FlowView sentences={sa.flow} onClose={() => sa.setFlow(null)} />}
-      {sa.reading && <ReadAloudSheet sentence={sa.reading} onClose={() => sa.setReading(null)} />}
     </div>
   )
 }
