@@ -8,12 +8,16 @@ import { SettingsScreen } from './ui/SettingsScreen'
 import { AllNotes } from './ui/AllNotes'
 import { TabBar, TAB_SCREENS } from './ui/TabBar'
 import { go, ToastHost, useRoute } from './ui/common'
-import { useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { activeTheme, isWarmTime, loadSettings, themeOf, useSettings, useSystemDark } from './lib/settings'
 import { isStandalone, lastReadBookId, shouldResume } from './lib/resume'
 
 // 起動したときの画面。ホーム画面から本棚が開いたときに、続きを開くかを決めるのに使う
 const launchHash = location.hash
+
+// 英語学習の画面は AI の部品が大きいので、開いたときに読み込む
+const Study = lazy(() => import('./ui/Study').then((m) => ({ default: m.Study })))
+const Vocab = lazy(() => import('./ui/Study').then((m) => ({ default: m.Vocab })))
 import { useWallpaper } from './lib/wallpaper'
 
 /** 色の上に置く文字の色。明るさの差が大きい方（白か黒）を選ぶ */
@@ -109,12 +113,18 @@ export default function App() {
     case 'notes':
       view = <AllNotes />
       break
+    case 'study':
+      view = <Study />
+      break
+    case 'vocab':
+      view = <Vocab />
+      break
     default:
       view = <Library />
   }
   return (
     <>
-      {view}
+      <Suspense fallback={null}>{view}</Suspense>
       {/* 画面全体に薄い橙を乗算で重ね、青い光を減らす（操作は下へ通す） */}
       {warm && <div className="warm-filter" style={{ opacity: settings.warmStrength }} aria-hidden="true" />}
       {TAB_SCREENS.includes(screen ?? '') && <TabBar screen={screen ?? ''} />}

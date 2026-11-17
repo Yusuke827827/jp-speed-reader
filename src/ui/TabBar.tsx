@@ -1,4 +1,4 @@
-// 画面の下のタブ（iPhone のタブバー）。本棚・メモ・記録・設定を行き来する。読書画面などでは出さない。
+// 画面の下のタブ（iPhone のタブバー）。本棚・メモ・英語・記録・設定を行き来する。読書画面などでは出さない。
 
 import { t } from '../lib/i18n'
 import { go, Icon } from './common'
@@ -6,6 +6,7 @@ import { go, Icon } from './common'
 const TABS = [
   { path: '/', screen: '', icon: 'book', label: () => t('本棚') },
   { path: '/notes', screen: 'notes', icon: 'highlighter', label: () => t('メモ') },
+  { path: '/study', screen: 'study', icon: 'translate', label: () => t('英語') },
   { path: '/history', screen: 'history', icon: 'chart', label: () => t('記録') },
   { path: '/settings', screen: 'settings', icon: 'settings', label: () => t('設定') },
 ] as const

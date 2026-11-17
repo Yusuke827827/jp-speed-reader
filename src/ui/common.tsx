@@ -50,6 +50,7 @@ const paths: Record<string, ReactNode> = {
   text: <path d="M5 6h14M12 6v13M9 19h6" />,
   scan: <path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4M7 12h10" />,
   close: <path d="M6 6l12 12M18 6L6 18" />,
+  translate: <path d="M3 5h9M7.5 3v2M5 5c1 4 3.5 6.5 6.5 7.5M10 5c-.8 3.8-3 6.5-6.5 8M12.5 21l4-10 4 10M14 17.5h5" />,
   bolt: <path d="M13 3L5 14h6l-1 7 8-11h-6z" />,
   people: <path d="M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM3 20a6 6 0 0 1 12 0M16 11a3 3 0 1 0 0-6M17.5 14.5A5 5 0 0 1 21 19.5" />,
 }

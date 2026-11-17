@@ -20,7 +20,8 @@ import backup from './backup'
 import cover from './cover'
 import intro from './intro'
 import tabs from './tabs'
+import study from './study'
 
-const en: Record<string, string> = { ...common, ...library, ...importer, ...ocr, ...reader, ...pdfviewer, ...settings, ...history, ...lib, ...help, ...customize, ...notes, ...goals, ...speech, ...quiz, ...epub, ...backup, ...cover, ...intro, ...tabs }
+const en: Record<string, string> = { ...common, ...library, ...importer, ...ocr, ...reader, ...pdfviewer, ...settings, ...history, ...lib, ...help, ...customize, ...notes, ...goals, ...speech, ...quiz, ...epub, ...backup, ...cover, ...intro, ...tabs, ...study }
 
 export default en
