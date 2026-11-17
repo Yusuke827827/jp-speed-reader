@@ -2726,3 +2726,97 @@ button.study-chip {
 .study-review-buttons .btn {
   min-height: 52px;
 }
+.study-q-prompt {
+  font-weight: 600;
+}
+.study-quote {
+  font-size: 18px;
+  padding: 8px 12px;
+  border-left: 3px solid var(--accent);
+  background: var(--surface-2);
+  border-radius: 6px;
+}
+.study-choice {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  width: 100%;
+  border: 2px solid transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  min-height: 52px;
+}
+.study-choice:disabled {
+  cursor: default;
+}
+.study-choice.correct {
+  border-color: var(--role-O);
+}
+.study-choice.wrong {
+  border-color: var(--role-V);
+}
+.study-choice-no {
+  font-weight: 700;
+  color: var(--muted);
+  min-width: 1.2em;
+}
+.study-ok {
+  color: var(--role-O);
+}
+.study-ng {
+  color: var(--role-V);
+}
+.study-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.study-stats b {
+  font-size: 24px;
+}
+.study-skill-list {
+  padding: 0;
+}
+.study-skill + .study-skill {
+  border-top: 0.5px solid var(--line);
+}
+.study-skill-head {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  width: 100%;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  padding: 14px 16px;
+}
+.study-skill-body {
+  padding: 0 16px 14px;
+}
+.study-state {
+  flex: none;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 8px;
+  border: 1px dashed var(--line);
+  color: var(--muted);
+}
+.study-state.state-weak {
+  border: none;
+  background: color-mix(in srgb, var(--role-V) 16%, transparent);
+  color: var(--role-V);
+}
+.study-state.state-practice {
+  border: none;
+  background: color-mix(in srgb, #ff9f0a 18%, transparent);
+  color: #b26a00;
+}
+.study-state.state-good {
+  border: none;
+  background: color-mix(in srgb, var(--role-O) 16%, transparent);
+  color: var(--role-O);
+}

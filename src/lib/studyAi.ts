@@ -26,7 +26,8 @@ import {
   type StudyModel,
   type WordEntry,
 } from './study'
-import { newMaterial, putMaterial, splitForAnalysis, type Material } from './studyTools'
+import { newMaterial, putMaterial, sentencesOf, splitForAnalysis, type Material } from './studyTools'
+import { QUIZ_SCHEMA, QUIZ_SYSTEM, addAnswers, parseQuiz, quizRequestText, type Answer, type Quiz } from './studyQuiz'
 
 const KEY_STORE = 'flowa.study.apiKey'
 const MODEL_STORE = 'flowa.study.model'
@@ -268,4 +269,40 @@ export async function readImageText(file: Blob, lang: 'eng' | 'jpn', onProgress?
   } finally {
     await worker.terminate()
   }
+}
+
+// ---- 設問と分析 ----
+
+const ANSWERS_KEY = 'study:answers'
+
+export function quizKey(materialId: string): string {
+  return `study:quiz:${materialId}`
+}
+
+export async function loadQuiz(materialId: string): Promise<Quiz | undefined> {
+  return getKV<Quiz>(quizKey(materialId)).catch(() => undefined)
+}
+
+/** 教材から設問を作って保存する（作り直すときも同じ場所に上書きする） */
+export async function generateQuiz(m: Material, transport?: Transport): Promise<Quiz> {
+  const sentences = sentencesOf(await loadAnalyses(m)).map((s) => s.en)
+  if (!sentences.length) throw new StudyError('other', 'empty')
+  const model = getModel()
+  const json = await call(transportOrThrow(transport), model, QUIZ_SYSTEM, quizRequestText(sentences), QUIZ_SCHEMA as unknown as Record<string, unknown>, 16000)
+  let q: Quiz
+  try {
+    q = parseQuiz(json, m.id, model, sentences.length)
+  } catch (e) {
+    throw toStudyError(e)
+  }
+  await setKV(quizKey(m.id), q).catch(() => undefined)
+  return q
+}
+
+export async function loadAnswers(): Promise<Answer[]> {
+  return (await getKV<Answer[]>(ANSWERS_KEY).catch(() => undefined)) ?? []
+}
+
+export async function saveAnswers(add: Answer[]) {
+  await setKV(ANSWERS_KEY, addAnswers(await loadAnswers(), add))
 }

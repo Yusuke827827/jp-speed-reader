@@ -162,6 +162,10 @@ export function Study() {
       <header className="topbar" role="none">
         <h1>{t('英語')}</h1>
         <div className="grow" />
+        <button className="btn small" onClick={() => go('/analysis')}>
+          <Icon name="chart" />
+          {t('分析')}
+        </button>
         <button className="btn small" onClick={() => go('/vocab')}>
           <Icon name="bookmark" />
           {t('単語帳')}
@@ -405,7 +409,11 @@ export function MaterialView({ id }: { id: string }) {
         </>
       )}
       <div className="row wrap" style={{ margin: '12px 0' }}>
-        <button className="btn primary" onClick={() => sa.setFlow(sentences.slice(m.last < sentences.length - 1 ? m.last : 0))}>
+        <button className="btn primary" onClick={() => go(`/quiz/${id}`)}>
+          <Icon name="quiz" />
+          {t('問題を解く')}
+        </button>
+        <button className="btn" onClick={() => sa.setFlow(sentences.slice(m.last < sentences.length - 1 ? m.last : 0))}>
           <Icon name="bolt" />
           {m.last > 0 && m.last < sentences.length - 1 ? t('続き {n}文目から流して読む', { n: m.last + 1 }) : t('全体を流して読む')}
         </button>
