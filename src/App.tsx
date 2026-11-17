@@ -21,8 +21,6 @@ const MaterialView = lazy(() => import('./ui/Study').then((m) => ({ default: m.M
 const GrammarView = lazy(() => import('./ui/Study').then((m) => ({ default: m.GrammarView })))
 const Vocab = lazy(() => import('./ui/Vocab').then((m) => ({ default: m.Vocab })))
 const Review = lazy(() => import('./ui/Vocab').then((m) => ({ default: m.Review })))
-const QuizView = lazy(() => import('./ui/StudyQuiz').then((m) => ({ default: m.QuizView })))
-const Analysis = lazy(() => import('./ui/StudyQuiz').then((m) => ({ default: m.Analysis })))
 import { useWallpaper } from './lib/wallpaper'
 
 /** 色の上に置く文字の色。明るさの差が大きい方（白か黒）を選ぶ */
@@ -126,12 +124,6 @@ export default function App() {
       break
     case 'review':
       view = <Review />
-      break
-    case 'quiz':
-      view = <QuizView key={id} id={id ?? ''} />
-      break
-    case 'analysis':
-      view = <Analysis />
       break
     case 'm':
       view = <MaterialView key={id} id={id ?? ''} />
